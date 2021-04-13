@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { AuthActions } from '@actions';
-import { View, Dimensions, TouchableOpacity } from 'react-native';
-import { bindActionCreators } from 'redux';
-import { Text, Header, Image, SafeAreaView } from '@components';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {AuthActions} from '@actions';
+import {View, Dimensions, Alert} from 'react-native';
+import {bindActionCreators} from 'redux';
+import {Text, Header, Image, SafeAreaView} from '@components';
 import styles from './styles';
-import { BaseColor, BaseSize } from '@config';
+import {BaseColor, BaseSize} from '@config';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import { useFocusEffect } from '@react-navigation/native';
-import { WebView } from 'react-native-webview';
+import {useFocusEffect} from '@react-navigation/native';
+import {WebView} from 'react-native-webview';
 
-function FocusEfect({ onFocus }) {
+function FocusEfect({onFocus}) {
   useFocusEffect(
     React.useCallback(() => {
       onFocus();
@@ -34,11 +34,11 @@ class Article extends Component {
   }
 
   onFocus = () => {
-    this.setState({ article: this.props.route.params.article });
+    this.setState({article: this.props.route.params.article});
   };
 
   onWebViewMessage = (event: WebViewMessageEvent) => {
-    this.setState({ webViewHeight: Number(event.nativeEvent.data) });
+    this.setState({webViewHeight: Number(event.nativeEvent.data)});
   };
 
   renderWebView = (content) => {
@@ -74,8 +74,8 @@ class Article extends Component {
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         // style={{ height: this.state.webViewHeight, borderWidth: 3 }}
-        style={{ flex: 1 }}
-        source={{ html: generateHtml }}
+        style={{flex: 1}}
+        source={{html: generateHtml}}
         onMessage={this.onWebViewMessage}
         injectedJavaScript="window.ReactNativeWebView.postMessage(document.body.scrollHeight)"
       />
@@ -99,11 +99,11 @@ class Article extends Component {
   }
 
   render() {
-    const { article, content } = this.state;
+    const {article, content} = this.state;
     return (
       <>
         <FocusEfect onFocus={this.onFocus} />
-        <SafeAreaView style={styles.contain} forceInset={{ top: 'never' }}>
+        <SafeAreaView style={styles.contain} forceInset={{top: 'never'}}>
           <Header
             title="Полезная информация"
             whiteHeaderColor
@@ -120,9 +120,43 @@ class Article extends Component {
               this.props.navigation.goBack();
             }}
           />
-          <View style={{ flex: 1, marginHorizontal: 20 }}>
+          <View style={{flex: 1, marginHorizontal: 20}}>
             {this.renderWebView(article.content)}
           </View>
+          {article.company !== null && (
+            <TouchableOpacity
+              onPress={() => {
+                if (
+                  this.props.auth?.catalogues.find(
+                    (partner) => partner.id === article.company.id,
+                  ) === undefined
+                ) {
+                  Alert.alert('This shop is not available in your address');
+                } else {
+                  this.props.actions.setPartner(
+                    this.props.auth?.catalogues.find(
+                      (partner) => partner.id === article.company.id,
+                    ),
+                  );
+                  this.props.navigation.navigate('ProductDetail', {
+                    from: 'Article',
+                  });
+                }
+              }}
+              style={{
+                backgroundColor: BaseColor.redColor,
+                borderRadius: 5,
+                marginHorizontal: 20,
+                padding: 10,
+                marginBottom: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Text title3 style={{color: 'white'}}>
+                К партнеру
+              </Text>
+            </TouchableOpacity>
+          )}
         </SafeAreaView>
       </>
     );
@@ -130,7 +164,7 @@ class Article extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return {};
+  return {auth: state.auth};
 };
 
 const mapDispatchToProps = (dispatch) => {
