@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 import { BaseColor } from '@config';
 import * as Utils from '@utils';
 
@@ -53,7 +53,7 @@ export default StyleSheet.create({
     width: '100%',
     height: 300,
     position: 'absolute',
-    top: 55,
+    top: Platform.OS === 'ios' ? 95 : 55,
   },
   contentBoxTop: {
     backgroundColor: BaseColor.grayBackgroundColor,

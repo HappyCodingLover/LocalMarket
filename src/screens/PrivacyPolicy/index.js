@@ -3,12 +3,11 @@ import { connect } from 'react-redux';
 import { AuthActions } from '@actions';
 import { View, Dimensions } from 'react-native';
 import { bindActionCreators } from 'redux';
-import { Header } from '@components';
+import { Header, SafeAreaView } from '@components';
 import styles from './styles';
 import { BaseColor } from '@config';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { useFocusEffect } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 
 const scalesPageToFit = Platform.OS === 'android';

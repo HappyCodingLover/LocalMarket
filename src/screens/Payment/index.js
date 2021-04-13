@@ -296,9 +296,12 @@ class Payment extends Component {
     // tinkoff payment -------------------------------------------------------------------------------
     const payment = TinkoffASDK.Pay({
       OrderID: Math.abs(new Date().getTime()).toString(10), // ID заказа в вашей системе
-      Amount: orderPriceTmp * 100, // сумма для оплаты (в копейках)
-      PaymentName: auth.partner.name, // название платежа, видимое пользователю
-      PaymentDesc: auth.partner.description, // описание платежа, видимое пользователю
+      // Amount: orderPriceTmp * 100, // сумма для оплаты (в копейках)
+      Amount: 32345, // сумма для оплаты (в копейках)
+      // PaymentName: auth.partner.name, // название платежа, видимое пользователю
+      PaymentName: 'auth.partner.name', // название платежа, видимое пользователю
+      // PaymentDesc: auth.partner.description, // описание платежа, видимое пользователю
+      PaymentDesc: 'auth.partner.description', // описание платежа, видимое пользователю
       CardID: 'CARD-ID', // ID карточки
       //Email: "batman@gotham.co",         // E-mail клиента для отправки уведомления об оплате
       //CustomerKey: null,                 // ID клиента для сохранения карты
@@ -307,7 +310,6 @@ class Payment extends Component {
       CustomerKey: 'team.local.market@gmail.com',
       IsRecurrent: false, // флаг определяющий является ли платеж рекуррентным [1]
       UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
-      ExtraData: {},
       GooglePayParams: {
         MerchantName: 'test',
         AddressRequired: false,
@@ -315,23 +317,23 @@ class Payment extends Component {
         Environment: 'TEST', // "SANDBOX", "PRODUCTION"
       },
       Taxation: 'usn_income',
-      Items: items,
-      // Items: [
-      //   {
-      //     Name: "test 1",
-      //     Price: 10000, // В копейках (100 рублей)
-      //     Quantity: 2,
-      //     Amount: 20000, // В копейках (200 рублей)
-      //     Tax: 'none',
-      //   },
-      //   {
-      //     Name: "test 2",
-      //     Price: 12345,
-      //     Quantity: 1,
-      //     Amount: 12345,
-      //     Tax: "none",
-      //   }
-      // ],
+      // Items: items,
+      Items: [
+        {
+          Name: "test 1",
+          Price: 10000, // В копейках (100 рублей)
+          Quantity: 2,
+          Amount: 20000, // В копейках (200 рублей)
+          Tax: 'none',
+        },
+        {
+          Name: "test 2",
+          Price: 12345,
+          Quantity: 1,
+          Amount: 12345,
+          Tax: "none",
+        }
+      ],
     });
 
     payment

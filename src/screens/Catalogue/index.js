@@ -811,7 +811,6 @@ class Catalogue extends Component {
     } = this.state;
     var ecoPrice = 0;
     const { auth } = this.props;
-
     return (
       <AndroidBackHandler onBackPress={() => {
         return true;
@@ -1020,7 +1019,7 @@ class Catalogue extends Component {
                   ))}
                 {/* cart */}
                 {loadingCategories ||
-                  (auth?.totalPrice > 0 && delivery_zone?.delivery_price > 0 && (
+                  (auth?.totalPrice > 0 && (
                     <View style={styles.cart}>
                       <View style={styles.totalPrice}>
                         {ecoPrice > 0 ? (
@@ -1065,7 +1064,7 @@ class Catalogue extends Component {
                           style={{
                             borderRadius: 5,
                             // height: 44,
-                            paddingVertical: 12,
+                            paddingVertical: 8,
                             alignItems: 'center',
                             justifyContent: 'center',
                             backgroundColor: !this.checkMinimalCheckout()

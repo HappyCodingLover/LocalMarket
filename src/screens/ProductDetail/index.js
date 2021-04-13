@@ -998,14 +998,15 @@ class ProductDetail extends Component {
       <>
         <FocusEfect onFocus={this.onFocus} />
         <Spinner visible={loading} color="#FF2D34" />
-        <View
+        <SafeAreaView
           style={[
             styles.contain,
             this.checkMinimalCheckout() && {
               marginBottomWidth: 1,
               marginBottomColor: BaseColor.textPrimaryColor,
             },
-          ]}>
+          ]}
+          forceInset={{top: 'never'}}>
           <Header
             title={auth.partner?.name}
             statusBarColor={BaseColor.grayBackgroundColor}
@@ -1120,7 +1121,7 @@ class ProductDetail extends Component {
               </TouchableOpacity>
             </Animated.View>
           </Animated.View>
-          <SafeAreaView style={{flex: 1}} forceInset={{top: 'always'}}>
+          <View style={{flex: 1}}>
             <ScrollView
               onScroll={Animated.event(
                 [
@@ -1381,17 +1382,6 @@ class ProductDetail extends Component {
             )}
             {auth.totalPrice > 0 && (
               <View style={styles.bottomBar}>
-                {/* <View
-                  style={{
-                    flex: 1,
-                    marginLeft: 20,
-                    justifyContent: 'center',
-                  }}>
-                  <Text title2 semiBold>
-                    {auth.totalPrice} ₽
-                  </Text>
-                  <Text>{'Сегодня'}</Text>
-                </View> */}
                 <View style={styles.totalPrice}>
                   {ecoPrice > 0 ? (
                     <>
@@ -1433,7 +1423,7 @@ class ProductDetail extends Component {
                     style={{
                       borderRadius: 5,
                       // height: 44,
-                      paddingVertical: 12,
+                      paddingVertical: 8,
                       alignItems: 'center',
                       justifyContent: 'center',
                       backgroundColor: !this.checkMinimalCheckout()
@@ -1459,8 +1449,8 @@ class ProductDetail extends Component {
             {this.renderCostPopup()}
             {this.renderPromoPopup()}
             {this.renderSupplierPopup()}
-          </SafeAreaView>
-        </View>
+          </View>
+        </SafeAreaView>
       </>
     );
   }

@@ -190,13 +190,10 @@ class ChangePhone extends Component {
     const {
       loading,
       loading1,
-      countryCode,
       callingCode,
-      cpModalVisible,
       showSkipBtn,
       showBackBtn,
       errorMsg,
-      verificationCode,
     } = this.state;
     const { navigation, route } = this.props;
     return (
@@ -208,8 +205,7 @@ class ChangePhone extends Component {
             return true;
           }}>
           <SafeAreaView
-            style={BaseStyle.safeAreaView}
-            forceInset={{ top: 'never' }}>
+            style={BaseStyle.safeAreaView}>
             {this.renderSpinner(loading)}
             <StatusBar
               hidden={false}

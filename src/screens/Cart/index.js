@@ -956,7 +956,6 @@ class Cart extends Component {
             statusBarColor={BaseColor.grayBackgroundColor}
           />
           {/* products list */}
-          {/* {cart !== null && cart.products.length !== 0 && ( */}
           {_cart !== null && _cart.length !== 0 && (
             <View style={{ marginHorizontal: 12 }}>
               {_cart.map((item, index) => {
@@ -1035,7 +1034,7 @@ class Cart extends Component {
                   style={{
                     borderRadius: 5,
                     // height: 44,
-                    paddingVertical: 12,
+                    paddingVertical: 8,
                     alignItems: 'center',
                     justifyContent: 'center',
                     backgroundColor:

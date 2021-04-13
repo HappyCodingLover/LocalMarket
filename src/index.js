@@ -8,8 +8,14 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import SplashScreen from 'react-native-splash-screen';
 import moment from 'moment-timezone';
 import messaging from '@react-native-firebase/messaging';
+import FeatherIcon from 'react-native-vector-icons/Feather';
+import IoniconsIcon from 'react-native-vector-icons/Ionicons';
+// import FontAwesome5FreeIcon from 'react-native-vector-icons/FontAwesome5Free-Solid';
 
 moment.tz.setDefault('Europe/Moscow');
+FeatherIcon.loadFont();
+IoniconsIcon.loadFont();
+// FontAwesome5FreeIcon.loadFont();
 
 export default class App extends Component {
   constructor(props) {

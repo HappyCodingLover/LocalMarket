@@ -37,17 +37,8 @@ class Loading extends Component {
     };
   }
 
-  componentDidMount() {
-    messaging()
-      .getToken()
-      .then((token) => {
-        console.log('_token', token);
-      });
-  }
-
   _handleAppStateChange = (nextAppState) => {
     if (nextAppState === 'inactive' || nextAppState === 'background') {
-      console.log('_app_background');
       // auth.totalPrice > 0
       const { auth } = this.props;
       if (auth.totalPrice > 0) {
