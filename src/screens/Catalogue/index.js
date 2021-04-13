@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { AuthActions } from '@actions';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {AuthActions} from '@actions';
 import {
   FlatList,
   View,
@@ -10,13 +10,13 @@ import {
   Image,
   ImageBackground,
 } from 'react-native';
-import { bindActionCreators } from 'redux';
-import { Text, Header, PartnerItem, SafeAreaView } from '@components';
+import {bindActionCreators} from 'redux';
+import {Text, Header, PartnerItem, SafeAreaView} from '@components';
 import styles from './styles';
-import { BaseColor, BaseSize, Images } from '@config';
-import { useFocusEffect } from '@react-navigation/native';
+import {BaseColor, BaseSize, Images} from '@config';
+import {useFocusEffect} from '@react-navigation/native';
 import NoPartners from '../../assets/svgs/noPartners.svg';
-import { GuestServices, UserServices } from '../../services';
+import {GuestServices, UserServices} from '../../services';
 import {
   Placeholder,
   PlaceholderMedia,
@@ -27,10 +27,10 @@ import moment from 'moment-timezone';
 
 import Feather from 'react-native-vector-icons/Feather';
 import SvgCssUri from 'react-native-svg';
-import { ScrollView } from 'react-native-gesture-handler';
-import { AndroidBackHandler } from 'react-navigation-backhandler';
+import {ScrollView} from 'react-native-gesture-handler';
+import {AndroidBackHandler} from 'react-navigation-backhandler';
 
-function FocusEfect({ onFocus }) {
+function FocusEfect({onFocus}) {
   useFocusEffect(
     React.useCallback(() => {
       onFocus();
@@ -64,8 +64,8 @@ class Catalogue extends Component {
   }
 
   getCart = () => {
-    const { auth, actions } = this.props;
-    this.setState({ loadingPartners: true });
+    const {auth, actions} = this.props;
+    this.setState({loadingPartners: true});
     UserServices.getCart(auth?.user?.access_token)
       .then((response) => {
         if (response.data.success === 1) {
@@ -74,7 +74,7 @@ class Catalogue extends Component {
             actions.saveTotalPrice(0);
           } else {
             var totalPrice = 0;
-            this.setState({ loadingPartners: true });
+            this.setState({loadingPartners: true});
             GuestServices.getCatalogueById(cart?.company_id)
               .then((response) => {
                 if (response.data.success === 1) {
@@ -121,11 +121,11 @@ class Catalogue extends Component {
                 console.error('err in getting partner', err);
               })
               .finally(() => {
-                this.setState({ loadingPartners: false });
+                this.setState({loadingPartners: false});
                 actions.saveTotalPrice(totalPrice);
               });
           }
-          this.setState({ cart: cart });
+          this.setState({cart: cart});
         } else {
           console.error(
             'something went wrong while getting cart',
@@ -137,12 +137,12 @@ class Catalogue extends Component {
         console.error('err in getting cart', err);
       })
       .finally(() => {
-        this.setState({ loadingPartners: false });
+        this.setState({loadingPartners: false});
       });
   };
 
   onRegister(token) {
-    this.setState({ registerToken: token?.token, fcmRegistered: true });
+    this.setState({registerToken: token?.token, fcmRegistered: true});
   }
 
   onNotif(notif) {
@@ -154,7 +154,7 @@ class Catalogue extends Component {
   }
 
   getDeliveryZone = () => {
-    const { auth } = this.props;
+    const {auth} = this.props;
     if (auth?.partner !== null && auth?.activeAddress !== undefined) {
       if (
         auth?.partner?.delivery_zones?.some(
@@ -177,12 +177,12 @@ class Catalogue extends Component {
   };
 
   getArticles = () => {
-    const { navigation } = this.props;
-    this.setState({ loadingArticles: true });
+    const {navigation} = this.props;
+    this.setState({loadingArticles: true});
     GuestServices.getArticles()
       .then((response) => {
         if (response.data.success === 1) {
-          this.setState({ articles: response.data.data });
+          this.setState({articles: response.data.data});
         } else {
           console.error(
             'something went wrong while getting articles',
@@ -195,28 +195,28 @@ class Catalogue extends Component {
       })
       .catch((err) => {
         console.error('err while getting articles', err);
-        navigation.navigate('ErrorScreen', { message: err.message });
+        navigation.navigate('ErrorScreen', {message: err.message});
       })
       .finally(() => {
-        this.setState({ loadingArticles: false });
+        this.setState({loadingArticles: false});
       });
   };
 
   getCategories = () => {
-    const { auth, actions, navigation } = this.props;
+    const {auth, actions, navigation} = this.props;
 
-    this.setState({ loadingCategories: true });
+    this.setState({loadingCategories: true});
     GuestServices.getCategories()
       .then((response) => {
         if (response.data.success === 1) {
-          this.setState({ categories: response.data.data });
+          this.setState({categories: response.data.data});
           var tmp = [];
           response.data.data.forEach((ele, index) =>
             auth?.categories[index] === undefined
               ? tmp.push(false)
               : tmp.push(auth?.categories[index] * true),
           );
-          this.setState({ cats: tmp });
+          this.setState({cats: tmp});
           actions.saveCategories(tmp);
         } else {
           console.error(
@@ -230,15 +230,15 @@ class Catalogue extends Component {
       })
       .catch((err) => {
         console.error('err while getting categories', err);
-        navigation.navigate('ErrorScreen', { message: err.message });
+        navigation.navigate('ErrorScreen', {message: err.message});
       })
       .finally(() => {
-        this.setState({ loadingCategories: false });
+        this.setState({loadingCategories: false});
       });
   };
 
   functionX = () => {
-    const { auth, actions, navigation } = this.props;
+    const {auth, actions, navigation} = this.props;
     var tmpArray = [];
     auth?.categories.forEach((category, index) => {
       if (auth?.categories[index]) {
@@ -248,7 +248,7 @@ class Catalogue extends Component {
     if (auth?.user === null) {
       // guest mode
       if (auth?.activeAddress?.district !== null) {
-        this.setState({ loadingPartners: true });
+        this.setState({loadingPartners: true});
         var ids = undefined;
         if (tmpArray.length !== 0) {
           ids = tmpArray;
@@ -259,7 +259,7 @@ class Catalogue extends Component {
               let partners = response.data.data.data;
               partners = this.filterBreakTimes(partners);
               actions.saveCatalogues(partners, () => {
-                this.setState({ loadingPartners: false });
+                this.setState({loadingPartners: false});
               });
             } else {
               console.error(
@@ -272,14 +272,14 @@ class Catalogue extends Component {
             console.error('err : getAllPartners', err);
           })
           .finally(() => {
-            this.setState({ loadingPartners: false });
+            this.setState({loadingPartners: false});
           });
       }
     } else {
       // logged in user
       if (auth?.category !== null) {
         // category not selected
-        this.setState({ selectedCategoryIndex: auth?.category });
+        this.setState({selectedCategoryIndex: auth?.category});
       }
       actions.setLoadingFalse();
       // category selected
@@ -289,21 +289,21 @@ class Catalogue extends Component {
         });
         this.getPartnersByCategory();
       } else {
-        this.setState({ loadingPartners: true });
+        this.setState({loadingPartners: true});
         GuestServices.getCatalogues(auth?.user?.access_token)
           .then((response) => {
             if (response.data.success === 1) {
               let partners = response.data.data.data;
               partners = this.filterBreakTimes(partners);
               actions.saveCatalogues(partners, () => {
-                this.setState({ loadingPartners: false });
+                this.setState({loadingPartners: false});
               });
             } else {
               console.error(
                 'something went wrong while getting catalogues',
                 response.data.message,
               );
-              this.setState({ loading: false });
+              this.setState({loading: false});
 
               navigation.navigate('ErrorScreen', {
                 message: response.data.message,
@@ -312,20 +312,20 @@ class Catalogue extends Component {
           })
           .catch((err) => {
             console.error('err in getting partners___', err);
-            this.setState({ loading: false });
+            this.setState({loading: false});
 
-            navigation.navigate('ErrorScreen', { message: err.message });
+            navigation.navigate('ErrorScreen', {message: err.message});
           })
           .finally(() => {
-            this.setState({ loadingPartners: false });
+            this.setState({loadingPartners: false});
           });
       }
     }
   };
 
   getPartnersByCategory = () => {
-    const { auth, actions, navigation } = this.props;
-    this.setState({ loadingPartners: true });
+    const {auth, actions, navigation} = this.props;
+    this.setState({loadingPartners: true});
     var tmpArray = [];
     auth?.categories.forEach((category, index) => {
       if (auth?.categories[index]) {
@@ -339,7 +339,7 @@ class Catalogue extends Component {
           let partners = response.data.data.data;
           partners = this.filterBreakTimes(partners);
           actions.saveCatalogues(partners, () => {
-            this.setState({ loadingPartners: false });
+            this.setState({loadingPartners: false});
           });
         } else {
           console.error(
@@ -354,20 +354,20 @@ class Catalogue extends Component {
       .catch((err) => {
         console.error('err in getting partners', err);
 
-        navigation.navigate('ErrorScreen', { message: err.message });
+        navigation.navigate('ErrorScreen', {message: err.message});
       })
       .finally(() => {
-        this.setState({ loadingPartners: false });
+        this.setState({loadingPartners: false});
       });
   };
 
   onFocus = () => {
-    const { auth } = this.props;
+    const {auth} = this.props;
     if (auth?.user === null) {
     } else {
       this.getCart();
     }
-    this.setState({ showAlert: false });
+    this.setState({showAlert: false});
     this.getDeliveryZone();
     this.getArticles();
     this.getCategories();
@@ -376,19 +376,19 @@ class Catalogue extends Component {
   };
 
   onArticleBtn = (article) => {
-    this.props.navigation.navigate('Article', { article: article });
+    this.props.navigation.navigate('Article', {article: article});
   };
 
   onPartnerBtn = (index) => {
-    const { auth, actions, navigation } = this.props;
-    const { cart } = this.state;
+    const {auth, actions, navigation} = this.props;
+    const {cart} = this.state;
     const _cart = cart !== null ? cart?.products : auth?.cart;
     if (
       auth?.partner?.id !== auth?.catalogues[index]?.id &&
       _cart !== null &&
       _cart.length !== 0
     ) {
-      this.setState({ selectedIndex: index });
+      this.setState({selectedIndex: index});
       Alert.alert(
         'Хотите сделать заказ у другого партнера? Сначала очистите корзину',
         'Вы собираетесь очистить свою корзину.',
@@ -408,7 +408,7 @@ class Catalogue extends Component {
       );
     } else {
       actions.setPartner(auth?.catalogues[index]);
-      navigation.navigate('ProductDetail', { from: 'Catalogue' });
+      navigation.navigate('ProductDetail', {from: 'Catalogue'});
     }
   };
 
@@ -417,9 +417,7 @@ class Catalogue extends Component {
     partners = partners.filter((partner) => {
       flag = false;
       if (partner.break_times.length > 0) {
-
         partner.break_times.map((timeframe) => {
-
           if (this.checkIsBetween(timeframe)) {
             flag = true;
           }
@@ -431,13 +429,13 @@ class Catalogue extends Component {
   };
 
   onCategoryBtn = (index) => {
-    const { auth, actions, navigation } = this.props;
+    const {auth, actions, navigation} = this.props;
 
-    const { cats } = this.state;
+    const {cats} = this.state;
     var tmpCats = cats;
     // if selected, unselect; if unselected, select
     tmpCats[index] = !tmpCats[index];
-    this.setState({ cats: tmpCats });
+    this.setState({cats: tmpCats});
     actions.saveCategories(tmpCats);
     var tmpArray = [];
     tmpCats.forEach((category, index) => {
@@ -457,7 +455,7 @@ class Catalogue extends Component {
         auth?.activeAddress?.district !== null
           ? auth?.activeAddress?.district
           : 'Выбрать все районы (Москва)\r\n';
-      this.setState({ loadingPartners: true });
+      this.setState({loadingPartners: true});
       var ids = undefined;
       if (tmpArray.length !== 0) {
         ids = tmpArray;
@@ -468,7 +466,7 @@ class Catalogue extends Component {
             let partners = response.data.data.data;
             partners = this.filterBreakTimes(partners);
             actions.saveCatalogues(partners, () => {
-              this.setState({ loadingPartners: false });
+              this.setState({loadingPartners: false});
             });
           } else {
             console.error('sth wrong : getAllPartners', response.data.message);
@@ -479,17 +477,17 @@ class Catalogue extends Component {
         })
         .catch((err) => {
           console.error('err : getAllPartners', err.message);
-          navigation.navigate('ErrorScreen', { message: err.message });
+          navigation.navigate('ErrorScreen', {message: err.message});
         })
         .finally(() => {
-          this.setState({ loadingPartners: false });
+          this.setState({loadingPartners: false});
         });
     }
   };
 
   getEconomizedPrice() {
-    const { auth } = this.props;
-    const { cart } = this.state;
+    const {auth} = this.props;
+    const {cart} = this.state;
     var ecoPrice = 0;
     if (cart !== null) {
       cart?.products.forEach((item) => {
@@ -506,7 +504,7 @@ class Catalogue extends Component {
     return parseFloat(ecoPrice.toFixed(2));
   }
 
-  renderArticlesView = ({ item, index }) => {
+  renderArticlesView = ({item, index}) => {
     if (item.image) {
       var extension = item.image.split('.').pop();
       if (extension === 'svg') {
@@ -518,7 +516,7 @@ class Catalogue extends Component {
             style={styles.article}>
             <ImageBackground
               source={Images.productPlaceholder}
-              imageStyle={{ borderRadius: 10 }}
+              imageStyle={{borderRadius: 10}}
               style={styles.articleImgBackground}>
               <SvgCssUri
                 width="90"
@@ -540,7 +538,7 @@ class Catalogue extends Component {
             style={styles.article}>
             <ImageBackground
               source={Images.productPlaceholder}
-              imageStyle={{ borderRadius: 10 }}
+              imageStyle={{borderRadius: 10}}
               style={styles.articleImgBackground}>
               <Image
                 source={{
@@ -555,11 +553,24 @@ class Catalogue extends Component {
           </TouchableOpacity>
         );
       }
+    } else {
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            this.onArticleBtn(item);
+          }}
+          style={styles.article}>
+          <ImageBackground
+            source={Images.productPlaceholder}
+            imageStyle={{borderRadius: 10}}
+            style={styles.articleImgBackground}></ImageBackground>
+        </TouchableOpacity>
+      );
     }
   };
 
   renderTypesView(item, index) {
-    const { auth } = this.props;
+    const {auth} = this.props;
 
     if (item.icon !== null) {
       var extension = item.icon.split('.').pop();
@@ -644,17 +655,17 @@ class Catalogue extends Component {
   }
 
   _clearCart = async () => {
-    this.setState({ showAlert: false });
-    const { auth, actions, navigation } = this.props;
-    const { selectedIndex, cart } = this.state;
+    this.setState({showAlert: false});
+    const {auth, actions, navigation} = this.props;
+    const {selectedIndex, cart} = this.state;
     if (auth.user === null) {
       actions.clearCart();
       actions.clearTotalPrice();
       actions.setPartner(auth.catalogues[selectedIndex]);
-      navigation.navigate('ProductDetail', { from: 'Catalogue' });
+      navigation.navigate('ProductDetail', {from: 'Catalogue'});
     } else {
       // clear cart
-      this.setState({ loadingPartners: true });
+      this.setState({loadingPartners: true});
       UserServices.clearCart(auth.user.access_token, cart.id)
         .then((response) => {
           if (response.data.success === 1) {
@@ -662,7 +673,7 @@ class Catalogue extends Component {
             actions.clearDiscountPrice();
             actions.clearPartner();
             actions.setPartner(auth.catalogues[selectedIndex]);
-            navigation.navigate('ProductDetail', { from: 'Catalogue' });
+            navigation.navigate('ProductDetail', {from: 'Catalogue'});
           } else {
             console.error(
               'something went wrong while clearing cart',
@@ -675,16 +686,16 @@ class Catalogue extends Component {
         })
         .catch((err) => {
           console.error('err in clearing cart', err);
-          navigation.navigate('ErrorScreen', { message: err.message });
+          navigation.navigate('ErrorScreen', {message: err.message});
         })
         .finally(() => {
-          this.setState({ loadingPartners: false });
+          this.setState({loadingPartners: false});
         });
     }
   };
 
   checkMinimalCheckout = () => {
-    const { auth } = this.props;
+    const {auth} = this.props;
     if (
       auth.partner !== null &&
       auth.activeAddress !== null &&
@@ -734,7 +745,7 @@ class Catalogue extends Component {
   }
 
   renderPartnersView(item, index) {
-    const { auth } = this.props;
+    const {auth} = this.props;
     // if no activeAddress, which means in the guest mode
     if (auth.activeAddress === null || auth.activeAddress === undefined) {
       return (
@@ -810,15 +821,16 @@ class Catalogue extends Component {
       selectedCategoryIndex,
     } = this.state;
     var ecoPrice = 0;
-    const { auth } = this.props;
+    const {auth} = this.props;
     return (
-      <AndroidBackHandler onBackPress={() => {
-        return true;
-      }}>
+      <AndroidBackHandler
+        onBackPress={() => {
+          return true;
+        }}>
         <FocusEfect onFocus={this.onFocus} />
-        <SafeAreaView style={styles.contain} forceInset={{ top: 'never' }}>
+        <SafeAreaView style={styles.contain} forceInset={{top: 'never'}}>
           <Header
-            style={{ backgroundColor: BaseColor.backgroundColor }}
+            style={{backgroundColor: BaseColor.backgroundColor}}
             title={
               auth.activeAddress ? auth.activeAddress.address : 'Ваш адрес'
             }
@@ -855,7 +867,7 @@ class Catalogue extends Component {
                           style={[styles.articleImgPlaceholder, props.style]}
                         />
                       )}>
-                      <View style={{ marginTop: 15 }}>
+                      <View style={{marginTop: 15}}>
                         <PlaceholderLine width={80} />
                         <PlaceholderLine />
                         <PlaceholderLine width={30} />
@@ -873,7 +885,7 @@ class Catalogue extends Component {
                 </View>
                 {/* partners */}
                 {loadingPartners ? (
-                  <View style={{ alignItems: 'center', marginTop: 15 }}>
+                  <View style={{alignItems: 'center', marginTop: 15}}>
                     <Placeholder Animation={Fade}>
                       <PlaceholderMedia
                         isRound={true}
@@ -882,7 +894,7 @@ class Catalogue extends Component {
                       <PlaceholderLine
                         width={80}
                         height={20}
-                        style={{ marginTop: 10, marginBottom: 32 }}
+                        style={{marginTop: 10, marginBottom: 32}}
                       />
                     </Placeholder>
                     <Placeholder Animation={Fade}>
@@ -893,7 +905,7 @@ class Catalogue extends Component {
                       <PlaceholderLine
                         width={40}
                         height={20}
-                        style={{ marginTop: 10, marginBottom: 32 }}
+                        style={{marginTop: 10, marginBottom: 32}}
                       />
                     </Placeholder>
                     <Placeholder Animation={Fade}>
@@ -904,17 +916,17 @@ class Catalogue extends Component {
                       <PlaceholderLine
                         width={55}
                         height={20}
-                        style={{ marginTop: 10, marginBottom: 32 }}
+                        style={{marginTop: 10, marginBottom: 32}}
                       />
                     </Placeholder>
                   </View>
                 ) : auth.catalogues.length === 0 ? (
                   // no partners found
-                  <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
-                    <View style={{ marginVertical: 20 }}>
+                  <ScrollView contentContainerStyle={{alignItems: 'center'}}>
+                    <View style={{marginVertical: 20}}>
                       <NoPartners width={svgSize} height={svgSize} />
                     </View>
-                    <View style={{ alignItems: 'center' }}>
+                    <View style={{alignItems: 'center'}}>
                       <Text
                         title1
                         style={{
@@ -941,11 +953,11 @@ class Catalogue extends Component {
                 ) : (
                   // partners
                   <FlatList
-                    style={{ marginTop: 20 }}
+                    style={{marginTop: 20}}
                     showsVerticalScrollIndicator={false}
                     data={auth.catalogues}
                     keyExtractor={(item, index) => index.toString()}
-                    renderItem={({ item, index }) =>
+                    renderItem={({item, index}) =>
                       this.renderPartnersView(item, index)
                     }
                   />
@@ -953,10 +965,10 @@ class Catalogue extends Component {
               </ScrollView>
               {/* categories */}
               <View style={styles.bottomBar}>
-                <View style={{ paddingLeft: 20, paddingVertical: 15 }}>
+                <View style={{paddingLeft: 20, paddingVertical: 15}}>
                   {loadingCategories ? (
-                    <Placeholder style={{ zIndex: 2 }} Animation={Fade}>
-                      <View style={{ flexDirection: 'row' }}>
+                    <Placeholder style={{zIndex: 2}} Animation={Fade}>
+                      <View style={{flexDirection: 'row'}}>
                         <PlaceholderMedia
                           isRound={true}
                           style={styles.typesViewPlaceholder}
@@ -985,7 +997,7 @@ class Catalogue extends Component {
                       showsHorizontalScrollIndicator={false}
                       data={categories}
                       keyExtractor={(item, index) => index.toString()}
-                      renderItem={({ item, index }) =>
+                      renderItem={({item, index}) =>
                         this.renderTypesView(item, index)
                       }
                     />
@@ -996,7 +1008,7 @@ class Catalogue extends Component {
                       data={categories}
                       initialScrollIndex={selectedCategoryIndex}
                       keyExtractor={(item, index) => index.toString()}
-                      renderItem={({ item, index }) =>
+                      renderItem={({item, index}) =>
                         this.renderTypesView(item, index)
                       }
                     />
@@ -1005,11 +1017,11 @@ class Catalogue extends Component {
                 {/* minimal order price warning */}
                 {loadingCategories ||
                   (auth?.totalPrice > 0 && this.checkMinimalCheckout() && (
-                    <View style={{ backgroundColor: '#262626' }}>
+                    <View style={{backgroundColor: '#262626'}}>
                       <Text
                         body2
                         whiteColor
-                        style={{ textAlign: 'center', paddingVertical: 3 }}>
+                        style={{textAlign: 'center', paddingVertical: 3}}>
                         {delivery_zone !== undefined &&
                           'Минимальная сумма заказа ' +
                             delivery_zone?.min_order_price +
@@ -1024,7 +1036,7 @@ class Catalogue extends Component {
                       <View style={styles.totalPrice}>
                         {ecoPrice > 0 ? (
                           <>
-                            <View style={{ alignItems: 'flex-start' }}>
+                            <View style={{alignItems: 'flex-start'}}>
                               <Text
                                 style={{
                                   textDecorationLine: 'line-through',
@@ -1043,7 +1055,7 @@ class Catalogue extends Component {
                             </Text>
                           </>
                         ) : (
-                          <View style={{ alignItems: 'flex-start' }}>
+                          <View style={{alignItems: 'flex-start'}}>
                             <Text title2 semiBold>
                               {auth?.totalPrice +
                                 (delivery_zone.free_delivery_from >
@@ -1055,7 +1067,7 @@ class Catalogue extends Component {
                           </View>
                         )}
                       </View>
-                      <View style={{ flex: 1 }}>
+                      <View style={{flex: 1}}>
                         <TouchableOpacity
                           disabled={this.checkMinimalCheckout()}
                           onPress={() => {
@@ -1096,7 +1108,7 @@ class Catalogue extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return { auth: state.auth, catalogues: state.catalogues };
+  return {auth: state.auth, catalogues: state.catalogues};
 };
 
 const mapDispatchToProps = (dispatch) => {
