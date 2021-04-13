@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { AuthActions } from '@actions';
-import { bindActionCreators } from 'redux';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {AuthActions} from '@actions';
+import {bindActionCreators} from 'redux';
 import {
   View,
   StatusBar,
@@ -10,18 +10,18 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import { BaseStyle, BaseColor, BaseSize } from '@config';
-import { SafeAreaView, Text, Header } from '@components';
+import {BaseStyle, BaseColor, BaseSize} from '@config';
+import {SafeAreaView, Text, Header} from '@components';
 import styles from './styles';
-import { withTranslation } from 'react-i18next';
+import {withTranslation} from 'react-i18next';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import { UserServices } from '../../services';
+import {UserServices} from '../../services';
 
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 
-function FocusEfect({ onFocus }) {
+function FocusEfect({onFocus}) {
   useFocusEffect(
     React.useCallback(() => {
       onFocus();
@@ -52,8 +52,8 @@ class NewAddress extends Component {
   };
 
   onSaveBtn = () => {
-    const { address, entrance, intercom, apt, floor, comments } = this.state;
-    const { auth, actions, navigation, route } = this.props;
+    const {address, entrance, intercom, apt, floor, comments} = this.state;
+    const {auth, actions, navigation, route} = this.props;
     const addressInfo = {
       address:
         address.street_with_type +
@@ -66,7 +66,9 @@ class NewAddress extends Component {
           : ''),
       latitude: address.geo_lat,
       longitude: address.geo_lon,
-      district: address.city_district ? address.city_district : address.federal_district,
+      district: address.city_district
+        ? address.city_district
+        : address.federal_district,
       entrance: entrance,
       intercom: intercom,
       apt_office: apt,
@@ -90,7 +92,9 @@ class NewAddress extends Component {
             : ''),
         latitude: address.geo_lat,
         longitude: address.geo_lon,
-        district: address.city_district ? address.city_district : address.federal_district,
+        district: address.city_district
+          ? address.city_district
+          : address.federal_district,
         entrance: entrance,
         intercom: intercom,
         apt_office: apt,
@@ -98,12 +102,12 @@ class NewAddress extends Component {
         comments: comments,
         active: 1,
       };
-      this.setState({ loading: true });
+      this.setState({loading: true});
 
       UserServices.addAddress(body, auth.user.access_token)
         .then((response) => {
           if (response.data.success === 1) {
-            this.setState({ loading: true });
+            this.setState({loading: true});
             UserServices.getAddress(auth.user.access_token)
               .then((response1) => {
                 if (response1.data.success === 1) {
@@ -120,7 +124,7 @@ class NewAddress extends Component {
                   }
                 } else {
                   console.error('something went wrong', response1.data.message);
-                  this.setState({ loading: false });
+                  this.setState({loading: false});
                   navigation.navigate('ErrorScreen', {
                     message: response1.data.message,
                   });
@@ -128,15 +132,15 @@ class NewAddress extends Component {
               })
               .catch((err) => {
                 console.error('err2 in getting addresses', err);
-                this.setState({ loading: false });
-                navigation.navigate('ErrorScreen', { message: err.message });
+                this.setState({loading: false});
+                navigation.navigate('ErrorScreen', {message: err.message});
               })
               .finally(() => {
                 actions.setLoadingFalse();
               });
           } else {
             console.error('something went wrong', response.data.message);
-            this.setState({ loading: false });
+            this.setState({loading: false});
             navigation.navigate('ErrorScreen', {
               message: response.data.message,
             });
@@ -145,11 +149,14 @@ class NewAddress extends Component {
         .catch((err) => {
           console.error('err in adding address', err);
           if (err.message === 'Request failed with status code 422') {
-            Alert.alert('Этот адрес пока не поддерживается. Пожалуйста, попробуйте другой адрес.');
+            Alert.alert(
+              'Этот адрес пока не поддерживается. Пожалуйста, попробуйте другой адрес.',
+            );
             navigation.navigate('SearchAddress');
+          } else {
+            this.setState({loading: false});
+            navigation.navigate('ErrorScreen', {message: err.message});
           }
-          this.setState({ loading: false });
-          navigation.navigate('ErrorScreen', { message: err.message });
         })
         .finally(() => {});
     } else {
@@ -167,7 +174,7 @@ class NewAddress extends Component {
   };
 
   checkInput = () => {
-    const { address, apt } = this.state;
+    const {address, apt} = this.state;
     if (address === '' || apt === '') return false;
     else return true;
   };
@@ -177,16 +184,16 @@ class NewAddress extends Component {
   };
 
   render() {
-    const { loading, address } = this.state;
-    const { auth } = this.props;
-    const { t, navigation } = this.props;
+    const {loading, address} = this.state;
+    const {auth} = this.props;
+    const {t, navigation} = this.props;
 
     return (
       <>
         <FocusEfect onFocus={this.onFocus} />
         <SafeAreaView
           style={BaseStyle.safeAreaView}
-          forceInset={{ top: 'never' }}>
+          forceInset={{top: 'never'}}>
           {this.renderSpinner(loading)}
           <StatusBar
             hidden={false}
@@ -228,7 +235,7 @@ class NewAddress extends Component {
                 placeholder="Укажите подъезд"
                 style={styles.textInput}
                 onChangeText={(text) => {
-                  this.setState({ entrance: text });
+                  this.setState({entrance: text});
                 }}
               />
               <Text lightGrayColor>{'Домофон'}</Text>
@@ -236,7 +243,7 @@ class NewAddress extends Component {
                 placeholder="Укажите домофон"
                 style={styles.textInput}
                 onChangeText={(text) => {
-                  this.setState({ intercom: text });
+                  this.setState({intercom: text});
                 }}
               />
               <Text lightGrayColor>{'Кв/офис'}</Text>
@@ -244,7 +251,7 @@ class NewAddress extends Component {
                 placeholder="Укажите кв/офис"
                 style={styles.textInput}
                 onChangeText={(text) => {
-                  this.setState({ apt: text });
+                  this.setState({apt: text});
                 }}
               />
               <Text lightGrayColor>{'Этаж'}</Text>
@@ -252,7 +259,7 @@ class NewAddress extends Component {
                 placeholder="Укажите этаж"
                 style={styles.textInput}
                 onChangeText={(text) => {
-                  this.setState({ floor: text });
+                  this.setState({floor: text});
                 }}
               />
               <Text lightGrayColor>{'Комментарий курьеру'}</Text>
@@ -261,7 +268,7 @@ class NewAddress extends Component {
                 placeholder="Укажите комментарий"
                 style={styles.textInput}
                 onChangeText={(text) => {
-                  this.setState({ comments: text });
+                  this.setState({comments: text});
                 }}
               />
             </KeyboardAwareScrollView>
@@ -272,15 +279,15 @@ class NewAddress extends Component {
                 style={[
                   styles.saveBtn,
                   this.checkInput()
-                    ? { backgroundColor: BaseColor.redColor }
-                    : { backgroundColor: BaseColor.textInputBackgroundColor },
+                    ? {backgroundColor: BaseColor.redColor}
+                    : {backgroundColor: BaseColor.textInputBackgroundColor},
                 ]}>
                 <Text
                   middleBody
                   style={
                     this.checkInput()
-                      ? { color: BaseColor.whiteColor }
-                      : { color: BaseColor.placeholderColor }
+                      ? {color: BaseColor.whiteColor}
+                      : {color: BaseColor.placeholderColor}
                   }>
                   {'Сохранить'}
                 </Text>
