@@ -310,12 +310,12 @@ class Catalogue extends Component {
               });
             }
           })
-          .catch((err) => {
-            console.error('err in getting partners___', err);
-            this.setState({loading: false});
+          // .catch((err) => {
+          //   console.error('err in getting partners___', err);
+          //   this.setState({loading: false});
 
-            navigation.navigate('ErrorScreen', {message: err.message});
-          })
+          //   navigation.navigate('ErrorScreen', {message: err.message});
+          // })
           .finally(() => {
             this.setState({loadingPartners: false});
           });
@@ -363,6 +363,11 @@ class Catalogue extends Component {
 
   onFocus = () => {
     const {auth} = this.props;
+    if (!auth.activeAddress) {
+      Alert.alert(
+        'Активный адрес не выбран.\nПожалуйста, выберите один из ваших адресов',
+      );
+    }
     if (auth?.user === null) {
     } else {
       this.getCart();
