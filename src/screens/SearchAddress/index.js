@@ -79,7 +79,7 @@ class SearchAddress extends Component {
           }
           placeholderTextColor={'#B3B3B3'}
           ref={(ref) => (this.textInputRef = ref)}
-          style={[styles.input, inputStyle, { marginRight: 5, width: '70%' }]}
+          style={[styles.input, inputStyle, { marginRight: 5, width: '70%', height: 54 }]}
           value={this.state.query}
         />
       </View>
