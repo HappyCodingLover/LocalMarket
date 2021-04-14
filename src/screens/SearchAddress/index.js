@@ -1,22 +1,23 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { AuthActions } from '@actions';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {AuthActions} from '@actions';
 import {
   View,
   Dimensions,
   TextInput,
   FlatList,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
-import { bindActionCreators } from 'redux';
-import { SafeAreaView, Header, Text } from '@components';
+import {bindActionCreators} from 'redux';
+import {SafeAreaView, Header, Text} from '@components';
 import styles from './styles';
-import { BaseColor, BaseSize } from '@config';
+import {BaseColor, BaseSize} from '@config';
 import NotFound from '../../assets/svgs/notFound.svg';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 
-function FocusEfect({ onFocus }) {
+function FocusEfect({onFocus}) {
   useFocusEffect(
     React.useCallback(() => {
       onFocus();
@@ -37,7 +38,7 @@ class SearchAddress extends Component {
       notFound: false,
       location: {
         description: '',
-        coordinate: { latitude: 55.751244, longitude: 37.618423 },
+        coordinate: {latitude: 55.751244, longitude: 37.618423},
       },
       result: null,
       query: '',
@@ -55,15 +56,15 @@ class SearchAddress extends Component {
 
   onFocus = () => {
     this.textInputRef && this.textInputRef.clear();
-    this.setState({ suggestions: [], clickedIndex: 5 });
+    this.setState({suggestions: [], clickedIndex: 5});
   };
 
   renderTextInput = () => {
-    const { inputStyle } = this.props;
+    const {inputStyle} = this.props;
 
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <View style={{ marginRight: 10 }}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{marginRight: 10}}>
           <FeatherIcon name="search" size={20} color={'#B3B3B3'} />
         </View>
         <TextInput
@@ -79,19 +80,24 @@ class SearchAddress extends Component {
           }
           placeholderTextColor={'#B3B3B3'}
           ref={(ref) => (this.textInputRef = ref)}
-          style={[styles.input, inputStyle, { marginRight: 5, width: '70%', height: 54 }]}
+          style={[
+            styles.input,
+            inputStyle,
+            {marginRight: 5, width: '70%', height: 54},
+          ]}
           value={this.state.query}
         />
       </View>
     );
   };
 
-  renderSuggestionItem = ({ item, index }) => {
+  renderSuggestionItem = ({item, index}) => {
+    console.log('________address_______', item.data);
     return (
       <TouchableOpacity
         onPress={(e) => this.onSuggestionClick(index, e)}
-        style={{ marginVertical: 7 }}>
-        <Text style={{ fontSize: 15, color: '#262626' }}>
+        style={{marginVertical: 7}}>
+        <Text style={{fontSize: 15, color: '#262626'}}>
           {item.data.house_type && item.data.block_type
             ? item.data.street_with_type +
               ', ' +
@@ -103,10 +109,14 @@ class SearchAddress extends Component {
               ' ' +
               item.data.block
             : item.data.house_type || item.data.block
-            ? item.data.street_with_type + ', ' + item.data.house_type + ' ' + item.data.house
+            ? item.data.street_with_type +
+              ', ' +
+              item.data.house_type +
+              ' ' +
+              item.data.house
             : item.data.street_with_type}
         </Text>
-        <Text body2 style={{ color: '#585858' }}>
+        <Text body2 style={{color: '#585858'}}>
           {item.data.region_with_type +
             (item.data.settlement_with_type !== null
               ? item.data.settlement_with_type
@@ -117,8 +127,8 @@ class SearchAddress extends Component {
   };
 
   renderSuggestions() {
-    const { ItemSeparatorComponent, keyExtractor, listStyle } = this.props;
-    const { suggestions, query } = this.state;
+    const {ItemSeparatorComponent, keyExtractor, listStyle} = this.props;
+    const {suggestions, query} = this.state;
     if (query !== '') {
       return (
         <FlatList
@@ -136,26 +146,23 @@ class SearchAddress extends Component {
   }
 
   onInputFocus = () => {
-    this.setState({ inputFocused: true });
+    this.setState({inputFocused: true});
     if (this.state.suggestions.length == 0) {
       this.fetchSuggestions();
     }
   };
 
   onInputBlur = () => {
-    this.setState({ inputFocused: false });
+    this.setState({inputFocused: false});
     if (this.state.suggestions.length == 0) {
       this.fetchSuggestions();
     }
   };
 
   onInputChange = (value) => {
-    this.setState(
-      { query: value, key: value, suggestionsVisible: true },
-      () => {
-        this.fetchSuggestions();
-      },
-    );
+    this.setState({query: value, key: value, suggestionsVisible: true}, () => {
+      this.fetchSuggestions();
+    });
   };
 
   fetchSuggestions = () => {
@@ -174,8 +181,8 @@ class SearchAddress extends Component {
           language: 'ru',
           // locations: [{ kladr_id: '50' }, { kladr_id: '77' }],
           locations: [
-            { region: 'Москва' },
-            { region_fias_id: '29251dcf-00a1-4e34-98d4-5c47484a36d4' },
+            {region: 'Москва'},
+            {region_fias_id: '29251dcf-00a1-4e34-98d4-5c47484a36d4'},
           ],
           // locations_boost: [{ kladr_id: '77' }],
         }),
@@ -198,7 +205,7 @@ class SearchAddress extends Component {
   };
 
   fecthFinalSuggestion = (suggestion) => {
-    const { navigation, route } = this.props;
+    const {navigation, route} = this.props;
     fetch(
       'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address',
       {
@@ -213,33 +220,50 @@ class SearchAddress extends Component {
           count: 1,
           language: 'ru',
           locations: [
-            { region: 'Москва' },
-            { region_fias_id: '29251dcf-00a1-4e34-98d4-5c47484a36d4' },
+            {region: 'Москва'},
+            {region_fias_id: '29251dcf-00a1-4e34-98d4-5c47484a36d4'},
           ],
         }),
       },
     )
       .then((response) => response.json())
       .then((response) => {
-        if (route.params !== undefined) {
-          navigation.navigate('NewAddress', {
-            address: response.suggestions.filter(
-              (suggestion) =>
-                !suggestion.data.street_with_type?.includes('метро'),
-            )[0].data,
-            from: 'Payment',
-          });
+        let lat = response.suggestions.filter(
+          (suggestion) => !suggestion.data.street_with_type?.includes('метро'),
+        )[0].data.geo_lat;
+        let lon = response.suggestions.filter(
+          (suggestion) => !suggestion.data.street_with_type?.includes('метро'),
+        )[0].data.geo_lon;
+        if (
+          this.props.auth.addresses.find(
+            (address) => address.latitude === lat && address.longitude === lon,
+          )
+        ) {
+          // aleady existing address
+          Alert.alert(
+            'Этот адрес уже существует.\nПопробуйте найти другой адрес.',
+          );
         } else {
-          navigation.navigate('NewAddress', {
-            address: response.suggestions.filter(
-              (suggestion) =>
-                !suggestion.data.street_with_type?.includes('метро'),
-            )[0].data,
-          });
+          if (route.params !== undefined) {
+            navigation.navigate('NewAddress', {
+              address: response.suggestions.filter(
+                (suggestion) =>
+                  !suggestion.data.street_with_type?.includes('метро'),
+              )[0].data,
+              from: 'Payment',
+            });
+          } else {
+            navigation.navigate('NewAddress', {
+              address: response.suggestions.filter(
+                (suggestion) =>
+                  !suggestion.data.street_with_type?.includes('метро'),
+              )[0].data,
+            });
+          }
         }
       })
       .catch((error) => {
-        console.error(error);
+        console.error('_err_fetchFinalSuggestions', error);
       });
   };
 
@@ -252,12 +276,12 @@ class SearchAddress extends Component {
     if (suggestion.data.house !== null) {
       this.fecthFinalSuggestion(suggestion.value);
     } else {
-      this.setState({ suggestion: suggestion });
+      this.setState({suggestion: suggestion});
     }
   };
 
   selectSuggestion = (index) => {
-    const { query, suggestions } = this.state;
+    const {query, suggestions} = this.state;
 
     if (suggestions.length >= index - 1) {
       const currentSuggestion = suggestions[index];
@@ -346,15 +370,15 @@ class SearchAddress extends Component {
   };
 
   clearSearch = () => {
-    this.setState({ query: '', key: '', suggestions: [] });
+    this.setState({query: '', key: '', suggestions: []});
   };
 
   render() {
-    const { slidesize, suggestionsVisible, suggestions } = this.state;
+    const {slidesize, suggestionsVisible, suggestions} = this.state;
     return (
       <>
         <FocusEfect onFocus={this.onFocus} />
-        <SafeAreaView style={styles.contain} forceInset={{ top: 'never' }}>
+        <SafeAreaView style={styles.contain} forceInset={{top: 'never'}}>
           <Header
             title="Новый адрес"
             whiteHeaderColor
@@ -372,26 +396,22 @@ class SearchAddress extends Component {
             }}
           />
           <View style={styles.mainContainer}>
-            <View style={{ flexDirection: 'row' }}>
+            <View style={{flexDirection: 'row'}}>
               <View style={styles.inputContainer}>
                 {this.renderTextInput()}
               </View>
 
               <TouchableOpacity
                 onPress={this.clearSearch}
-                style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Text middleBody style={{ color: BaseColor.redColor }}>
+                style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Text middleBody style={{color: BaseColor.redColor}}>
                   {'Удалить'}
                 </Text>
               </TouchableOpacity>
             </View>
-            {suggestionsVisible &&
-              suggestions &&
-              suggestions.length > 0 && (
-                <View>
-                  {this.renderSuggestions()}
-                </View>
-              )}
+            {suggestionsVisible && suggestions && suggestions.length > 0 && (
+              <View>{this.renderSuggestions()}</View>
+            )}
           </View>
           {/* {notFound && <NotFound width={slidesize} height={slidesize} />} */}
           {suggestions.length === 0 && (
@@ -399,9 +419,9 @@ class SearchAddress extends Component {
               <NotFound
                 width={slidesize}
                 height={slidesize}
-                style={{ alignSelf: 'center' }}
+                style={{alignSelf: 'center'}}
               />
-              <Text title1 style={{ textAlign: 'center' }}>
+              <Text title1 style={{textAlign: 'center'}}>
                 {'Ничего не найдено…'}
               </Text>
             </>
@@ -413,7 +433,7 @@ class SearchAddress extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return {};
+  return {auth: state.auth};
 };
 
 const mapDispatchToProps = (dispatch) => {
