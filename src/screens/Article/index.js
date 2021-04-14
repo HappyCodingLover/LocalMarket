@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {AuthActions} from '@actions';
-import {View, Dimensions, Alert} from 'react-native';
+import {View, Dimensions, Alert, TouchableOpacity} from 'react-native';
 import {bindActionCreators} from 'redux';
 import {Text, Header, Image, SafeAreaView} from '@components';
 import styles from './styles';
