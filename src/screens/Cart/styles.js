@@ -11,6 +11,7 @@ export default StyleSheet.create({
     // bottom: 0,
     // paddingVertical: 10,
     backgroundColor: BaseColor.whiteColor,
+    marginBottom: 29,
     // flexDirection: 'row',
     // borderWidth: 1,
     // zIndex: 2,
@@ -23,8 +24,8 @@ export default StyleSheet.create({
   totalPrice: {
     flex: 1,
     // alignItems: 'center',
-    padding: 5,
-    marginHorizontal: 5,
+    // padding: 5,
+    marginLeft: 10,
   },
   outOfStockLabel: {
     flex: 2,
@@ -95,7 +96,7 @@ export default StyleSheet.create({
   cart: {
     zIndex: 2,
     height: 64,
-    paddingVertical: 10,
+    paddingVertical: 5,
     backgroundColor: BaseColor.whiteColor,
     flexDirection: 'row',
     justifyContent: 'center',
