@@ -16,6 +16,12 @@
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* LocalMarketTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* LocalMarketTests.m */; };
 		6F2AAC43262479FD009695C8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6F2AAC42262479FD009695C8 /* GoogleService-Info.plist */; };
+		6F694A6D26277850002C0804 /* FontsFree-Net-SFProDisplay-RegularItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6F694A6C26277850002C0804 /* FontsFree-Net-SFProDisplay-RegularItalic.ttf */; };
+		6F694A6F262779B8002C0804 /* FontsFree-Net-SFProText-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6F694A6E262779A4002C0804 /* FontsFree-Net-SFProText-Regular.ttf */; };
+		6F694A71262779C8002C0804 /* FontsFree-Net-SFProDisplay-SemiboldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6F694A70262779C7002C0804 /* FontsFree-Net-SFProDisplay-SemiboldItalic.ttf */; };
+		6F694A73262779D5002C0804 /* FontsFree-Net-SFProDisplay-Semibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6F694A72262779D5002C0804 /* FontsFree-Net-SFProDisplay-Semibold.ttf */; };
+		6F694A75262779DE002C0804 /* FontsFree-Net-SFProDisplay-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6F694A74262779DE002C0804 /* FontsFree-Net-SFProDisplay-BlackItalic.ttf */; };
+		6F694A77262779F2002C0804 /* FontsFree-Net-SFProDisplay-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6F694A76262779F2002C0804 /* FontsFree-Net-SFProDisplay-MediumItalic.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		8C39CBA71D9D0941AAC624CE /* libPods-LocalMarket-LocalMarketTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BB47A6BDB146A303BCA710E /* libPods-LocalMarket-LocalMarketTests.a */; };
 		A0A69DC80E85111355F5A4DC /* libPods-LocalMarket-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40CFA3A3AE6EC017C950CE13 /* libPods-LocalMarket-tvOS.a */; };
@@ -59,6 +65,12 @@
 		6CB31B2721FCABF74CB5AFC4 /* Pods-LocalMarket-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LocalMarket-tvOS.release.xcconfig"; path = "Target Support Files/Pods-LocalMarket-tvOS/Pods-LocalMarket-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		6F2AAC3D2623577B009695C8 /* LocalMarket.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = LocalMarket.entitlements; path = LocalMarket/LocalMarket.entitlements; sourceTree = "<group>"; };
 		6F2AAC42262479FD009695C8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		6F694A6C26277850002C0804 /* FontsFree-Net-SFProDisplay-RegularItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FontsFree-Net-SFProDisplay-RegularItalic.ttf"; sourceTree = "<group>"; };
+		6F694A6E262779A4002C0804 /* FontsFree-Net-SFProText-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "FontsFree-Net-SFProText-Regular.ttf"; path = "/Volumes/Data/02_Work/LocalMarket/ios/FontsFree-Net-SFProText-Regular.ttf"; sourceTree = "<absolute>"; };
+		6F694A70262779C7002C0804 /* FontsFree-Net-SFProDisplay-SemiboldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FontsFree-Net-SFProDisplay-SemiboldItalic.ttf"; sourceTree = "<group>"; };
+		6F694A72262779D5002C0804 /* FontsFree-Net-SFProDisplay-Semibold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FontsFree-Net-SFProDisplay-Semibold.ttf"; sourceTree = "<group>"; };
+		6F694A74262779DE002C0804 /* FontsFree-Net-SFProDisplay-BlackItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FontsFree-Net-SFProDisplay-BlackItalic.ttf"; sourceTree = "<group>"; };
+		6F694A76262779F2002C0804 /* FontsFree-Net-SFProDisplay-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FontsFree-Net-SFProDisplay-MediumItalic.ttf"; sourceTree = "<group>"; };
 		7DD1ED2013DD1021952204DA /* Pods-LocalMarket.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LocalMarket.release.xcconfig"; path = "Target Support Files/Pods-LocalMarket/Pods-LocalMarket.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = LocalMarket/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8458C04B6341D65538925E6A /* Pods-LocalMarket.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LocalMarket.debug.xcconfig"; path = "Target Support Files/Pods-LocalMarket/Pods-LocalMarket.debug.xcconfig"; sourceTree = "<group>"; };
@@ -164,6 +176,12 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				6F694A6E262779A4002C0804 /* FontsFree-Net-SFProText-Regular.ttf */,
+				6F694A6C26277850002C0804 /* FontsFree-Net-SFProDisplay-RegularItalic.ttf */,
+				6F694A76262779F2002C0804 /* FontsFree-Net-SFProDisplay-MediumItalic.ttf */,
+				6F694A74262779DE002C0804 /* FontsFree-Net-SFProDisplay-BlackItalic.ttf */,
+				6F694A72262779D5002C0804 /* FontsFree-Net-SFProDisplay-Semibold.ttf */,
+				6F694A70262779C7002C0804 /* FontsFree-Net-SFProDisplay-SemiboldItalic.ttf */,
 				13B07FAE1A68108700A75B9A /* LocalMarket */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* LocalMarketTests */,
@@ -347,8 +365,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F694A77262779F2002C0804 /* FontsFree-Net-SFProDisplay-MediumItalic.ttf in Resources */,
+				6F694A6F262779B8002C0804 /* FontsFree-Net-SFProText-Regular.ttf in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				6F694A73262779D5002C0804 /* FontsFree-Net-SFProDisplay-Semibold.ttf in Resources */,
+				6F694A75262779DE002C0804 /* FontsFree-Net-SFProDisplay-BlackItalic.ttf in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				6F694A6D26277850002C0804 /* FontsFree-Net-SFProDisplay-RegularItalic.ttf in Resources */,
+				6F694A71262779C8002C0804 /* FontsFree-Net-SFProDisplay-SemiboldItalic.ttf in Resources */,
 				6F2AAC43262479FD009695C8 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
