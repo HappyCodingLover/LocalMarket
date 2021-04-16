@@ -218,81 +218,88 @@ class NewAddress extends Component {
             />
             <KeyboardAwareScrollView
               style={styles.mainContainer}
+              contentContainerStyle={{justifyContent: 'space-between'}}
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-              <Text lightGrayColor>{'Адрес'}</Text>
-              <Text style={styles.textInput}>
-                {address.street_with_type +
-                  ', ' +
-                  address.house_type +
-                  ' ' +
-                  address.house +
-                  (address.settlement_with_type !== null
-                    ? ', ' + address.settlement_with_type
-                    : '')}
-              </Text>
-              <Text lightGrayColor>{'Подъезд'}</Text>
-              <TextInput
-                placeholder="Укажите подъезд"
-                style={styles.textInput}
-                onChangeText={(text) => {
-                  this.setState({entrance: text});
-                }}
-              />
-              <Text lightGrayColor>{'Домофон'}</Text>
-              <TextInput
-                placeholder="Укажите домофон"
-                style={styles.textInput}
-                onChangeText={(text) => {
-                  this.setState({intercom: text});
-                }}
-              />
-              <Text lightGrayColor>{'Кв/офис'}</Text>
-              <TextInput
-                placeholder="Укажите кв/офис"
-                style={styles.textInput}
-                onChangeText={(text) => {
-                  this.setState({apt: text});
-                }}
-              />
-              <Text lightGrayColor>{'Этаж'}</Text>
-              <TextInput
-                placeholder="Укажите этаж"
-                style={styles.textInput}
-                onChangeText={(text) => {
-                  this.setState({floor: text});
-                }}
-              />
-              <Text lightGrayColor>{'Комментарий курьеру'}</Text>
-              <TextInput
-                multiline={true}
-                placeholder="Укажите комментарий"
-                style={styles.textInput}
-                onChangeText={(text) => {
-                  this.setState({comments: text});
-                }}
-              />
-            </KeyboardAwareScrollView>
-            <View style={styles.bottomContainer}>
-              <TouchableOpacity
-                onPress={this.onSaveBtn}
-                disabled={!this.checkInput()}
-                style={[
-                  styles.saveBtn,
-                  this.checkInput()
-                    ? {backgroundColor: BaseColor.redColor}
-                    : {backgroundColor: BaseColor.textInputBackgroundColor},
-                ]}>
-                <Text
-                  middleBody
-                  style={
-                    this.checkInput()
-                      ? {color: BaseColor.whiteColor}
-                      : {color: BaseColor.placeholderColor}
-                  }>
-                  {'Сохранить'}
+              <View style={{flex: 1}}>
+                <Text lightGrayColor>{'Адрес'}</Text>
+                <Text style={styles.textInput}>
+                  {address.street_with_type +
+                    ', ' +
+                    address.house_type +
+                    ' ' +
+                    address.house +
+                    (address.settlement_with_type !== null
+                      ? ', ' + address.settlement_with_type
+                      : '')}
                 </Text>
-              </TouchableOpacity>
-            </View>
+                <Text lightGrayColor>{'Подъезд'}</Text>
+                <TextInput
+                  multiline={true}
+                  placeholder="Укажите подъезд"
+                  style={styles.textInput}
+                  onChangeText={(text) => {
+                    this.setState({entrance: text});
+                  }}
+                />
+                <Text lightGrayColor>{'Домофон'}</Text>
+                <TextInput
+                  multiline={true}
+                  placeholder="Укажите домофон"
+                  style={styles.textInput}
+                  onChangeText={(text) => {
+                    this.setState({intercom: text});
+                  }}
+                />
+                <Text lightGrayColor>{'Кв/офис'}</Text>
+                <TextInput
+                  multiline={true}
+                  placeholder="Укажите кв/офис"
+                  style={styles.textInput}
+                  onChangeText={(text) => {
+                    this.setState({apt: text});
+                  }}
+                />
+                <Text lightGrayColor>{'Этаж'}</Text>
+                <TextInput
+                  multiline={true}
+                  placeholder="Укажите этаж"
+                  style={styles.textInput}
+                  onChangeText={(text) => {
+                    this.setState({floor: text});
+                  }}
+                />
+                <Text lightGrayColor>{'Комментарий курьеру'}</Text>
+                <TextInput
+                  multiline={true}
+                  placeholder="Укажите комментарий"
+                  style={styles.textInput}
+                  onChangeText={(text) => {
+                    this.setState({comments: text});
+                  }}
+                />
+              </View>
+              <View style={styles.bottomContainer}>
+                <TouchableOpacity
+                  onPress={this.onSaveBtn}
+                  disabled={!this.checkInput()}
+                  style={[
+                    styles.saveBtn,
+                    this.checkInput()
+                      ? {backgroundColor: BaseColor.redColor}
+                      : {backgroundColor: BaseColor.textInputBackgroundColor},
+                  ]}>
+                  <Text
+                    middleBody
+                    style={
+                      this.checkInput()
+                        ? {color: BaseColor.whiteColor}
+                        : {color: BaseColor.placeholderColor}
+                    }>
+                    {'Сохранить'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </KeyboardAwareScrollView>
           </View>
         </SafeAreaView>
       </>

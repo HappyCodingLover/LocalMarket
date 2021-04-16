@@ -8,6 +8,7 @@ export default StyleSheet.create({
   mainContainer: {
     paddingTop: 10,
     marginHorizontal: 20,
+    flex: 1,
   },
   textInput: {
     color: BaseColor.textPrimaryColor,
@@ -29,7 +30,7 @@ export default StyleSheet.create({
     borderRadius: 5,
   },
   bottomContainer: {
-    justifyContent: 'flex-end',
-    marginHorizontal: 20,
+    marginBottom: 50,
+    marginTop: 100,
   },
 });
