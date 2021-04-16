@@ -363,11 +363,12 @@ class Catalogue extends Component {
 
   onFocus = () => {
     const {auth} = this.props;
-    if (!auth.activeAddress) {
-      Alert.alert(
-        'Активный адрес не выбран.\nПожалуйста, выберите один из ваших адресов',
-      );
-    }
+    console.log('__auth_activeAddress', auth.activeAddress);
+    // if (!auth.activeAddress) {
+    //   Alert.alert(
+    //     'Активный адрес не выбран.\nПожалуйста, выберите один из ваших адресов',
+    //   );
+    // }
     if (auth?.user === null) {
     } else {
       this.getCart();

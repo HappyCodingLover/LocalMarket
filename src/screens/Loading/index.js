@@ -343,6 +343,7 @@ class Loading extends Component {
             .then((response) => {
               if (response.data.success === 1) {
                 if (response.data.data.length > 0) {
+                  console.log('__getAddressResp', response.data.data);
                   actions.saveAddresses(response.data.data);
                   actions.setActiveAddress(
                     response.data.data.find((item) => item.active === 1),

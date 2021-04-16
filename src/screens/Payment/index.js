@@ -1,35 +1,33 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { AuthActions } from '@actions';
-import { bindActionCreators } from 'redux';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {AuthActions} from '@actions';
+import {bindActionCreators} from 'redux';
 import {
   View,
-  StatusBar,
   TouchableOpacity,
   Platform,
   TextInput,
   ScrollView,
-  FlatList,
   Alert,
 } from 'react-native';
-import { BaseStyle, BaseColor, BaseSize, Images } from '@config';
-import { SafeAreaView, Text, Header, Icon } from '@components';
+import {BaseStyle, BaseColor, BaseSize, Images} from '@config';
+import {SafeAreaView, Text, Header, Icon} from '@components';
 import styles from './styles';
-import { withTranslation } from 'react-i18next';
+import {withTranslation} from 'react-i18next';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { useFocusEffect } from '@react-navigation/native';
-import { UserServices } from '../../services';
+import {useFocusEffect} from '@react-navigation/native';
+import {UserServices} from '../../services';
 import moment from 'moment-timezone';
-import { WheelPicker } from 'react-native-wheel-picker-android';
+import {WheelPicker} from 'react-native-wheel-picker-android';
 import TinkoffASDK from 'react-native-tinkoff-asdk';
-import { concat } from 'react-native-reanimated';
+import {concat} from 'react-native-reanimated';
 
 const DELIVERY_DAY = ['Cегодня', 'Завтра', '12 сентября'];
 
-function FocusEfect({ onFocus }) {
+function FocusEfect({onFocus}) {
   useFocusEffect(
     React.useCallback(() => {
       onFocus();
@@ -70,14 +68,14 @@ class Payment extends Component {
   }
 
   onFocus = () => {
-  const { auth, navigation, actions, route } = this.props;
+    const {auth, navigation, actions, route} = this.props;
     if (route.params.cart === null) {
-      this.setState({ loading: true });
+      this.setState({loading: true});
       UserServices.getCart(auth.user.access_token)
         .then((response) => {
           if (response.data.success === 1) {
             const cart = response.data.data.cart;
-            this.setState({ cart: cart });
+            this.setState({cart: cart});
           } else {
             console.error(
               'something went wrong while getting cart',
@@ -90,13 +88,13 @@ class Payment extends Component {
         })
         .catch((err) => {
           console.error('err in getting cart', err);
-          navigation.navigate('ErrorScreen', { message: err.message });
+          navigation.navigate('ErrorScreen', {message: err.message});
         })
         .finally(() => {
-          this.setState({ loading: false });
+          this.setState({loading: false});
         });
     } else {
-      this.setState({ cart: this.props.route.params.cart });
+      this.setState({cart: this.props.route.params.cart});
     }
 
     let myZone = '';
@@ -138,9 +136,9 @@ class Payment extends Component {
           : myZone?.delivery_timeframes[0],
     });
     if (availableTimeframes.length === 0) {
-      this.setState({ deliveryDays: ['Завтра', 'Послезавтра', '12 сентября'] });
+      this.setState({deliveryDays: ['Завтра', 'Послезавтра', '12 сентября']});
     }
-    this.setState({ availableTimeframes: availableTimeframes });
+    this.setState({availableTimeframes: availableTimeframes});
     this.setState({
       delivery_zone: myZone,
       time:
@@ -171,7 +169,7 @@ class Payment extends Component {
       //     },
       //   },
       // ]);
-      navigation.push('SignIn', { from: 'PaymentSignIn' });
+      navigation.push('SignIn', {from: 'PaymentSignIn'});
     } else {
       if (auth.addresses.length === 0) {
         Alert.alert(
@@ -190,7 +188,7 @@ class Payment extends Component {
               onPress: () => {
                 navigation.push('Main', {
                   screen: 'DrawerStack',
-                  params: { screen: 'Address1', params: { from: 'Payment' } },
+                  params: {screen: 'Address1', params: {from: 'Payment'}},
                 });
               },
             },
@@ -239,12 +237,12 @@ class Payment extends Component {
     } = this.state;
     const _cart = cart.products;
 
-    const { auth, actions, navigation } = this.props;
+    const {auth, actions, navigation} = this.props;
     let products = [];
     _cart
       .filter((val) => val.quantity > 0)
       .map((item, index) => {
-        products = [...products, { id: item.productID, count: item.quantity }];
+        products = [...products, {id: item.productID, count: item.quantity}];
       });
     var myTime = moment();
     var orderPriceTmp =
@@ -281,8 +279,6 @@ class Payment extends Component {
       items.push(fee);
     }
 
-    // const {navigation} = this.props;
-    // navigation.navigate('Card');
     TinkoffASDK.init({
       // Тестовые данные из https://github.com/TinkoffCreditSystems/tinkoff-asdk-android/blob/9c7d1727f2ba5d715f240e0be6e4a0fd8b88a1db/sample/src/main/java/ru/tinkoff/acquiring/sample/SessionParams.java
       terminalKey: '1611068012288DEMO',
@@ -292,149 +288,288 @@ class Payment extends Component {
       testMode: false,
       debugLog: true,
     });
+    if (Platform.OS === 'ios') {
+      TinkoffASDK.isPayWithAppleAvailable()
+        .then((response) => {
+          console.log('____hasApplePay', response);
+          if (response) {
+            const payment = TinkoffASDK.ApplePay({
+              appleMerchantId: 'merchant.local-market',
+              Phone: '+74956481000',
+              Shipping: {
+                Street: 'Головинское шоссе, дом 5, корп. 1',
+                Country: 'Россия',
+                City: 'Москва',
+                PostalCode: '125212',
+                ISOCountryCode: '643',
+                givenName: 'имя',
+                familyName: 'фамилия',
+              },
+              // Все то же что в простом Pay
+              OrderID: Math.abs(new Date().getTime()).toString(10), // ID заказа в вашей системе
+              Amount: orderPriceTmp * 100, // сумма для оплаты (в копейках)
+              PaymentName: auth.partner.name, // название платежа, видимое пользователю
+              PaymentDesc: auth.partner.description, // описание платежа, видимое пользователю
+              CardID: 'CARD-ID', // ID карточки
+              // тестовые:
+              Email: 'team.local.market@gmail.com',
+              CustomerKey: 'team.local.market@gmail.com',
+              IsRecurrent: false, // флаг определяющий является ли платеж рекуррентным [1]
+              UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
+              Taxation: 'usn_income',
+              Items: items,
+            });
 
-    // tinkoff payment -------------------------------------------------------------------------------
-    const payment = TinkoffASDK.Pay({
-      OrderID: Math.abs(new Date().getTime()).toString(10), // ID заказа в вашей системе
-      Amount: orderPriceTmp * 100, // сумма для оплаты (в копейках)
-      PaymentName: auth.partner.name, // название платежа, видимое пользователю
-      PaymentDesc: auth.partner.description, // описание платежа, видимое пользователю
-      CardID: 'CARD-ID', // ID карточки
-      // тестовые:
-      Email: 'team.local.market@gmail.com',
-      CustomerKey: 'team.local.market@gmail.com',
-      IsRecurrent: false, // флаг определяющий является ли платеж рекуррентным [1]
-      UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
-      GooglePayParams: {
-        MerchantName: 'test',
-        AddressRequired: false,
-        PhoneRequired: false,
-        Environment: 'TEST', // "SANDBOX", "PRODUCTION"
-      },
-      Taxation: 'usn_income',
-      Items: items,
-      // Items: [
-      //   {
-      //     Name: "test 1",
-      //     Price: 10000, // В копейках (100 рублей)
-      //     Quantity: 2,
-      //     Amount: 20000, // В копейках (200 рублей)
-      //     Tax: 'none',
-      //   },
-      //   {
-      //     Name: "test 2",
-      //     Price: 12345,
-      //     Quantity: 1,
-      //     Amount: 12345,
-      //     Tax: "none",
-      //   }
-      // ],
-    });
-
-    payment
-      .then((r) => {
-
-        const body = {
-          user_address_id: auth.activeAddress.id,
-          company_id: auth.partner.id,
-          order_date: myTime.tz('Europe/Moscow').format('YYYY-MM-DD'),
-          delivery_timeframe: selectedTimeframe,
-          delivery_day: selectedDay,
-          order_price: orderPriceTmp,
-          order_original_price:
-            delivery_zone.free_delivery_from > auth.totalPrice
-              ? auth.totalPrice + delivery_zone?.delivery_price
-              : auth.totalPrice,
-          products: products,
-          comment: comments,
-        };
-        this.setState({ loading: true });
-        UserServices.addOrder(body, auth.user.access_token)
-          .then((response) => {
-            if (response.data.success === 1) {
-              // actions.clearCart();
-              // clear cart
-              this.setState({ loading: true });
-              UserServices.clearCart(auth.user.access_token, cart.id)
-                .then((response) => {
-                  if (response.data.success === 1) {
-                    actions.clearTotalPrice();
-                    actions.clearDiscountPrice();
-                    // actions.clearPartner();
-                    this.setState({
-                      courierComment: null,
-                      deliveryTime: null,
-                      comments: null,
-                    });
-                    this.setState({ loading: true });
-                    UserServices.getOrder(auth.user.access_token)
-                      .then((response) => {
-                        if (response.data.success === 1) {
-                          navigation.navigate('OrdersStatus', {
-                            id: response.data.data[0].id,
-                          });
-                        } else {
-                          console.error(
-                            'sth wrong in getOrder',
-                            response.data.message,
-                          );
+            payment
+              .then((r) => {
+                const body = {
+                  user_address_id: auth.activeAddress.id,
+                  company_id: auth.partner.id,
+                  order_date: myTime.tz('Europe/Moscow').format('YYYY-MM-DD'),
+                  delivery_timeframe: selectedTimeframe,
+                  delivery_day: selectedDay,
+                  order_price: orderPriceTmp,
+                  order_original_price:
+                    delivery_zone.free_delivery_from > auth.totalPrice
+                      ? auth.totalPrice + delivery_zone?.delivery_price
+                      : auth.totalPrice,
+                  products: products,
+                  comment: comments,
+                };
+                this.setState({loading: true});
+                UserServices.addOrder(body, auth.user.access_token)
+                  .then((response) => {
+                    if (response.data.success === 1) {
+                      // actions.clearCart();
+                      // clear cart
+                      this.setState({loading: true});
+                      UserServices.clearCart(auth.user.access_token, cart.id)
+                        .then((response) => {
+                          if (response.data.success === 1) {
+                            actions.clearTotalPrice();
+                            actions.clearDiscountPrice();
+                            // actions.clearPartner();
+                            this.setState({
+                              courierComment: null,
+                              deliveryTime: null,
+                              comments: null,
+                            });
+                            this.setState({loading: true});
+                            UserServices.getOrder(auth.user.access_token)
+                              .then((response) => {
+                                if (response.data.success === 1) {
+                                  navigation.navigate('OrdersStatus', {
+                                    id: response.data.data[0].id,
+                                  });
+                                } else {
+                                  console.error(
+                                    'sth wrong in getOrder',
+                                    response.data.message,
+                                  );
+                                  navigation.navigate('ErrorScreen', {
+                                    message: response.data.message,
+                                  });
+                                }
+                              })
+                              .catch((err) => {
+                                console.error('err in getOrder', err);
+                                navigation.navigate('ErrorScreen', {
+                                  message: err.message,
+                                });
+                              })
+                              .finally(() => {
+                                this.setState({loading: false});
+                              });
+                          } else {
+                            console.error(
+                              'something went wrong while clearing cart',
+                              response.data.message,
+                            );
+                            navigation.navigate('ErrorScreen', {
+                              message: response.data.message,
+                            });
+                          }
+                        })
+                        .catch((err) => {
+                          console.error('err in clearing cart', err);
                           navigation.navigate('ErrorScreen', {
-                            message: response.data.message,
+                            message: err.message,
                           });
-                        }
-                      })
-                      .catch((err) => {
-                        console.error('err in getOrder', err);
-                        navigation.navigate('ErrorScreen', {
-                          message: err.message,
+                        })
+                        .finally(() => {
+                          // this.setState({ loading: false });
                         });
-                      })
-                      .finally(() => {
-                        this.setState({ loading: false });
+                    } else {
+                      console.error(
+                        'something went wrong in adding order',
+                        response.data.message,
+                      );
+                      navigation.navigate('ErrorScreen', {
+                        message: response.data.message,
                       });
-                  } else {
-                    console.error(
-                      'something went wrong while clearing cart',
-                      response.data.message,
-                    );
-                    navigation.navigate('ErrorScreen', {
-                      message: response.data.message,
-                    });
-                  }
-                })
-                .catch((err) => {
-                  console.error('err in clearing cart', err);
-                  navigation.navigate('ErrorScreen', { message: err.message });
-                })
-                .finally(() => {
-                  // this.setState({ loading: false });
-                });
-            } else {
-              console.error(
-                'something went wrong in adding order',
-                response.data.message,
-              );
-              navigation.navigate('ErrorScreen', {
-                message: response.data.message,
+                    }
+                  })
+                  .catch((err) => {
+                    console.error('err in adding Order', err);
+                    navigation.navigate('ErrorScreen', {message: err.message});
+                  })
+                  .finally(() => {
+                    this.setState({loading: false});
+                  });
+              })
+              .catch((e) => {
+                console.error('_err_payment', e);
               });
-            }
-          })
-          .catch((err) => {
-            console.error('err in adding Order', err);
-            navigation.navigate('ErrorScreen', { message: err.message });
-          })
-          .finally(() => {
-            this.setState({ loading: false });
-          });
-      })
-      .catch((e) => {
-        console.error(e);
+          } else {
+            Alert.alert('Applepay в данный момент недоступен');
+          }
+        })
+        .catch((err) => {
+          console.error('_err_ios_available', err);
+        });
+    } else {
+      // tinkoff payment -------------------------------------------------------------------------------
+      const payment = TinkoffASDK.Pay({
+        OrderID: Math.abs(new Date().getTime()).toString(10), // ID заказа в вашей системе
+        Amount: orderPriceTmp * 100, // сумма для оплаты (в копейках)
+        PaymentName: auth.partner.name, // название платежа, видимое пользователю
+        PaymentDesc: auth.partner.description, // описание платежа, видимое пользователю
+        CardID: 'CARD-ID', // ID карточки
+        // тестовые:
+        Email: 'team.local.market@gmail.com',
+        CustomerKey: 'team.local.market@gmail.com',
+        IsRecurrent: false, // флаг определяющий является ли платеж рекуррентным [1]
+        UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
+        GooglePayParams: {
+          MerchantName: 'test',
+          AddressRequired: false,
+          PhoneRequired: false,
+          Environment: 'TEST', // "SANDBOX", "PRODUCTION"
+        },
+        Taxation: 'usn_income',
+        Items: items,
+        // Items: [
+        //   {
+        //     Name: "test 1",
+        //     Price: 10000, // В копейках (100 рублей)
+        //     Quantity: 2,
+        //     Amount: 20000, // В копейках (200 рублей)
+        //     Tax: 'none',
+        //   },
+        //   {
+        //     Name: "test 2",
+        //     Price: 12345,
+        //     Quantity: 1,
+        //     Amount: 12345,
+        //     Tax: "none",
+        //   }
+        // ],
       });
+      payment
+        .then((r) => {
+          const body = {
+            user_address_id: auth.activeAddress.id,
+            company_id: auth.partner.id,
+            order_date: myTime.tz('Europe/Moscow').format('YYYY-MM-DD'),
+            delivery_timeframe: selectedTimeframe,
+            delivery_day: selectedDay,
+            order_price: orderPriceTmp,
+            order_original_price:
+              delivery_zone.free_delivery_from > auth.totalPrice
+                ? auth.totalPrice + delivery_zone?.delivery_price
+                : auth.totalPrice,
+            products: products,
+            comment: comments,
+          };
+          this.setState({loading: true});
+          UserServices.addOrder(body, auth.user.access_token)
+            .then((response) => {
+              if (response.data.success === 1) {
+                // actions.clearCart();
+                // clear cart
+                this.setState({loading: true});
+                UserServices.clearCart(auth.user.access_token, cart.id)
+                  .then((response) => {
+                    if (response.data.success === 1) {
+                      actions.clearTotalPrice();
+                      actions.clearDiscountPrice();
+                      // actions.clearPartner();
+                      this.setState({
+                        courierComment: null,
+                        deliveryTime: null,
+                        comments: null,
+                      });
+                      this.setState({loading: true});
+                      UserServices.getOrder(auth.user.access_token)
+                        .then((response) => {
+                          if (response.data.success === 1) {
+                            navigation.navigate('OrdersStatus', {
+                              id: response.data.data[0].id,
+                            });
+                          } else {
+                            console.error(
+                              'sth wrong in getOrder',
+                              response.data.message,
+                            );
+                            navigation.navigate('ErrorScreen', {
+                              message: response.data.message,
+                            });
+                          }
+                        })
+                        .catch((err) => {
+                          console.error('err in getOrder', err);
+                          navigation.navigate('ErrorScreen', {
+                            message: err.message,
+                          });
+                        })
+                        .finally(() => {
+                          this.setState({loading: false});
+                        });
+                    } else {
+                      console.error(
+                        'something went wrong while clearing cart',
+                        response.data.message,
+                      );
+                      navigation.navigate('ErrorScreen', {
+                        message: response.data.message,
+                      });
+                    }
+                  })
+                  .catch((err) => {
+                    console.error('err in clearing cart', err);
+                    navigation.navigate('ErrorScreen', {message: err.message});
+                  })
+                  .finally(() => {
+                    // this.setState({ loading: false });
+                  });
+              } else {
+                console.error(
+                  'something went wrong in adding order',
+                  response.data.message,
+                );
+                navigation.navigate('ErrorScreen', {
+                  message: response.data.message,
+                });
+              }
+            })
+            .catch((err) => {
+              console.error('err in adding Order', err);
+              navigation.navigate('ErrorScreen', {message: err.message});
+            })
+            .finally(() => {
+              this.setState({loading: false});
+            });
+        })
+        .catch((e) => {
+          console.error('_err_payment', e);
+        });
+    }
+
     // -----------------------------------------------
   };
 
   checkInput = () => {
-    const { deliveryAddress, date, time } = this.state;
+    const {deliveryAddress, date, time} = this.state;
     if (deliveryAddress && date && time) return true;
     else return false;
   };
@@ -456,7 +591,7 @@ class Payment extends Component {
   };
 
   onDaySelected = (selectedDay) => {
-    this.setState({ selectedDay });
+    this.setState({selectedDay});
     const {
       availableTimeframes,
       deliveryDays,
@@ -474,7 +609,7 @@ class Payment extends Component {
       deliveryDays[selectedDay] === DELIVERY_DAY[0] &&
       timeframesForToday.length !== 0
     ) {
-      this.setState({ selectedTimeframe: availableTimeframes[indToday] });
+      this.setState({selectedTimeframe: availableTimeframes[indToday]});
     } else {
       if (delivery_zone !== undefined) {
         this.setState({
@@ -520,7 +655,7 @@ class Payment extends Component {
       });
     }
 
-    const { auth } = this.props;
+    const {auth} = this.props;
     return (
       <RBSheet
         ref={(ref) => {
@@ -537,21 +672,21 @@ class Payment extends Component {
             borderTopLeftRadius: 20,
           },
         }}>
-        <ScrollView style={{ paddingHorizontal: 20 }}>
-          <View style={{ marginTop: 15 }}>
+        <ScrollView style={{paddingHorizontal: 20}}>
+          <View style={{marginTop: 15}}>
             <Text title3>{'Укажите промежуток доставки'}</Text>
           </View>
           {auth.partner !== null &&
           auth.partner?.delivery_zones.length !== 0 ? (
-            <View style={{ flexDirection: 'row', marginTop: 15 }}>
-              <View style={{ width: '50%' }}>
+            <View style={{flexDirection: 'row', marginTop: 15}}>
+              <View style={{width: '50%'}}>
                 <WheelPicker
                   selectedItem={selectedDay}
                   data={deliveryDays}
                   onItemSelected={this.onDaySelected}
                 />
               </View>
-              <View style={{ width: '50%' }}>
+              <View style={{width: '50%'}}>
                 {deliveryDays[selectedDay] === DELIVERY_DAY[0] &&
                 timeframesForToday.length !== 0 ? (
                   <WheelPicker
@@ -584,15 +719,15 @@ class Payment extends Component {
   }
 
   onApplyBtn = () => {
-    const { discountCode } = this.state;
-    const { auth } = this.props;
+    const {discountCode} = this.state;
+    const {auth} = this.props;
     if (
       auth.partner.promocode !== null &&
       auth.partner.promocode.code === discountCode
     ) {
-      this.setState({ appliedStatus: true, errorPromocode: false });
+      this.setState({appliedStatus: true, errorPromocode: false});
     } else {
-      this.setState({ errorPromocode: true });
+      this.setState({errorPromocode: true});
     }
   };
 
@@ -617,7 +752,7 @@ class Payment extends Component {
         <FocusEfect onFocus={this.onFocus} />
         <SafeAreaView
           style={BaseStyle.safeAreaView}
-          forceInset={{ top: 'never' }}>
+          forceInset={{top: 'never'}}>
           <Spinner visible={loading} color="#FF2D34" />
           <View style={styles.contain}>
             <Header
@@ -689,7 +824,7 @@ class Payment extends Component {
                   placeholder="Укажите комментарий"
                   style={styles.textInput}
                   onChangeText={(text) => {
-                    this.setState({ comments: text });
+                    this.setState({comments: text});
                   }}
                 />
                 <Text body2 lightGrayColor>
@@ -700,12 +835,12 @@ class Payment extends Component {
                     flexDirection: 'row',
                     // alignItems: 'center',
                   }}>
-                  <View style={{ flex: 6 }}>
+                  <View style={{flex: 6}}>
                     <TextInput
                       placeholder="Укажите промокод"
                       style={styles.textInput}
                       onChangeText={(text) => {
-                        this.setState({ discountCode: text });
+                        this.setState({discountCode: text});
                       }}
                     />
                   </View>
@@ -732,7 +867,7 @@ class Payment extends Component {
                         onPress={() => {
                           this.onApplyBtn();
                         }}>
-                        <Text redColor style={{ textAlign: 'center' }}>
+                        <Text redColor style={{textAlign: 'center'}}>
                           {'Применить'}
                         </Text>
                       </TouchableOpacity>
@@ -740,8 +875,8 @@ class Payment extends Component {
                   )}
                 </View>
                 {errorPromocode && (
-                  <View style={{ width: '65%' }}>
-                    <Text body2 style={{ color: '#5858589E' }}>
+                  <View style={{width: '65%'}}>
+                    <Text body2 style={{color: '#5858589E'}}>
                       {
                         'Данного промокода не существует,или он уже был использован'
                       }
@@ -757,10 +892,10 @@ class Payment extends Component {
                 style={[
                   styles.saveBtn,
                   this.checkInput()
-                    ? { backgroundColor: BaseColor.redColor }
-                    : { backgroundColor: BaseColor.textInputBackgroundColor },
+                    ? {backgroundColor: BaseColor.redColor}
+                    : {backgroundColor: BaseColor.textInputBackgroundColor},
                 ]}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   {/* <Icon
                     name="apple-pay"
                     size={20}
@@ -784,8 +919,8 @@ class Payment extends Component {
                     middleBody
                     style={
                       this.checkInput()
-                        ? { color: BaseColor.whiteColor }
-                        : { color: BaseColor.redColor }
+                        ? {color: BaseColor.whiteColor}
+                        : {color: BaseColor.redColor}
                     }>
                     {'Оплатить заказ'}
                   </Text>
@@ -801,7 +936,7 @@ class Payment extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return { auth: state.auth };
+  return {auth: state.auth};
 };
 
 const mapDispatchToProps = (dispatch) => {
