@@ -8,6 +8,8 @@ import {
   FlatList,
   ImageBackground,
   Dimensions,
+  TouchableOpacity,
+  TouchableHighlight,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
 import {Text, Image, Header, SafeAreaView} from '@components';
@@ -17,10 +19,6 @@ import * as Utils from '@utils';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import Badge1 from '../../assets/svgs/badge1.svg';
 import Badge2 from '../../assets/svgs/badge2.svg';
-import {
-  TouchableOpacity,
-  TouchableHighlight,
-} from 'react-native-gesture-handler';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Minus from '../../assets/svgs/minus.svg';
 import Plus from '../../assets/svgs/plus.svg';
@@ -413,6 +411,8 @@ class ProductDetail extends Component {
   };
 
   onDateBadge = () => {
+    console.log('___onDateBadge');
+
     const {auth} = this.props;
     if (auth.partner?.delivery_zones.length !== 0) {
       this.DateSheet.open();
@@ -431,6 +431,7 @@ class ProductDetail extends Component {
   };
 
   onSupplierBadge = () => {
+    console.log('___onSupplierBadge');
     this.SupplierSheet.open();
   };
 
@@ -720,7 +721,7 @@ class ProductDetail extends Component {
 
   renderDatePopup() {
     const {auth} = this.props;
-    const {availableTimeframes, delivery_zone} = this.state;
+    const {delivery_zone} = this.state;
 
     return (
       <>
@@ -758,12 +759,7 @@ class ProductDetail extends Component {
               </View>
               <View style={{marginTop: 10}}>
                 <FlatList
-                  data={
-                    // availableTimeframes.length === 0
-                    //   ? delivery_zone.delivery_timeframes
-                    //   : availableTimeframes
-                    delivery_zone.delivery_timeframes
-                  }
+                  data={delivery_zone.delivery_timeframes}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({item, index}) => (
                     <Text body2 grayColor>
@@ -1029,427 +1025,435 @@ class ProductDetail extends Component {
               }
             }}
           />
-          <Animated.View
-            style={[
-              styles.imgBanner,
-              {
-                height: this._deltaY.interpolate({
-                  inputRange: [
-                    0,
-                    Utils.scaleWithPixel(250),
-                    Utils.scaleWithPixel(250),
-                  ],
-                  // outputRange: [heightImageBanner, heightHeader, heightHeader],
-                  outputRange: [Utils.scaleWithPixel(260, 1), 0, 0],
-                }),
-              },
-            ]}>
-            {auth.partner && (
-              <ImageBackground
-                source={Images.productPlaceholder}
-                imageStyle={{resizeMode: 'cover'}}
-                style={{flex: 1}}>
-                <Image
-                  source={{uri: auth.partner.mainimage_url}}
-                  style={{flex: 1}}
-                />
-              </ImageBackground>
-            )}
-            <Animated.View
-              style={{
-                zIndex: 2,
-                position: 'absolute',
-                flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                top: 20,
-                right: 20,
-                opacity: this._deltaY.interpolate({
-                  inputRange: [
-                    0,
-                    Utils.scaleWithPixel(40),
-                    Utils.scaleWithPixel(40),
-                  ],
-                  outputRange: [1, 0, 0],
-                }),
-              }}>
-              {auth.partner !== null && (
-                <TouchableOpacity onPress={this.onSupplierBadge}>
-                  <Badge1 width={35} height={35} style={{marginRight: 5}} />
-                </TouchableOpacity>
-              )}
-              {auth.partner?.promo_information !== null && (
-                <TouchableOpacity onPress={this.onPromoBadge}>
-                  <Badge2 width={35} height={35} />
-                </TouchableOpacity>
-              )}
-            </Animated.View>
-            <Animated.View
-              style={{
-                zIndex: 2,
-                position: 'absolute',
-                flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                width: '100%',
-                bottom: 55,
-                left: 20,
-                opacity: this._deltaY.interpolate({
-                  inputRange: [
-                    0,
-                    Utils.scaleWithPixel(190),
-                    Utils.scaleWithPixel(190),
-                  ],
-                  outputRange: [1, 0, 0],
-                }),
-              }}>
-              <TouchableOpacity
-                onPress={this.onDateBadge}
-                style={styles.blackBadge}>
-                <Text footnote whiteColor>
-                  {this.getAvailableDeliveryDay()}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={this.onCostBadge}
-                style={styles.blackBadge}>
-                <Text footnote whiteColor>
-                  Бесплатная доставка от {delivery_zone.free_delivery_from} ₽
-                </Text>
-              </TouchableOpacity>
-            </Animated.View>
-          </Animated.View>
-          <View style={{flex: 1}}>
-            <ScrollView
-              onScroll={Animated.event(
-                [
-                  {
-                    nativeEvent: {
-                      contentOffset: {y: this._deltaY},
-                    },
-                  },
-                ],
-                {useNativeDriver: false},
-              )}
-              onContentSizeChange={() =>
-                this.setState({
-                  heightHeader: Utils.heightHeader(),
-                })
-              }
-              scrollEventThrottle={8}>
-              <View
-                style={[
-                  styles.contentBoxTop,
-                  // { marginTop: marginTopBanner ? marginTopBanner : 215 },
-                  {marginTop: 215},
-                ]}>
+          <ScrollView>
+            {/* <Animated.View */}
+            <View
+              style={[
+                styles.imgBanner,
                 {
-                  <Text
-                    title1
-                    style={{textAlign: 'left', marginHorizontal: 20}}>
-                    {auth.partner?.name}
-                  </Text>
-                }
-                {auth.subCategories && (
-                  <FlatList
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    data={auth.subCategories}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={({item, index}) =>
-                      this.renderTypesView(item, index)
-                    }
-                    style={styles.typesFlatList}
+                  // height: this._deltaY.interpolate({
+                  //   inputRange: [
+                  //     0,
+                  //     Utils.scaleWithPixel(250),
+                  //     Utils.scaleWithPixel(250),
+                  //   ],
+                  //   // outputRange: [heightImageBanner, heightHeader, heightHeader],
+                  //   outputRange: [Utils.scaleWithPixel(260, 1), 0, 0],
+                  // }),
+                  height: 215,
+                },
+              ]}>
+              {auth.partner && (
+                <ImageBackground
+                  source={Images.productPlaceholder}
+                  imageStyle={{resizeMode: 'cover'}}
+                  style={{width: Dimensions.get('window').width, height: 215}}>
+                  <Image
+                    source={{uri: auth.partner.mainimage_url}}
+                    style={{flex: 1}}
                   />
+                </ImageBackground>
+              )}
+              {/* <Animated.View */}
+              <View
+                style={{
+                  zIndex: 2,
+                  position: 'absolute',
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                  top: 20,
+                  right: 20,
+                  // opacity: this._deltaY.interpolate({
+                  //   inputRange: [
+                  //     0,
+                  //     Utils.scaleWithPixel(40),
+                  //     Utils.scaleWithPixel(40),
+                  //   ],
+                  //   outputRange: [1, 0, 0],
+                  // }),
+                }}>
+                {auth.partner !== null && (
+                  <TouchableOpacity onPress={this.onSupplierBadge}>
+                    <Badge1 width={35} height={35} style={{marginRight: 5}} />
+                  </TouchableOpacity>
                 )}
+                {auth.partner?.promo_information !== null && (
+                  <TouchableOpacity onPress={this.onPromoBadge}>
+                    <Badge2 width={35} height={35} />
+                  </TouchableOpacity>
+                )}
+                {/* </Animated.View> */}
               </View>
-              <View style={{marginHorizontal: 20}}>
-                {subCatVal ? (
-                  subCats.map((subCat, index) => {
-                    if (
-                      subCat &&
-                      auth.products.filter(
-                        (val) =>
-                          val.subcategory_id === auth.subCategories[index].id,
-                      ).length !== 0
-                    ) {
-                      return (
-                        <View style={styles.productsFlatList}>
-                          <Text title2 style={{marginBottom: 10}}>
-                            {auth.subCategories[index].name}
-                          </Text>
-                          {/* products list by category */}
-                          <FlatList
-                            columnWrapperStyle={{marginBottom: 10}}
-                            numColumns={2}
-                            data={auth.products.filter(
-                              (val) =>
-                                val.subcategory_id ===
-                                  auth.subCategories[index].id &&
-                                val.archived === 0,
-                            )}
-                            keyExtractor={(item, index) => index.toString()}
-                            renderItem={({item, index}) => (
-                              <View
-                                style={[
-                                  styles.productsView,
-                                  index % 2 ? {marginLeft: 10} : {},
-                                ]}>
-                                <TouchableOpacity
-                                  onPress={() => {
-                                    this.props.navigation.navigate(
-                                      'ProductShow',
-                                      {
-                                        productID: item.id,
-                                        quantity:
-                                          // cart === null ||
-                                          // cart.products.find(
-                                          //   (val) => val.productID === item.id,
-                                          // ) === undefined
-                                          //   ? 0
-                                          //   : cart.products.find(
-                                          //       (val) =>
-                                          //         val.productID === item.id,
-                                          //     ).quantity,
-                                          _cart &&
-                                          _cart.find(
-                                            (val) => val.productID === item.id,
-                                          ) === undefined
-                                            ? 0
-                                            : _cart.find(
-                                                (val) =>
-                                                  val.productID === item.id,
-                                              ).quantity,
-                                      },
-                                    );
-                                  }}>
-                                  {item.hasPromo === 1 && (
-                                    <Badge2
-                                      width={35}
-                                      height={35}
-                                      style={{
-                                        position: 'absolute',
-                                        top: 5,
-                                        right: 5,
-                                        zIndex: 2,
-                                      }}
-                                    />
-                                  )}
-                                  <ImageBackground
-                                    source={Images.productPlaceholder}
-                                    imageStyle={{resizeMode: 'cover'}}
-                                    style={styles.productImg}>
-                                    <Image
-                                      source={
-                                        item.images[0].image_url
-                                          ? {uri: item.images[0].image_url}
-                                          : Images.productPlaceholder
-                                      }
-                                      resizeMode="cover"
-                                      style={styles.productImg}
-                                    />
-                                  </ImageBackground>
-                                </TouchableOpacity>
-                                <Text body1 style={{marginVertical: 12}}>
-                                  {item.name}
-                                </Text>
-                                {/* {cart !== null &&
+              {/* <Animated.View */}
+              <View
+                style={{
+                  zIndex: 2,
+                  position: 'absolute',
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                  width: '100%',
+                  bottom: 20,
+                  left: 20,
+                  // opacity: this._deltaY.interpolate({
+                  //   inputRange: [
+                  //     0,
+                  //     Utils.scaleWithPixel(190),
+                  //     Utils.scaleWithPixel(190),
+                  //   ],
+                  //   outputRange: [1, 0, 0],
+                  // }),
+                }}>
+                <TouchableOpacity
+                  onPress={this.onDateBadge}
+                  style={styles.blackBadge}>
+                  <Text footnote whiteColor>
+                    {this.getAvailableDeliveryDay()}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={this.onCostBadge}
+                  style={styles.blackBadge}>
+                  <Text footnote whiteColor>
+                    Бесплатная доставка от {delivery_zone.free_delivery_from} ₽
+                  </Text>
+                </TouchableOpacity>
+                {/* </Animated.View> */}
+              </View>
+              {/* </Animated.View> */}
+            </View>
+            <View style={{flex: 1}}>
+              <ScrollView
+                // onScroll={Animated.event(
+                //   [
+                //     {
+                //       nativeEvent: {
+                //         contentOffset: {y: this._deltaY},
+                //       },
+                //     },
+                //   ],
+                //   {useNativeDriver: false},
+                // )}
+                // onContentSizeChange={() =>
+                //   this.setState({
+                //     heightHeader: Utils.heightHeader(),
+                //   })
+                // }
+                scrollEventThrottle={8}>
+                <View
+                  style={[
+                    styles.contentBoxTop,
+                    // { marginTop: marginTopBanner ? marginTopBanner : 215 },
+                    {marginTop: 15},
+                  ]}>
+                  {
+                    <Text
+                      title1
+                      style={{textAlign: 'left', marginHorizontal: 20}}>
+                      {auth.partner?.name}
+                    </Text>
+                  }
+                  {auth.subCategories && (
+                    <FlatList
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      data={auth.subCategories}
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={({item, index}) =>
+                        this.renderTypesView(item, index)
+                      }
+                      style={styles.typesFlatList}
+                    />
+                  )}
+                </View>
+                <View style={{marginHorizontal: 20}}>
+                  {subCatVal ? (
+                    subCats.map((subCat, index) => {
+                      if (
+                        subCat &&
+                        auth.products.filter(
+                          (val) =>
+                            val.subcategory_id === auth.subCategories[index].id,
+                        ).length !== 0
+                      ) {
+                        return (
+                          <View style={styles.productsFlatList}>
+                            <Text title2 style={{marginBottom: 10}}>
+                              {auth.subCategories[index].name}
+                            </Text>
+                            {/* products list by category */}
+                            <FlatList
+                              columnWrapperStyle={{marginBottom: 10}}
+                              numColumns={2}
+                              data={auth.products.filter(
+                                (val) =>
+                                  val.subcategory_id ===
+                                    auth.subCategories[index].id &&
+                                  val.archived === 0,
+                              )}
+                              keyExtractor={(item, index) => index.toString()}
+                              renderItem={({item, index}) => (
+                                <View
+                                  style={[
+                                    styles.productsView,
+                                    index % 2 ? {marginLeft: 10} : {},
+                                  ]}>
+                                  <TouchableOpacity
+                                    onPress={() => {
+                                      this.props.navigation.navigate(
+                                        'ProductShow',
+                                        {
+                                          productID: item.id,
+                                          quantity:
+                                            // cart === null ||
+                                            // cart.products.find(
+                                            //   (val) => val.productID === item.id,
+                                            // ) === undefined
+                                            //   ? 0
+                                            //   : cart.products.find(
+                                            //       (val) =>
+                                            //         val.productID === item.id,
+                                            //     ).quantity,
+                                            _cart &&
+                                            _cart.find(
+                                              (val) =>
+                                                val.productID === item.id,
+                                            ) === undefined
+                                              ? 0
+                                              : _cart.find(
+                                                  (val) =>
+                                                    val.productID === item.id,
+                                                ).quantity,
+                                        },
+                                      );
+                                    }}>
+                                    {item.hasPromo === 1 && (
+                                      <Badge2
+                                        width={35}
+                                        height={35}
+                                        style={{
+                                          position: 'absolute',
+                                          top: 5,
+                                          right: 5,
+                                          zIndex: 2,
+                                        }}
+                                      />
+                                    )}
+                                    <ImageBackground
+                                      source={Images.productPlaceholder}
+                                      imageStyle={{resizeMode: 'cover'}}
+                                      style={styles.productImg}>
+                                      <Image
+                                        source={
+                                          item.images[0].image_url
+                                            ? {uri: item.images[0].image_url}
+                                            : Images.productPlaceholder
+                                        }
+                                        resizeMode="cover"
+                                        style={styles.productImg}
+                                      />
+                                    </ImageBackground>
+                                  </TouchableOpacity>
+                                  <Text body1 style={{marginVertical: 12}}>
+                                    {item.name}
+                                  </Text>
+                                  {/* {cart !== null &&
                                 cart.products.findIndex(
                                   (x) => x.productID === item.id,
                                 ) !== -1 ? ( */}
-                                {_cart &&
-                                _cart.find((x) => x.productID === item.id) !==
-                                  undefined ? (
-                                  <View style={styles.countBtn}>
-                                    <View style={styles.countBtnInside}>
-                                      <TouchableOpacity
-                                        onPress={() => {
-                                          this.onMinusBtn(item.id);
-                                        }}>
-                                        <Minus width={18} height={18} />
-                                      </TouchableOpacity>
-                                      <Text
-                                        title3
-                                        bold
-                                        style={{marginHorizontal: 20}}>
-                                        {/* {
+                                  {_cart &&
+                                  _cart.find((x) => x.productID === item.id) !==
+                                    undefined ? (
+                                    <View style={styles.countBtn}>
+                                      <View style={styles.countBtnInside}>
+                                        <TouchableOpacity
+                                          onPress={() => {
+                                            this.onMinusBtn(item.id);
+                                          }}>
+                                          <Minus width={18} height={18} />
+                                        </TouchableOpacity>
+                                        <Text
+                                          title3
+                                          bold
+                                          style={{marginHorizontal: 20}}>
+                                          {/* {
                                           cart.products[
                                             cart.products.findIndex(
                                               (x) => x.productID === item.id,
                                             )
                                           ].quantity
                                         } */}
-                                        {_cart &&
-                                          _cart.find(
-                                            (x) => x.productID === item.id,
-                                          ).quantity}
-                                      </Text>
-                                      <TouchableOpacity
-                                        onPress={() => {
-                                          this.onPlusBtn(item.id);
-                                        }}>
-                                        <Plus width={18} height={18} />
-                                      </TouchableOpacity>
+                                          {_cart &&
+                                            _cart.find(
+                                              (x) => x.productID === item.id,
+                                            ).quantity}
+                                        </Text>
+                                        <TouchableOpacity
+                                          onPress={() => {
+                                            this.onPlusBtn(item.id);
+                                          }}>
+                                          <Plus width={18} height={18} />
+                                        </TouchableOpacity>
+                                      </View>
                                     </View>
-                                  </View>
-                                ) : (
-                                  <>
-                                    {item.hasPromo !== 0 ? (
-                                      <View style={styles.productPrice}>
-                                        <View
+                                  ) : (
+                                    <>
+                                      {item.hasPromo !== 0 ? (
+                                        <View style={styles.productPrice}>
+                                          <View
+                                            style={{
+                                              flex: 1,
+                                              alignItems: 'center',
+                                              justifyContent: 'center',
+                                            }}>
+                                            <Text
+                                              middleBody
+                                              style={styles.originalPrice}>
+                                              {item.price} ₽
+                                            </Text>
+                                          </View>
+                                          <View
+                                            style={{
+                                              flex: 1,
+                                            }}>
+                                            <TouchableOpacity
+                                              disabled={adding}
+                                              onPress={() => {
+                                                this.onSelectProduct(item);
+                                              }}
+                                              style={styles.productSalePrice}>
+                                              <Text
+                                                middleBody
+                                                whiteColor
+                                                style={{textAlign: 'center'}}>
+                                                {item.promo.new_price} ₽
+                                              </Text>
+                                            </TouchableOpacity>
+                                          </View>
+                                        </View>
+                                      ) : (
+                                        <TouchableOpacity
+                                          disabled={adding}
+                                          onPress={() => {
+                                            this.onSelectProduct(item);
+                                          }}
                                           style={{
+                                            borderWidth: 1,
+                                            borderColor: BaseColor.redColor,
                                             flex: 1,
                                             alignItems: 'center',
                                             justifyContent: 'center',
+                                            paddingVertical: 12,
+                                            borderRadius: 5,
                                           }}>
-                                          <Text
-                                            middleBody
-                                            style={styles.originalPrice}>
+                                          <Text middleBody redColor>
                                             {item.price} ₽
                                           </Text>
-                                        </View>
-                                        <View
-                                          style={{
-                                            flex: 1,
-                                          }}>
-                                          <TouchableOpacity
-                                            disabled={adding}
-                                            onPress={() => {
-                                              this.onSelectProduct(item);
-                                            }}
-                                            style={styles.productSalePrice}>
-                                            <Text
-                                              middleBody
-                                              whiteColor
-                                              style={{textAlign: 'center'}}>
-                                              {item.promo.new_price} ₽
-                                            </Text>
-                                          </TouchableOpacity>
-                                        </View>
-                                      </View>
-                                    ) : (
-                                      <TouchableOpacity
-                                        disabled={adding}
-                                        onPress={() => {
-                                          this.onSelectProduct(item);
-                                        }}
-                                        style={{
-                                          borderWidth: 1,
-                                          borderColor: BaseColor.redColor,
-                                          flex: 1,
-                                          alignItems: 'center',
-                                          justifyContent: 'center',
-                                          paddingVertical: 12,
-                                          borderRadius: 5,
-                                        }}>
-                                        <Text middleBody redColor>
-                                          {item.price} ₽
-                                        </Text>
-                                      </TouchableOpacity>
-                                    )}
-                                  </>
-                                )}
-                              </View>
-                            )}
-                          />
-                        </View>
-                      );
-                    }
-                  })
-                ) : (
-                  <FlatList
-                    showsScrollIndicator={false}
-                    data={auth.subCategories}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={({item, index}) =>
-                      this.renderAllProductsView(index)
-                    }
-                    style={styles.productsFlatList}
-                  />
-                )}
-              </View>
-            </ScrollView>
-            {this.checkMinimalCheckout() && (
-              <View style={styles.minimalWarning}>
-                <Text body2 style={{textAlign: 'center', color: 'white'}}>
-                  {'Минимальная сумма заказа ' +
-                    delivery_zone?.min_order_price +
-                    ' руб.'}
-                </Text>
-              </View>
-            )}
-            {auth.totalPrice > 0 && (
-              <View style={styles.bottomBar}>
-                <View style={styles.totalPrice}>
-                  {ecoPrice > 0 ? (
-                    <>
-                      <View style={{alignItems: 'flex-start'}}>
-                        <Text
-                          style={{
-                            textDecorationLine: 'line-through',
-                            textDecorationStyle: 'solid',
-                            color: '#B3B3B3',
-                          }}>
-                          {ecoPrice} ₽
-                        </Text>
-                      </View>
-                      <Text title2>
-                        {auth.totalPrice +
-                          (delivery_zone.free_delivery_from > auth.totalPrice &&
-                            delivery_zone?.delivery_price)}{' '}
-                        ₽
-                      </Text>
-                    </>
+                                        </TouchableOpacity>
+                                      )}
+                                    </>
+                                  )}
+                                </View>
+                              )}
+                            />
+                          </View>
+                        );
+                      }
+                    })
                   ) : (
-                    <View style={{alignItems: 'flex-start'}}>
-                      <Text title2 semiBold>
-                        {auth.totalPrice +
-                          (delivery_zone.free_delivery_from > auth.totalPrice &&
-                            delivery_zone?.delivery_price)}{' '}
-                        ₽
-                      </Text>
-                      <Text>{'Сегодня'}</Text>
-                    </View>
+                    <FlatList
+                      showsScrollIndicator={false}
+                      data={auth.subCategories}
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={({item, index}) =>
+                        this.renderAllProductsView(index)
+                      }
+                      style={styles.productsFlatList}
+                    />
                   )}
                 </View>
-                <View style={{flex: 1}}>
-                  <TouchableOpacity
-                    disabled={this.checkMinimalCheckout()}
-                    onPress={() => {
-                      this.props.navigation.navigate('Cart');
-                    }}
-                    style={{
-                      borderRadius: 5,
-                      // height: 44,
-                      paddingVertical: 8,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: !this.checkMinimalCheckout()
-                        ? BaseColor.redColor
-                        : '#F1F1F1',
-                      marginRight: 20,
-                    }}>
-                    <Text
-                      middleBody
-                      semiBold
-                      style={{
-                        color: !this.checkMinimalCheckout()
-                          ? 'white'
-                          : '#B3B3B3',
-                      }}>
-                      {'В корзину'}
+              </ScrollView>
+            </View>
+          </ScrollView>
+          {this.checkMinimalCheckout() && (
+            <View style={styles.minimalWarning}>
+              <Text body2 style={{textAlign: 'center', color: 'white'}}>
+                {'Минимальная сумма заказа ' +
+                  delivery_zone?.min_order_price +
+                  ' руб.'}
+              </Text>
+            </View>
+          )}
+          {auth.totalPrice > 0 && (
+            <View style={styles.bottomBar}>
+              <View style={styles.totalPrice}>
+                {ecoPrice > 0 ? (
+                  <>
+                    <View style={{alignItems: 'flex-start'}}>
+                      <Text
+                        style={{
+                          textDecorationLine: 'line-through',
+                          textDecorationStyle: 'solid',
+                          color: '#B3B3B3',
+                        }}>
+                        {ecoPrice} ₽
+                      </Text>
+                    </View>
+                    <Text title2>
+                      {auth.totalPrice +
+                        (delivery_zone.free_delivery_from > auth.totalPrice &&
+                          delivery_zone?.delivery_price)}{' '}
+                      ₽
                     </Text>
-                  </TouchableOpacity>
-                </View>
+                  </>
+                ) : (
+                  <View style={{alignItems: 'flex-start'}}>
+                    <Text title2 semiBold>
+                      {auth.totalPrice +
+                        (delivery_zone.free_delivery_from > auth.totalPrice &&
+                          delivery_zone?.delivery_price)}{' '}
+                      ₽
+                    </Text>
+                    <Text>{'Сегодня'}</Text>
+                  </View>
+                )}
               </View>
-            )}
-            {this.renderDatePopup()}
-            {this.renderCostPopup()}
-            {this.renderPromoPopup()}
-            {this.renderSupplierPopup()}
-          </View>
+              <View style={{flex: 1}}>
+                <TouchableOpacity
+                  disabled={this.checkMinimalCheckout()}
+                  onPress={() => {
+                    this.props.navigation.navigate('Cart');
+                  }}
+                  style={{
+                    borderRadius: 5,
+                    height: 44,
+                    paddingVertical: 8,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: !this.checkMinimalCheckout()
+                      ? BaseColor.redColor
+                      : '#F1F1F1',
+                    marginRight: 20,
+                  }}>
+                  <Text
+                    middleBody
+                    semiBold
+                    style={{
+                      color: !this.checkMinimalCheckout() ? 'white' : '#B3B3B3',
+                    }}>
+                    {'В корзину'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+          {this.renderDatePopup()}
+          {this.renderCostPopup()}
+          {this.renderPromoPopup()}
+          {this.renderSupplierPopup()}
         </SafeAreaView>
       </>
     );
