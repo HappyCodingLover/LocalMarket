@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { AuthActions } from '@actions';
-import { View, Dimensions } from 'react-native';
-import { bindActionCreators } from 'redux';
-import { Header, SafeAreaView } from '@components';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {AuthActions} from '@actions';
+import {View, Dimensions} from 'react-native';
+import {bindActionCreators} from 'redux';
+import {Header, SafeAreaView} from '@components';
 import styles from './styles';
-import { BaseColor } from '@config';
+import {BaseColor} from '@config';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import { useFocusEffect } from '@react-navigation/native';
-import { WebView } from 'react-native-webview';
+import {useFocusEffect} from '@react-navigation/native';
+import {WebView} from 'react-native-webview';
 
 const scalesPageToFit = Platform.OS === 'android';
 
-function FocusEfect({ onFocus }) {
+function FocusEfect({onFocus}) {
   useFocusEffect(
     React.useCallback(() => {
       onFocus();
@@ -33,11 +33,11 @@ class PrivacyPolicy extends Component {
   }
 
   onFocus = () => {
-    this.setState({ document: this.props.route.params.document });
+    this.setState({document: this.props.route.params.document});
   };
 
   onWebViewMessage = (event: WebViewMessageEvent) => {
-    this.setState({ webViewHeight: Number(event.nativeEvent.data) });
+    this.setState({webViewHeight: Number(event.nativeEvent.data)});
   };
 
   renderWebView = (content) => {
@@ -69,10 +69,10 @@ class PrivacyPolicy extends Component {
       <WebView
         scalesPageToFit={scalesPageToFit}
         bounces={false}
-        scrollEnabled={false}
+        scrollEnabled={true}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        source={{ html: generateHtml }}
+        source={{html: generateHtml}}
         onMessage={this.onWebViewMessage}
         injectedJavaScript="window.ReactNativeWebView.postMessage(document.body.scrollHeight)"
       />
@@ -80,13 +80,13 @@ class PrivacyPolicy extends Component {
   };
 
   render() {
-    const { document } = this.state;
+    const {document} = this.state;
     return (
       <>
         <FocusEfect onFocus={this.onFocus} />
-        <SafeAreaView style={styles.contain} forceInset={{ top: 'never' }}>
+        <SafeAreaView style={styles.contain} forceInset={{top: 'never'}}>
           <Header
-            style={{ backgroundColor: 'white' }}
+            style={{backgroundColor: 'white'}}
             title={document.title}
             renderLeft={() => {
               return (
