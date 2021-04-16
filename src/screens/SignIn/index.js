@@ -148,9 +148,7 @@ class SignIn extends Component {
   render() {
     const {
       loading,
-      countryCode,
       callingCode,
-      cpModalVisible,
       showSkipBtn,
       showBackBtn,
       errorMsg,
