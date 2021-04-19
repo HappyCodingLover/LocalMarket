@@ -703,10 +703,21 @@ class ProductDetail extends Component {
   }
 
   renderWebView = (content) => {
+    var css = `<head><style type="text/css"> @font-face {
+      font-family: 'SF Pro Text';
+      src: url('SFProText-Regular.woff2') format('woff2'),
+          url('SFProText-Regular.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    </style></head>`;
+    var HTML = css + `<p style='font-family:BYekan'>${content}</p>`;
     return (
       <AutoHeightWebView
         source={{
-          html: `<span style="font-size: 14px; color: 'red'; font-family: 'System';">${content}</span>`,
+          baseUrl: '',
+          html: HTML,
         }}
         style={{
           width: Dimensions.get('window').width - 40,
@@ -714,7 +725,7 @@ class ProductDetail extends Component {
           alignSelf: 'center',
           // color: BaseColor.grayColor,
         }}
-        customStyle={`p{font-size:14px; color: ${BaseColor.grayColor};}`}
+        customStyle={`p{font-size:14px; color: ${BaseColor.grayColor}; font-family: 'SF Pro Text';}`}
       />
     );
   };
