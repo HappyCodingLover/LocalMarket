@@ -1055,7 +1055,7 @@ class Catalogue extends Component {
                             </View>
                             <Text title2>
                               {auth?.totalPrice +
-                                (delivery_zone.free_delivery_from >
+                                (delivery_zone?.free_delivery_from >
                                   auth.totalPrice &&
                                   delivery_zone?.delivery_price)}{' '}
                               ₽
@@ -1065,7 +1065,7 @@ class Catalogue extends Component {
                           <View style={{alignItems: 'flex-start'}}>
                             <Text title2 semiBold>
                               {auth?.totalPrice +
-                                (delivery_zone.free_delivery_from >
+                                (delivery_zone?.free_delivery_from >
                                   auth.totalPrice &&
                                   delivery_zone?.delivery_price)}{' '}
                               ₽
