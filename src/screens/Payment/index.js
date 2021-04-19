@@ -295,7 +295,7 @@ class Payment extends Component {
           if (response) {
             const payment = TinkoffASDK.ApplePay({
               appleMerchantId: 'merchant.local-market',
-              Phone: '+74956481000',
+              Phone: '+79998881111',
               Shipping: {
                 Street: 'Головинское шоссе, дом 5, корп. 1',
                 Country: 'Россия',

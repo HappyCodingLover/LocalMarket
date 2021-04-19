@@ -112,6 +112,10 @@ class SignIn extends Component {
           this.setState({
             errorMsg: 'Неверный формат телефонного номера',
           });
+        } else {
+          this.setState({
+            errorMsg: error.message,
+          });
         }
       })
       .finally(() => {
