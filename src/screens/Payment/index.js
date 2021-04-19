@@ -69,6 +69,7 @@ class Payment extends Component {
 
   onFocus = () => {
     const {auth, navigation, actions, route} = this.props;
+
     if (route.params.cart === null) {
       this.setState({loading: true});
       UserServices.getCart(auth.user.access_token)
@@ -236,6 +237,7 @@ class Payment extends Component {
       cart,
     } = this.state;
     const _cart = cart.products;
+    return;
 
     const {auth, actions, navigation} = this.props;
     let products = [];

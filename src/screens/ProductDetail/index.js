@@ -411,7 +411,6 @@ class ProductDetail extends Component {
   };
 
   onDateBadge = () => {
-    console.log('___onDateBadge');
 
     const {auth} = this.props;
     if (auth.partner?.delivery_zones.length !== 0) {
@@ -431,7 +430,6 @@ class ProductDetail extends Component {
   };
 
   onSupplierBadge = () => {
-    console.log('___onSupplierBadge');
     this.SupplierSheet.open();
   };
 
@@ -520,7 +518,7 @@ class ProductDetail extends Component {
   renderAllProductsView = (ind) => {
     const {auth, navigation} = this.props;
     const {cart, adding} = this.state;
-    const _cart = cart !== null ? cart.products : auth.cart;
+    const _cart = cart !== null ? cart.products : auth.totalPrice === 0 ? [] : auth.cart;
     var products = auth.products.filter(
       (val) =>
         val.subcategory_id === auth.subCategories[ind].id && val.archived === 0,
@@ -999,7 +997,7 @@ class ProductDetail extends Component {
       subCatVal = subCatVal || subCat;
     });
     const {auth} = this.props;
-    const _cart = cart !== null ? cart.products : auth.cart;
+    const _cart = cart !== null ? cart.products : auth.totalPrice === 0 ? [] : auth.cart;
 
     return (
       <>
@@ -1415,7 +1413,7 @@ class ProductDetail extends Component {
                     </View>
                     <Text title2>
                       {auth.totalPrice +
-                        (delivery_zone.free_delivery_from > auth.totalPrice &&
+                        (delivery_zone?.free_delivery_from > auth.totalPrice &&
                           delivery_zone?.delivery_price)}{' '}
                       ₽
                     </Text>
@@ -1424,7 +1422,7 @@ class ProductDetail extends Component {
                   <View style={{alignItems: 'flex-start'}}>
                     <Text title2 semiBold>
                       {auth.totalPrice +
-                        (delivery_zone.free_delivery_from > auth.totalPrice &&
+                        (delivery_zone?.free_delivery_from > auth.totalPrice &&
                           delivery_zone?.delivery_price)}{' '}
                       ₽
                     </Text>
