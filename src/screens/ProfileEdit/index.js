@@ -1,21 +1,21 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { AuthActions } from '@actions';
-import { bindActionCreators } from 'redux';
-import { View, TouchableOpacity, Alert } from 'react-native';
-import { BaseColor, BaseSize } from '@config';
-import { SafeAreaView, Text, Header, TextInput } from '@components';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {AuthActions} from '@actions';
+import {bindActionCreators} from 'redux';
+import {View, TouchableOpacity, Alert} from 'react-native';
+import {BaseColor, BaseSize} from '@config';
+import {SafeAreaView, Text, Header, TextInput} from '@components';
 import styles from './styles';
-import { withTranslation } from 'react-i18next';
+import {withTranslation} from 'react-i18next';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { isValidNumberForRegion } from 'libphonenumber-js';
-import { GuestServices, UserServices } from '../../services';
+import {isValidNumberForRegion} from 'libphonenumber-js';
+import {GuestServices, UserServices} from '../../services';
 import fbauth from '@react-native-firebase/auth';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import RuFlag from '../../assets/svgs/ru_flag.svg';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 
-function FocusEfect({ onFocus }) {
+function FocusEfect({onFocus}) {
   useFocusEffect(
     React.useCallback(() => {
       onFocus();
@@ -50,8 +50,8 @@ class ProfileEdit extends Component {
   }
 
   onFocus = () => {
-    const { auth, navigation, route, actions } = this.props;
-    this.setState({ loading: true });
+    const {auth, navigation, route, actions} = this.props;
+    this.setState({loading: true});
     UserServices.getProfile(auth.user.access_token)
       .then((response) => {
         if (response.data.success === 1) {
@@ -68,7 +68,7 @@ class ProfileEdit extends Component {
             originalEmail: response.data.data.email,
           });
           setTimeout(() => {
-            this.setState({ editable: true });
+            this.setState({editable: true});
           }, 1500);
 
           if (route.params !== undefined && route.params.from !== undefined) {
@@ -80,7 +80,7 @@ class ProfileEdit extends Component {
             });
           } else {
             if (auth.user) {
-              const { profile, user } = auth;
+              const {profile, user} = auth;
               if (profile !== null) {
                 this.setState({
                   name: profile.name,
@@ -116,7 +116,7 @@ class ProfileEdit extends Component {
                   {
                     text: 'Да',
                     onPress: () => {
-                      navigation.navigate('SignIn', { from: 'ProfileEdit' });
+                      navigation.navigate('SignIn', {from: 'ProfileEdit'});
                     },
                   },
                 ],
@@ -140,7 +140,7 @@ class ProfileEdit extends Component {
         });
       })
       .finally(() => {
-        this.setState({ loading: false });
+        this.setState({loading: false});
       });
   };
 
@@ -170,9 +170,9 @@ class ProfileEdit extends Component {
   };
 
   onSaveBtn = () => {
-    const { name, email, phoneNumber, callingCode } = this.state;
-    const { navigation, actions, auth } = this.props;
-    this.setState({ emailError: !this.validate(email) });
+    const {name, email, phoneNumber, callingCode} = this.state;
+    const {navigation, actions, auth} = this.props;
+    this.setState({emailError: !this.validate(email)});
     if (!this.validate(email)) {
       return;
     }
@@ -183,7 +183,7 @@ class ProfileEdit extends Component {
       email: email,
       phone: phone,
     };
-    this.setState({ loading: true });
+    this.setState({loading: true});
     UserServices.saveProfile(body, auth.user.access_token)
       .then((response) => {
         if (response.data.success === 1) {
@@ -195,7 +195,7 @@ class ProfileEdit extends Component {
           });
         } else {
           console.error('something went wrong', response.data.message);
-          this.setState({ loading: false });
+          this.setState({loading: false});
 
           navigation.navigate('ErrorScreen', {
             message: response.data.message,
@@ -204,12 +204,12 @@ class ProfileEdit extends Component {
       })
       .catch((err) => {
         console.error('err in saveProfile', err);
-        this.setState({ loading: false });
+        this.setState({loading: false});
 
-        navigation.navigate('ErrorScreen', { message: err.message });
+        navigation.navigate('ErrorScreen', {message: err.message});
       })
       .finally(() => {
-        this.setState({ loading: false });
+        this.setState({loading: false});
       });
   };
 
@@ -222,7 +222,7 @@ class ProfileEdit extends Component {
       originalEmail,
       originalName,
     } = this.state;
-    const { auth } = this.props;
+    const {auth} = this.props;
 
     if (name === '' || email === '') return false;
     if (auth.profile !== null) {
@@ -239,65 +239,68 @@ class ProfileEdit extends Component {
   };
 
   onLogoutBtn = async () => {
-    const { navigation, auth, actions } = this.props;
-    this.setState({ loading: true });
+    const {navigation, auth, actions} = this.props;
+    this.setState({loading: true});
     try {
       const response = await GuestServices.logout(auth.user.access_token);
       if (response.data.success === 1) {
         try {
-        await fbauth().signOut();
-        // await actions.saveUserData(null);
-        // await actions.saveProfile(null);
-        // await actions.saveAddresses([
-        //   {
-        //     id: null,
-        //     address: null,
-        //     district_id: null,
-        //     longitude: null,
-        //     latitude: null,
-        //     entrance: null,
-        //     intercom: null,
-        //     apt_office: null,
-        //     floor: null,
-        //     comments: null,
-        //     active: null,
-        //     district: null,
-        //   },
-        // ]);
-        // // actions.clearPartner();
-        // // actions.clearTotalPrice();
-        // // actions.clearDiscountPrice();
-        // // actions.clearCart();
-        // // actions.saveProducts([]);
-        // await actions.setActiveAddress({
-        //   id: null,
-        //   address: null,
-        //   district_id: null,
-        //   longitude: null,
-        //   latitude: null,
-        //   entrance: null,
-        //   intercom: null,
-        //   apt_office: null,
-        //   floor: null,
-        //   comments: null,
-        //   active: null,
-        //   district: null,
-        // });
-     
+          await actions.saveUserData(null);
+          await actions.saveAddresses([]);
+          await actions.clearTotalPrice();
+          await fbauth().signOut();
+          // await actions.saveUserData(null);
+          // await actions.saveProfile(null);
+          // await actions.saveAddresses([
+          //   {
+          //     id: null,
+          //     address: null,
+          //     district_id: null,
+          //     longitude: null,
+          //     latitude: null,
+          //     entrance: null,
+          //     intercom: null,
+          //     apt_office: null,
+          //     floor: null,
+          //     comments: null,
+          //     active: null,
+          //     district: null,
+          //   },
+          // ]);
+          // // actions.clearPartner();
+          // // actions.clearTotalPrice();
+          // // actions.clearDiscountPrice();
+          // // actions.clearCart();
+          // // actions.saveProducts([]);
+          // await actions.setActiveAddress({
+          //   id: null,
+          //   address: null,
+          //   district_id: null,
+          //   longitude: null,
+          //   latitude: null,
+          //   entrance: null,
+          //   intercom: null,
+          //   apt_office: null,
+          //   floor: null,
+          //   comments: null,
+          //   active: null,
+          //   district: null,
+          // });
         } catch (error) {
           console.error('err in fbauth signOut', error);
-              navigation.navigate('ErrorScreen', { message: error.message });
+          navigation.navigate('ErrorScreen', {message: error.message});
         }
-
       } else {
         console.error('response fail in api signOut', response.data.message);
-        navigation.navigate('ErrorScreen', { message: response.data.message.message });
+        navigation.navigate('ErrorScreen', {
+          message: response.data.message.message,
+        });
       }
     } catch (error) {
       console.error('err in signOut', error);
-      navigation.navigate('ErrorScreen', { message: error.message });
+      navigation.navigate('ErrorScreen', {message: error.message});
     }
-    this.setState({ loading: false });
+    this.setState({loading: false});
   };
 
   logoutAlert = () => {
@@ -321,8 +324,8 @@ class ProfileEdit extends Component {
   };
 
   onChangePhoneNumber = () => {
-    const { phoneNumber } = this.state;
-    const { navigation } = this.props;
+    const {phoneNumber} = this.state;
+    const {navigation} = this.props;
     navigation.navigate('ChangePhone', {
       phoneNumber: phoneNumber,
       from: 'ProfileEdit',
@@ -340,11 +343,13 @@ class ProfileEdit extends Component {
       isNameClicked,
     } = this.state;
 
-    const { navigation, auth } = this.props;
+    const {navigation, auth} = this.props;
     return (
       <>
         <FocusEfect onFocus={this.onFocus} />
-        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }} forceInset={{ top: 'never' }}>
+        <SafeAreaView
+          style={{flex: 1, backgroundColor: 'white'}}
+          forceInset={{top: 'never'}}>
           <Spinner visible={loading} color="#FF2D34" />
           <Header
             title="Мой Профиль"
@@ -396,8 +401,8 @@ class ProfileEdit extends Component {
             }}>
             {/* name, email, phone number inputs */}
             <View>
-              <View style={{ marginTop: 20 }}>
-                <View style={{ marginBottom: 7 }}>
+              <View style={{marginTop: 20}}>
+                <View style={{marginBottom: 7}}>
                   <Text lightGrayColor>{'Введите ваше имя'}</Text>
                 </View>
                 <View style={styles.textInput1}>
@@ -405,15 +410,15 @@ class ProfileEdit extends Component {
                     editable={auth.profile?.name === undefined || isNameClicked}
                     value={name}
                     placeholder="Иван Иванов"
-                    style={{ fontSize: 16 }}
+                    style={{fontSize: 16}}
                     onChangeText={(text) => {
-                      this.setState({ name: text });
+                      this.setState({name: text});
                     }}
                   />
                 </View>
               </View>
-              <View style={{ marginTop: 20 }}>
-                <View style={{ marginBottom: 7 }}>
+              <View style={{marginTop: 20}}>
+                <View style={{marginBottom: 7}}>
                   <Text lightGrayColor>{'Введите ваш E-Mail'}</Text>
                 </View>
                 <View style={styles.textInput1}>
@@ -437,19 +442,19 @@ class ProfileEdit extends Component {
                   <TextInput
                     placeholder="mail@gmail.com"
                     autoCapitalize="none"
-                    onChangeText={(text) => this.setState({ email: text })}
+                    onChangeText={(text) => this.setState({email: text})}
                     value={email}
-                    style={{ fontSize: 16 }}
+                    style={{fontSize: 16}}
                   />
                 </View>
                 {emailError && (
-                  <Text body2 style={{ color: '#5858589E', marginTop: 5 }}>
+                  <Text body2 style={{color: '#5858589E', marginTop: 5}}>
                     {'Email введен неверно, повторите попытку'}
                   </Text>
                 )}
               </View>
-              <View style={{ marginTop: 20 }}>
-                <View style={{ marginBottom: 7 }}>
+              <View style={{marginTop: 20}}>
+                <View style={{marginBottom: 7}}>
                   <Text lightGrayColor>{'Введите номер вашего телефона'}</Text>
                 </View>
                 <TouchableOpacity
@@ -467,10 +472,9 @@ class ProfileEdit extends Component {
                       justifyContent: 'space-between',
                       alignItems: 'center',
                     }}>
-                    <View
-                      style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
                       <RuFlag width={20} height={14} />
-                      <View style={{ marginLeft: 5 }}>
+                      <View style={{marginLeft: 5}}>
                         <Text middleBody>{formattedPhoneNumber}</Text>
                       </View>
                     </View>
@@ -478,7 +482,7 @@ class ProfileEdit extends Component {
                       name="chevron-right"
                       size={20}
                       color="#D1D1D1"
-                      style={{ marginRight: 10 }}
+                      style={{marginRight: 10}}
                     />
                   </View>
                 </TouchableOpacity>
@@ -502,8 +506,8 @@ class ProfileEdit extends Component {
                 body1
                 style={
                   this.checkInput()
-                    ? { color: BaseColor.whiteColor }
-                    : { color: BaseColor.placeholderColor }
+                    ? {color: BaseColor.whiteColor}
+                    : {color: BaseColor.placeholderColor}
                 }>
                 {'Сохранить'}
               </Text>
@@ -516,7 +520,7 @@ class ProfileEdit extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return { auth: state.auth };
+  return {auth: state.auth};
 };
 
 const mapDispatchToProps = (dispatch) => {

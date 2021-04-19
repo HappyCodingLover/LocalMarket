@@ -1,22 +1,22 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { AuthActions } from '@actions';
-import { View, Alert, ScrollView, ImageBackground } from 'react-native';
-import { bindActionCreators } from 'redux';
-import { Text, Header, Image } from '@components';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {AuthActions} from '@actions';
+import {View, Alert, ScrollView, ImageBackground} from 'react-native';
+import {bindActionCreators} from 'redux';
+import {Text, Header, Image} from '@components';
 import styles from './styles';
-import { BaseColor, BaseSize, Images } from '@config';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {BaseColor, BaseSize, Images} from '@config';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import Minus from '../../assets/svgs/minus.svg';
 import Plus from '../../assets/svgs/plus.svg';
-import { useFocusEffect } from '@react-navigation/native';
-import { GuestServices, UserServices } from '../../services';
+import {useFocusEffect} from '@react-navigation/native';
+import {GuestServices, UserServices} from '../../services';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Badge2 from '../../assets/svgs/badge2.svg';
 import moment from 'moment-timezone';
 
-function FocusEfect({ onFocus }) {
+function FocusEfect({onFocus}) {
   useFocusEffect(
     React.useCallback(() => {
       onFocus();
@@ -43,19 +43,19 @@ class Cart extends Component {
   }
 
   getCart = () => {
-    const { auth, actions } = this.props;
-    this.setState({ loading: true });
+    const {auth, actions} = this.props;
+    this.setState({loading: true});
     UserServices.getCart(auth?.user?.access_token)
       .then((response) => {
         if (response.data.success === 1) {
           const cart = response.data.data?.cart;
           if (cart === null) {
             actions.saveTotalPrice(0);
-            this.setState({ cart: null });
+            this.setState({cart: null});
           } else {
-            this.setState({ cart: cart });
+            this.setState({cart: cart});
             var totalPrice = 0;
-            this.setState({ loading: true });
+            this.setState({loading: true});
             GuestServices.getCatalogueById(cart?.company_id)
               .then((response) => {
                 if (response.data.success === 1) {
@@ -88,7 +88,7 @@ class Cart extends Component {
                 console.error('err in getting partner', err);
               })
               .finally(() => {
-                this.setState({ loading: false });
+                this.setState({loading: false});
                 actions.saveTotalPrice(totalPrice);
               });
           }
@@ -103,7 +103,7 @@ class Cart extends Component {
         console.error('err in getting cart', err);
       })
       .finally(() => {
-        this.setState({ loading: false });
+        this.setState({loading: false});
       });
   };
 
@@ -121,12 +121,12 @@ class Cart extends Component {
   };
 
   onFocus = () => {
-    const { auth } = this.props;
-    this.setState({ inactive: !this.filterBreakTimes(auth.partner) });
+    const {auth} = this.props;
+    this.setState({inactive: !this.filterBreakTimes(auth.partner)});
     if (auth.user !== null) {
       this.getCart();
     }
-    this.setState({ loading: false });
+    this.setState({loading: false});
     if (
       auth?.partner?.delivery_zones.some(
         (zone) => zone?.district === auth?.activeAddress?.district,
@@ -147,8 +147,8 @@ class Cart extends Component {
   };
 
   onMinusBtn = (productID) => {
-    const { auth, actions, navigation } = this.props;
-    const { cart } = this.state;
+    const {auth, actions, navigation} = this.props;
+    const {cart} = this.state;
     const _cart = cart !== null ? cart.products : auth.cart;
     // let tmpCart = cart.products;
     let tmpCart = _cart;
@@ -183,8 +183,8 @@ class Cart extends Component {
   };
 
   onPlusBtn = (productID) => {
-    const { auth, actions } = this.props;
-    const { cart } = this.state;
+    const {auth, actions} = this.props;
+    const {cart} = this.state;
     const _cart = cart !== null ? cart.products : auth.cart;
 
     // let tmpCart = cart.products;
@@ -204,8 +204,8 @@ class Cart extends Component {
   };
 
   checkMinimalCheckout = () => {
-    const { auth } = this.props;
-    const { delivery_zone } = this.state;
+    const {auth} = this.props;
+    const {delivery_zone} = this.state;
     if (auth.partner !== null) {
       return auth.totalPrice < delivery_zone.min_order_price;
     } else {
@@ -214,16 +214,16 @@ class Cart extends Component {
   };
 
   clearCart = () => {
-    const { auth, actions, navigation } = this.props;
-    const { cart } = this.state;
+    const {auth, actions, navigation} = this.props;
+    const {cart} = this.state;
     // clear cart
-    this.setState({ loading: true });
+    this.setState({loading: true});
     if (auth.user === null) {
       actions.clearCart();
       actions.clearTotalPrice();
       actions.clearDiscountPrice();
       actions.clearPartner();
-      this.setState({ loading: false });
+      this.setState({loading: false});
       navigation.navigate('Catalogue');
     } else {
       UserServices.clearCart(auth.user.access_token, cart.id)
@@ -246,17 +246,17 @@ class Cart extends Component {
         })
         .catch((err) => {
           console.error('err in clearing cart', err);
-          navigation.navigate('ErrorScreen', { message: err.message });
+          navigation.navigate('ErrorScreen', {message: err.message});
         })
         .finally(() => {
-          this.setState({ loading: false });
+          this.setState({loading: false});
         });
     }
   };
 
   getEconomizedPrice() {
-    const { auth } = this.props;
-    const { cart } = this.state;
+    const {auth} = this.props;
+    const {cart} = this.state;
     const _cart = cart !== null ? cart.products : auth.cart;
     var ecoPrice = 0;
     _cart.forEach((item) => {
@@ -275,26 +275,26 @@ class Cart extends Component {
   };
 
   checkIsBetween = () => {
-    const { auth } = this.props;
-    const { cart } = this.state;
+    const {auth} = this.props;
+    const {cart} = this.state;
     const _cart = cart !== null ? cart.products : auth.cart;
     var updated_partner;
     if (auth.user === null) {
       // guest mode
 
       if (auth.activeAddress.district !== null) {
-        this.setState({ loading: true });
+        this.setState({loading: true});
         GuestServices.getAllPartners(undefined, auth.activeAddress.district)
           .then((response) => {
             if (response.data.success === 1) {
-              this.setState({ loading: false });
+              this.setState({loading: false});
 
               updated_partner = response.data.data.data.find(
                 (partner) => partner.id === auth.partner.id,
               );
               if (updated_partner === undefined) {
                 console.error('err in getCatalogues: partner not found');
-                this.setState({ inactive: true });
+                this.setState({inactive: true});
               } else {
                 var start = updated_partner.working_starts_at;
                 var end = updated_partner.working_ends_at;
@@ -314,11 +314,8 @@ class Cart extends Component {
                   },
                   () => {
                     if (this.state.inactive === false) {
-                      const { navigation, auth, actions } = this.props;
-                      const {
-                        archivedProducts,
-                        checkedOutOfStock,
-                      } = this.state;
+                      const {navigation, auth, actions} = this.props;
+                      const {archivedProducts, checkedOutOfStock} = this.state;
 
                       if (checkedOutOfStock) {
                         Alert.alert(
@@ -409,7 +406,7 @@ class Cart extends Component {
                           ],
                         );
                       } else {
-                        this.setState({ loading: true });
+                        this.setState({loading: true});
                         GuestServices.getCatalogueById(auth.partner.id)
                           .then((response) => {
                             if (response.data.success === 1) {
@@ -458,7 +455,7 @@ class Cart extends Component {
                                 });
                               } else {
                                 // minus archived products from cart.
-                                this.setState({ checkedOutOfStock: true });
+                                this.setState({checkedOutOfStock: true});
                               }
                             } else {
                               console.error(
@@ -477,7 +474,7 @@ class Cart extends Component {
                             });
                           })
                           .finally(() => {
-                            this.setState({ loading: false });
+                            this.setState({loading: false});
                           });
                       }
                     }
@@ -485,29 +482,32 @@ class Cart extends Component {
                 );
               }
             } else {
-              console.error('sth wrong : getAllPartners', response.data.message);
+              console.error(
+                'sth wrong : getAllPartners',
+                response.data.message,
+              );
             }
           })
           .catch((err) => {
             console.error('err : getAllPartners', err);
           })
           .finally(() => {
-            this.setState({ loading: false });
+            this.setState({loading: false});
           });
       }
     } else {
-      this.setState({ loading: true });
+      this.setState({loading: true});
       GuestServices.getCatalogues(auth.user.access_token)
         .then((response) => {
           if (response.data.success === 1) {
-            this.setState({ loading: false });
+            this.setState({loading: false});
 
             updated_partner = response.data.data.data.find(
               (partner) => partner.id === auth.partner.id,
             );
             if (updated_partner === undefined) {
               console.error('err in getCatalogues: partner not found');
-              this.setState({ inactive: true });
+              this.setState({inactive: true});
             } else {
               var start = updated_partner.working_starts_at;
               var end = updated_partner.working_ends_at;
@@ -527,8 +527,8 @@ class Cart extends Component {
                 },
                 () => {
                   if (this.state.inactive === false) {
-                    const { navigation, auth, actions } = this.props;
-                    const { archivedProducts, checkedOutOfStock } = this.state;
+                    const {navigation, auth, actions} = this.props;
+                    const {archivedProducts, checkedOutOfStock} = this.state;
 
                     if (checkedOutOfStock) {
                       Alert.alert(
@@ -620,7 +620,7 @@ class Cart extends Component {
                         ],
                       );
                     } else {
-                      this.setState({ loading: true });
+                      this.setState({loading: true});
                       GuestServices.getCatalogueById(auth.partner.id)
                         .then((response) => {
                           if (response.data.success === 1) {
@@ -667,7 +667,7 @@ class Cart extends Component {
                               });
                             } else {
                               // minus archived products from cart.
-                              this.setState({ checkedOutOfStock: true });
+                              this.setState({checkedOutOfStock: true});
                             }
                           } else {
                             console.error(
@@ -686,7 +686,7 @@ class Cart extends Component {
                           });
                         })
                         .finally(() => {
-                          this.setState({ loading: false });
+                          this.setState({loading: false});
                         });
                     }
                   }
@@ -707,7 +707,7 @@ class Cart extends Component {
           });
         })
         .finally(() => {
-          this.setState({ loading: false });
+          this.setState({loading: false});
         });
     }
   };
@@ -723,7 +723,7 @@ class Cart extends Component {
   }
 
   addToCart = (tmpCart) => {
-    const { auth } = this.props;
+    const {auth} = this.props;
 
     const body = {
       company_id: auth.partner.id,
@@ -733,17 +733,17 @@ class Cart extends Component {
       this.clearCart();
       return;
     }
-    this.setState({ loading: true });
+    this.setState({loading: true});
 
     UserServices.addToCart(auth.user.access_token, body)
       .then((response) => {
         if (response.data.success === 1) {
-          this.setState({ loading: true });
+          this.setState({loading: true});
           UserServices.getCart(auth.user.access_token)
             .then((response) => {
               if (response.data.success === 1) {
                 const cart = response.data.data.cart;
-                this.setState({ cart: cart });
+                this.setState({cart: cart});
               } else {
                 console.error('error in getting cart', response.data.message);
               }
@@ -752,7 +752,7 @@ class Cart extends Component {
               console.error('error in getting cart', err);
             })
             .finally(() => {
-              this.setState({ loading: false });
+              this.setState({loading: false});
             });
         } else {
           console.error(
@@ -765,7 +765,7 @@ class Cart extends Component {
         console.error('err in adding to cart', err);
       })
       .finally(() => {
-        this.setState({ loading: false });
+        this.setState({loading: false});
       });
   };
 
@@ -774,8 +774,8 @@ class Cart extends Component {
   };
 
   renderProductsView(item) {
-    const { auth } = this.props;
-    const { archivedProducts, inactive, cart } = this.state;
+    const {auth} = this.props;
+    const {archivedProducts, inactive, cart} = this.state;
     const _cart = cart !== null ? cart.products : auth.cart;
     const product = auth.products.find((val) => val.id === item.productID);
     const isOutOfStock = archivedProducts.includes(item.productID);
@@ -790,10 +790,10 @@ class Cart extends Component {
         {/* {cart !== null && cart.products.length > 0 && ( */}
         {product !== undefined && _cart !== null && _cart.length > 0 && (
           <>
-            <View style={{ flex: 2 }}>
+            <View style={{flex: 2}}>
               <ImageBackground
                 source={Images.productPlaceholder}
-                imageStyle={{ borderRadius: 10 }}
+                imageStyle={{borderRadius: 10}}
                 style={styles.partnerImgBackground}>
                 <Image
                   source={{
@@ -805,14 +805,14 @@ class Cart extends Component {
                   <Badge2
                     width={20}
                     height={20}
-                    style={{ position: 'absolute', top: 5, right: 5 }}
+                    style={{position: 'absolute', top: 5, right: 5}}
                   />
                 )}
               </ImageBackground>
             </View>
-            <View style={{ flex: 8, padding: 5 }}>
+            <View style={{flex: 8, padding: 5}}>
               <View style={styles.productInfo}>
-                <View style={{ flex: 12 }}>
+                <View style={{flex: 12}}>
                   <Text
                     middleBody
                     numberOfLines={2}
@@ -822,7 +822,7 @@ class Cart extends Component {
                     {product.name}
                   </Text>
                 </View>
-                <View style={{ flex: 3, alignItems: 'flex-end' }}>
+                <View style={{flex: 3, alignItems: 'flex-end'}}>
                   <Text
                     bold
                     body2
@@ -851,7 +851,7 @@ class Cart extends Component {
               <View>
                 {isOutOfStock ? (
                   <View style={styles.outOfStockLabel}>
-                    <Text footnote style={{ color: '#898989' }}>
+                    <Text footnote style={{color: '#898989'}}>
                       {'Уже раскупили'}
                     </Text>
                   </View>
@@ -865,7 +865,7 @@ class Cart extends Component {
                         }}>
                         <Minus width={18} height={18} />
                       </TouchableOpacity>
-                      <Text title3 style={{ marginHorizontal: 30 }}>
+                      <Text title3 style={{marginHorizontal: 30}}>
                         {/* {
                           cart.products.find(
                             (val) => val.productID === item.productID,
@@ -915,8 +915,8 @@ class Cart extends Component {
   };
 
   render() {
-    const { loading, delivery_zone, inactive, cart } = this.state;
-    const { auth, navigation } = this.props;
+    const {loading, delivery_zone, inactive, cart} = this.state;
+    const {auth, navigation} = this.props;
     const _cart = cart !== null ? cart.products : auth.cart;
     var ecoPrice = 0;
     if (_cart !== null) this.getEconomizedPrice();
@@ -937,7 +937,7 @@ class Cart extends Component {
               );
             }}
             onPressLeft={() => {
-              this.setState({ inactive: false });
+              this.setState({inactive: false});
               navigation.goBack();
             }}
             renderRight={() => {
@@ -952,12 +952,12 @@ class Cart extends Component {
             onPressRight={() => {
               this.clearCartAlert();
             }}
-            style={{ backgroundColor: BaseColor.grayBackgroundColor }}
+            style={{backgroundColor: BaseColor.grayBackgroundColor}}
             statusBarColor={BaseColor.grayBackgroundColor}
           />
           {/* products list */}
           {_cart !== null && _cart.length !== 0 && (
-            <View style={{ marginHorizontal: 12 }}>
+            <View style={{marginHorizontal: 12}}>
               {_cart.map((item, index) => {
                 return this.renderProductsView(item);
               })}
@@ -965,12 +965,12 @@ class Cart extends Component {
           )}
           {/* delivery price */}
           <View style={styles.deliveryInfo}>
-            <View style={{ flex: 7 }}>
+            <View style={{flex: 7}}>
               <Text body1 blackColor>
                 {'Доставит курьер партнера'}
               </Text>
             </View>
-            <View style={{ flex: 3, alignItems: 'flex-end' }}>
+            <View style={{flex: 3, alignItems: 'flex-end'}}>
               <Text body1 bold>
                 {auth.partner !== null &&
                 delivery_zone.free_delivery_from > auth.totalPrice
@@ -997,7 +997,7 @@ class Cart extends Component {
               <View style={styles.totalPrice}>
                 {ecoPrice > 0 ? (
                   <>
-                    <View style={{ alignItems: 'flex-start' }}>
+                    <View style={{alignItems: 'flex-start'}}>
                       <Text
                         style={{
                           textDecorationLine: 'line-through',
@@ -1015,7 +1015,7 @@ class Cart extends Component {
                     </Text>
                   </>
                 ) : (
-                  <View style={{ alignItems: 'flex-start' }}>
+                  <View style={{alignItems: 'flex-start'}}>
                     <Text title2 semiBold>
                       {auth.totalPrice +
                         (delivery_zone.free_delivery_from > auth.totalPrice &&
@@ -1026,14 +1026,14 @@ class Cart extends Component {
                   </View>
                 )}
               </View>
-              <View style={{ flex: 1 }}>
+              <View style={{flex: 1}}>
                 <TouchableOpacity
                   disabled={this.checkMinimalCheckout() || inactive}
                   // disabled={false}
                   onPress={this.onNextBtn}
                   style={{
                     borderRadius: 5,
-                    // height: 44,
+                    height: 44,
                     paddingVertical: 8,
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -1041,7 +1041,7 @@ class Cart extends Component {
                       !this.checkMinimalCheckout() && !inactive
                         ? BaseColor.redColor
                         : '#F1F1F1',
-                    marginRight: 20,
+                    marginRight: 10,
                   }}>
                   <Text
                     middleBody
@@ -1065,7 +1065,7 @@ class Cart extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return { auth: state.auth };
+  return {auth: state.auth};
 };
 
 const mapDispatchToProps = (dispatch) => {

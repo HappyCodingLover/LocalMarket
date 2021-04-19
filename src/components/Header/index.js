@@ -8,7 +8,6 @@ import { getStatusBarHeight } from 'react-native-status-bar-height';
 
 export default class Header extends Component {
   componentDidMount() {
-    StatusBar.setBarStyle('light-content', true);
     // StatusBar.setBarStyle(this.props.barStyle, true);
   }
 
@@ -40,7 +39,8 @@ export default class Header extends Component {
           style={[
             {
               height: getStatusBarHeight(true),
-              backgroundColor: BaseColor.textPrimaryColor,
+              // backgroundColor: BaseColor.textPrimaryColor,
+              backgroundColor: statusBarColor,
             },
           ]}>
           <StatusBar barStyle="dark-content" backgroundColor={statusBarColor} />

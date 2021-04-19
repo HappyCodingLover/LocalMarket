@@ -112,6 +112,10 @@ class SignIn extends Component {
           this.setState({
             errorMsg: 'Неверный формат телефонного номера',
           });
+        } else {
+          this.setState({
+            errorMsg: error.message,
+          });
         }
       })
       .finally(() => {
@@ -148,9 +152,7 @@ class SignIn extends Component {
   render() {
     const {
       loading,
-      countryCode,
       callingCode,
-      cpModalVisible,
       showSkipBtn,
       showBackBtn,
       errorMsg,

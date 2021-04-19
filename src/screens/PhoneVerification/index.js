@@ -11,7 +11,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { BaseStyle, BaseColor, BaseSize } from '@config';
-import { Text } from '@components';
+import { Text, SafeAreaView } from '@components';
 import { AndroidBackHandler } from 'react-navigation-backhandler';
 import styles from './styles';
 import { withTranslation } from 'react-i18next';
@@ -168,7 +168,7 @@ const PhoneVerification = (props) => {
           barStyle="dark-content"
           backgroundColor="white"
         />
-        <View style={styles.contain}>
+        <SafeAreaView style={styles.contain}>
           <Background style={styles.background} />
           <View style={styles.header}>
             <View style={{ flex: 1 }}>
@@ -239,7 +239,7 @@ const PhoneVerification = (props) => {
               {buttonCaption}
             </Text>
           </TouchableOpacity>
-        </View>
+        </SafeAreaView>
       </ScrollView>
     </AndroidBackHandler>
   );

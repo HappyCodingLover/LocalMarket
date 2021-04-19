@@ -56,7 +56,9 @@ export default class Index extends Component {
     } = this.props;
     return (
       <Text
+
         style={StyleSheet.flatten([
+          {fontFamily: 'SF Pro Text'},
           header && Typography.header,
           title1 && Typography.title1,
           secondTitle && Typography.secondTitle,

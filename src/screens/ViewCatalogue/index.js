@@ -224,13 +224,6 @@ class ViewCatalogue extends Component {
             </View>
           </View>
         </SafeAreaView>
-        <TouchableOpacity
-          onPress={this.onAddAddressBtn}
-          style={[styles.saveBtn, { backgroundColor: BaseColor.redColor }]}>
-          <Text middleBody style={{ color: BaseColor.whiteColor }}>
-            {'Добавить адрес'}
-          </Text>
-        </TouchableOpacity>
       </>
     );
   }

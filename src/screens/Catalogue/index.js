@@ -363,11 +363,12 @@ class Catalogue extends Component {
 
   onFocus = () => {
     const {auth} = this.props;
-    if (!auth.activeAddress) {
-      Alert.alert(
-        'Активный адрес не выбран.\nПожалуйста, выберите один из ваших адресов',
-      );
-    }
+    console.log('__auth_activeAddress', auth.activeAddress);
+    // if (!auth.activeAddress) {
+    //   Alert.alert(
+    //     'Активный адрес не выбран.\nПожалуйста, выберите один из ваших адресов',
+    //   );
+    // }
     if (auth?.user === null) {
     } else {
       this.getCart();
@@ -835,7 +836,7 @@ class Catalogue extends Component {
         <FocusEfect onFocus={this.onFocus} />
         <SafeAreaView style={styles.contain} forceInset={{top: 'never'}}>
           <Header
-            style={{backgroundColor: BaseColor.backgroundColor}}
+            style={{backgroundColor: BaseColor.grayBackgroundColor}}
             title={
               auth.activeAddress ? auth.activeAddress.address : 'Ваш адрес'
             }
@@ -855,6 +856,7 @@ class Catalogue extends Component {
             onPressCenter={() => {
               this.props.navigation.navigate('Address1');
             }}
+            statusBarColor={BaseColor.grayBackgroundColor}
           />
           {locationPermissionStatus ? (
             <Text>{'Необходимо разрешить приложению доступ к геолокации'}</Text>
@@ -1080,7 +1082,7 @@ class Catalogue extends Component {
                           }}
                           style={{
                             borderRadius: 5,
-                            // height: 44,
+                            height: 44,
                             paddingVertical: 8,
                             alignItems: 'center',
                             justifyContent: 'center',

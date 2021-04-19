@@ -26,8 +26,8 @@ export default StyleSheet.create({
   totalPrice: {
     flex: 1,
     // alignItems: 'center',
-    padding: 5,
-    marginHorizontal: 5,
+    // padding: 5,
+    marginLeft: 10,
   },
   text: { textAlign: 'center', paddingBottom: 20 },
   addBtn: {
@@ -51,9 +51,9 @@ export default StyleSheet.create({
   },
   imgBanner: {
     width: '100%',
-    height: 300,
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 95 : 55,
+    // height: 300,
+    // position: 'absolute',
+    // top: Platform.OS === 'ios' ? 55 : 55,
   },
   contentBoxTop: {
     backgroundColor: BaseColor.grayBackgroundColor,

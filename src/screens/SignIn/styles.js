@@ -12,7 +12,7 @@ export default StyleSheet.create({
   },
   headerLeft: { paddingLeft: 20, width: 60 },
   headerCenter: {
-    flex: 5,
+    flex: 6,
     justifyContent: 'center',
     alignItems: 'center',
   },
