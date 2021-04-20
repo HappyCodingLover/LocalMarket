@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {AuthActions} from '@actions';
 import {View, Alert, ScrollView, ImageBackground} from 'react-native';
 import {bindActionCreators} from 'redux';
-import {Text, Header, Image} from '@components';
+import {Text, Header, Image, SafeAreaView} from '@components';
 import styles from './styles';
 import {BaseColor, BaseSize, Images} from '@config';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -924,7 +924,15 @@ class Cart extends Component {
       <>
         <FocusEfect onFocus={this.onFocus} />
         <Spinner visible={loading} color="#FF2D34" />
-        <ScrollView style={styles.contain} showsVerticalScrollIndicator={false}>
+        <SafeAreaView
+          style={[
+            styles.contain,
+            this.checkMinimalCheckout() && {
+              marginBottomWidth: 1,
+              marginBottomColor: BaseColor.textPrimaryColor,
+            },
+          ]}
+          forceInset={{top: 'never'}}>
           <Header
             title="Корзина"
             renderLeft={() => {
@@ -955,43 +963,108 @@ class Cart extends Component {
             style={{backgroundColor: BaseColor.grayBackgroundColor}}
             statusBarColor={BaseColor.grayBackgroundColor}
           />
-          {/* products list */}
-          {_cart !== null && _cart.length !== 0 && (
-            <View style={{marginHorizontal: 12}}>
-              {_cart.map((item, index) => {
-                return this.renderProductsView(item);
-              })}
+          <ScrollView
+            style={styles.contain}
+            showsVerticalScrollIndicator={false}>
+            {/* products list */}
+            {_cart !== null && _cart.length !== 0 && (
+              <View style={{marginHorizontal: 12}}>
+                {_cart.map((item, index) => {
+                  return this.renderProductsView(item);
+                })}
+              </View>
+            )}
+            {/* delivery price */}
+            <View style={styles.deliveryInfo}>
+              <View style={{flex: 7}}>
+                <Text body1 blackColor>
+                  {'Доставит курьер партнера'}
+                </Text>
+              </View>
+              <View style={{flex: 3, alignItems: 'flex-end'}}>
+                <Text body1 bold>
+                  {auth.partner !== null &&
+                  delivery_zone.free_delivery_from > auth.totalPrice
+                    ? delivery_zone?.delivery_price + ' ₽'
+                    : 'Бесплатно'}
+                </Text>
+              </View>
+            </View>
+          </ScrollView>
+          {/* Minimal Order Price */}
+          {auth.partner !== null && this.checkMinimalCheckout() && (
+            <View style={styles.minimalWarning}>
+              <Text style={styles.minimalCheckoutText}>
+                {'Минимальная сумма заказа ' +
+                  delivery_zone.min_order_price +
+                  ' руб.'}
+              </Text>
             </View>
           )}
-          {/* delivery price */}
-          <View style={styles.deliveryInfo}>
-            <View style={{flex: 7}}>
-              <Text body1 blackColor>
-                {'Доставит курьер партнера'}
-              </Text>
+          {/* bottomBar */}
+          {auth.totalPrice > 0 && (
+            <View style={styles.bottomBar}>
+              <View style={styles.totalPrice}>
+                {ecoPrice > 0 ? (
+                  <>
+                    <View style={{alignItems: 'flex-start'}}>
+                      <Text
+                        style={{
+                          textDecorationLine: 'line-through',
+                          textDecorationStyle: 'solid',
+                          color: '#B3B3B3',
+                        }}>
+                        {ecoPrice} ₽
+                      </Text>
+                    </View>
+                    <Text title2>
+                      {auth.totalPrice +
+                        (delivery_zone?.free_delivery_from > auth.totalPrice &&
+                          delivery_zone?.delivery_price)}{' '}
+                      ₽
+                    </Text>
+                  </>
+                ) : (
+                  <View style={{alignItems: 'flex-start'}}>
+                    <Text title2 semiBold>
+                      {auth.totalPrice +
+                        (delivery_zone?.free_delivery_from > auth.totalPrice &&
+                          delivery_zone?.delivery_price)}{' '}
+                      ₽
+                    </Text>
+                    <Text>{'Сегодня'}</Text>
+                  </View>
+                )}
+              </View>
+              <View style={{flex: 1}}>
+                <TouchableOpacity
+                  disabled={this.checkMinimalCheckout()}
+                  onPress={this.onNextBtn}
+                  style={{
+                    borderRadius: 5,
+                    // height: 44,
+                    paddingVertical: 16,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: !this.checkMinimalCheckout()
+                      ? BaseColor.redColor
+                      : '#F1F1F1',
+                    marginRight: 10,
+                  }}>
+                  <Text
+                    middleBody
+                    semiBold
+                    style={{
+                      color: !this.checkMinimalCheckout() ? 'white' : '#B3B3B3',
+                    }}>
+                    {'В корзину'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={{flex: 3, alignItems: 'flex-end'}}>
-              <Text body1 bold>
-                {auth.partner !== null &&
-                delivery_zone.free_delivery_from > auth.totalPrice
-                  ? delivery_zone?.delivery_price + ' ₽'
-                  : 'Бесплатно'}
-              </Text>
-            </View>
-          </View>
-        </ScrollView>
-        {/* Minimal Order Price */}
-        {auth.partner !== null && this.checkMinimalCheckout() && (
-          <View style={styles.minimalWarning}>
-            <Text style={styles.minimalCheckoutText}>
-              {'Минимальная сумма заказа ' +
-                delivery_zone.min_order_price +
-                ' руб.'}
-            </Text>
-          </View>
-        )}
-        {/* bottomBar */}
-        {auth.totalPrice > 0 && (
+          )}
+        </SafeAreaView>
+        {/* {auth.totalPrice > 0 && (
           <View style={styles.bottomBar}>
             <View style={styles.cart}>
               <View style={styles.totalPrice}>
@@ -1026,15 +1099,13 @@ class Cart extends Component {
                   </View>
                 )}
               </View>
-              <View style={{flex: 1}}>
+              <View style={{flex: 1, paddingVertical: 5}}>
                 <TouchableOpacity
                   disabled={this.checkMinimalCheckout() || inactive}
-                  // disabled={false}
                   onPress={this.onNextBtn}
                   style={{
                     borderRadius: 5,
-                    height: 44,
-                    paddingVertical: 8,
+                    paddingVertical: 18,
                     alignItems: 'center',
                     justifyContent: 'center',
                     backgroundColor:
@@ -1058,7 +1129,7 @@ class Cart extends Component {
               </View>
             </View>
           </View>
-        )}
+        )} */}
       </>
     );
   }

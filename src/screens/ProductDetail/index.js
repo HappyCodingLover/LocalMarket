@@ -411,7 +411,6 @@ class ProductDetail extends Component {
   };
 
   onDateBadge = () => {
-
     const {auth} = this.props;
     if (auth.partner?.delivery_zones.length !== 0) {
       this.DateSheet.open();
@@ -516,9 +515,10 @@ class ProductDetail extends Component {
   };
 
   renderAllProductsView = (ind) => {
-    const {auth, navigation} = this.props;
+    const {auth} = this.props;
     const {cart, adding} = this.state;
-    const _cart = cart !== null ? cart.products : auth.totalPrice === 0 ? [] : auth.cart;
+    const _cart =
+      cart !== null ? cart.products : auth.totalPrice === 0 ? [] : auth.cart;
     var products = auth.products.filter(
       (val) =>
         val.subcategory_id === auth.subCategories[ind].id && val.archived === 0,
@@ -544,12 +544,6 @@ class ProductDetail extends Component {
                   this.props.navigation.navigate('ProductShow', {
                     productID: item.id,
                     quantity:
-                      // cart === null ||
-                      // cart.products.find((val) => val.productID === item.id) ===
-                      //   undefined
-                      //   ? 0
-                      //   : cart.products.find((val) => val.productID === item.id)
-                      //       .quantity,
                       _cart &&
                       _cart.find((val) => val.productID === item.id) ===
                         undefined
@@ -588,8 +582,6 @@ class ProductDetail extends Component {
               <Text body1 style={{marginVertical: 12}}>
                 {item.name}
               </Text>
-              {/* {cart !== null &&
-              cart.products.findIndex((x) => x.productID === item.id) !== -1 ? ( */}
               {_cart &&
               _cart.find((x) => x.productID === item.id) !== undefined &&
               _cart.find((x) => x.productID === item.id).quantity !== 0 ? (
@@ -602,12 +594,6 @@ class ProductDetail extends Component {
                       <Minus width={18} height={18} />
                     </TouchableOpacity>
                     <Text title3 bold style={{marginHorizontal: 20}}>
-                      {/* {cart !== null &&
-                        cart.products[
-                          cart.products.findIndex(
-                            (x) => x.productID === item.id,
-                          )
-                        ].quantity} */}
                       {_cart &&
                         _cart.find((x) => x.productID === item.id).quantity}
                     </Text>
@@ -661,11 +647,11 @@ class ProductDetail extends Component {
                       style={{
                         borderWidth: 1,
                         borderColor: BaseColor.redColor,
-                        flex: 1,
                         alignItems: 'center',
                         justifyContent: 'center',
                         paddingVertical: 12,
                         borderRadius: 5,
+                        height: 50,
                       }}>
                       <Text middleBody redColor>
                         {item.price} ₽
@@ -997,7 +983,8 @@ class ProductDetail extends Component {
       subCatVal = subCatVal || subCat;
     });
     const {auth} = this.props;
-    const _cart = cart !== null ? cart.products : auth.totalPrice === 0 ? [] : auth.cart;
+    const _cart =
+      cart !== null ? cart.products : auth.totalPrice === 0 ? [] : auth.cart;
 
     return (
       <>
@@ -1437,15 +1424,16 @@ class ProductDetail extends Component {
                     this.props.navigation.navigate('Cart');
                   }}
                   style={{
+                    flex: 1,
                     borderRadius: 5,
-                    height: 44,
+                    // height: 44,
                     paddingVertical: 8,
                     alignItems: 'center',
                     justifyContent: 'center',
                     backgroundColor: !this.checkMinimalCheckout()
                       ? BaseColor.redColor
                       : '#F1F1F1',
-                    marginRight: 20,
+                    marginRight: 10,
                   }}>
                   <Text
                     middleBody

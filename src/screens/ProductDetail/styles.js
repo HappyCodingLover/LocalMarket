@@ -18,7 +18,7 @@ export default StyleSheet.create({
   bottomBar: {
     zIndex: 2,
     height: 64,
-    paddingVertical: 10,
+    paddingVertical: 5,
     backgroundColor: BaseColor.whiteColor,
     flexDirection: 'row',
     justifyContent: 'center',

@@ -248,6 +248,7 @@ class ProfileEdit extends Component {
           await actions.saveUserData(null);
           await actions.saveAddresses([]);
           await actions.clearTotalPrice();
+          await actions.setActiveAddress(null);
           await fbauth().signOut();
           // await actions.saveUserData(null);
           // await actions.saveProfile(null);

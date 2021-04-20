@@ -167,8 +167,7 @@ class SignIn extends Component {
             return true;
           }}>
           <SafeAreaView
-            style={BaseStyle.safeAreaView}
-            forceInset={{ top: 'never' }}>
+            style={BaseStyle.safeAreaView}>
             {this.renderSpinner(loading)}
             <StatusBar
               hidden={false}
