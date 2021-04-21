@@ -773,62 +773,64 @@ class ProductDetail extends Component {
   renderCostPopup() {
     const {auth} = this.props;
     const {delivery_zone} = this.state;
-    return (
-      <>
-        {auth.partner !== null && auth.partner?.delivery_zones.length !== 0 && (
-          <RBSheet
-            ref={(ref) => {
-              this.CostSheet = ref;
-            }}
-            height={Dimensions.get('window').height / 2}
-            closeOnDragDown={true}
-            dragFromTopOnly={true}
-            openDuration={500}
-            customStyles={{
-              container: {
-                backgroundColor: 'white',
-                borderTopRightRadius: 29,
-                borderTopLeftRadius: 29,
-              },
-              draggableIcon: {
-                marginTop: 20,
-                width: 75,
-                height: 6,
-                borderRadius: 3,
-              },
-            }}>
-            <ScrollView style={{paddingHorizontal: 20}}>
-              <View style={{marginTop: 30}}>
-                <Text title3 bold style={{color: BaseColor.textPrimaryColor}}>
-                  {'Информация о стоимости доставки'}
-                </Text>
-                {this.renderWebView(auth.partner?.delivery_cost_information)}
-              </View>
-              <View style={{marginTop: 10}}>
-                <Text body1>
-                  {'При заказе до '}
-                  {delivery_zone.free_delivery_from}
-                  {' ₽'}
-                </Text>
-                <Text body2 grayColor style={{marginTop: 5}}>
-                  {'Стоимость доставки '} {delivery_zone?.delivery_price}
-                  {' ₽'}
-                </Text>
-              </View>
-              <View style={{marginTop: 10}}>
-                <Text body1>
-                  {'При заказе от'} {delivery_zone.free_delivery_from}
-                  {' ₽'}
-                </Text>
-                <Text body2 style={{marginTop: 5}}>
-                  {'Стоимость доставки бесплатно'}
-                </Text>
-              </View>
-            </ScrollView>
-          </RBSheet>
-        )}
-      </>
-    );
+    if (delivery_zone) {
+      return (
+        <>
+          {auth.partner !== null && auth.partner?.delivery_zones.length !== 0 && (
+            <RBSheet
+              ref={(ref) => {
+                this.CostSheet = ref;
+              }}
+              height={Dimensions.get('window').height / 2}
+              closeOnDragDown={true}
+              dragFromTopOnly={true}
+              openDuration={500}
+              customStyles={{
+                container: {
+                  backgroundColor: 'white',
+                  borderTopRightRadius: 29,
+                  borderTopLeftRadius: 29,
+                },
+                draggableIcon: {
+                  marginTop: 20,
+                  width: 75,
+                  height: 6,
+                  borderRadius: 3,
+                },
+              }}>
+              <ScrollView style={{paddingHorizontal: 20}}>
+                <View style={{marginTop: 30}}>
+                  <Text title3 bold style={{color: BaseColor.textPrimaryColor}}>
+                    {'Информация о стоимости доставки'}
+                  </Text>
+                  {this.renderWebView(auth.partner?.delivery_cost_information)}
+                </View>
+                <View style={{marginTop: 10}}>
+                  <Text body1>
+                    {'При заказе до '}
+                    {delivery_zone.free_delivery_from}
+                    {' ₽'}
+                  </Text>
+                  <Text body2 grayColor style={{marginTop: 5}}>
+                    {'Стоимость доставки '} {delivery_zone?.delivery_price}
+                    {' ₽'}
+                  </Text>
+                </View>
+                <View style={{marginTop: 10}}>
+                  <Text body1>
+                    {'При заказе от'} {delivery_zone.free_delivery_from}
+                    {' ₽'}
+                  </Text>
+                  <Text body2 style={{marginTop: 5}}>
+                    {'Стоимость доставки бесплатно'}
+                  </Text>
+                </View>
+              </ScrollView>
+            </RBSheet>
+          )}
+        </>
+      );
+    }
   }
 
   renderPromoPopup() {
@@ -948,6 +950,7 @@ class ProductDetail extends Component {
     ) {
       if (
         auth.partner.delivery_zones !== null &&
+        auth.activeAddress.district !== null &&
         auth.partner.delivery_zones.find(
           (zone) => zone.district === auth.activeAddress.district,
         ) !== undefined
@@ -1113,9 +1116,12 @@ class ProductDetail extends Component {
                 <TouchableOpacity
                   onPress={this.onCostBadge}
                   style={styles.blackBadge}>
-                  <Text footnote whiteColor>
-                    Бесплатная доставка от {delivery_zone.free_delivery_from} ₽
-                  </Text>
+                  {delivery_zone && (
+                    <Text footnote whiteColor>
+                      Бесплатная доставка от {delivery_zone.free_delivery_from}{' '}
+                      ₽
+                    </Text>
+                  )}
                 </TouchableOpacity>
                 {/* </Animated.View> */}
               </View>
@@ -1399,18 +1405,22 @@ class ProductDetail extends Component {
                       </Text>
                     </View>
                     <Text title2>
-                      {auth.totalPrice +
-                        (delivery_zone?.free_delivery_from > auth.totalPrice &&
-                          delivery_zone?.delivery_price)}{' '}
+                      {delivery_zone &&
+                        auth.totalPrice +
+                          (delivery_zone?.free_delivery_from >
+                            auth.totalPrice &&
+                            delivery_zone?.delivery_price)}{' '}
                       ₽
                     </Text>
                   </>
                 ) : (
                   <View style={{alignItems: 'flex-start'}}>
                     <Text title2 semiBold>
-                      {auth.totalPrice +
-                        (delivery_zone?.free_delivery_from > auth.totalPrice &&
-                          delivery_zone?.delivery_price)}{' '}
+                      {delivery_zone &&
+                        auth.totalPrice +
+                          (delivery_zone?.free_delivery_from >
+                            auth.totalPrice &&
+                            delivery_zone?.delivery_price)}{' '}
                       ₽
                     </Text>
                     <Text>{'Сегодня'}</Text>

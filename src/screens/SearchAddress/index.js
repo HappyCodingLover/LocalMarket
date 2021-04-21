@@ -92,7 +92,6 @@ class SearchAddress extends Component {
   };
 
   renderSuggestionItem = ({item, index}) => {
-    console.log('________address_______', item.data);
     return (
       <TouchableOpacity
         onPress={(e) => this.onSuggestionClick(index, e)}

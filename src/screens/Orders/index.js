@@ -1,20 +1,20 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { AuthActions } from '@actions';
-import { View, Dimensions, FlatList, Alert, ImageBackground } from 'react-native';
-import { bindActionCreators } from 'redux';
-import { SafeAreaView, Header, Image, Text } from '@components';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {AuthActions} from '@actions';
+import {View, Dimensions, FlatList, Alert, ImageBackground} from 'react-native';
+import {bindActionCreators} from 'redux';
+import {SafeAreaView, Header, Image, Text} from '@components';
 import styles from './styles';
-import { BaseColor, Images, BaseSize } from '@config';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useFocusEffect } from '@react-navigation/native';
+import {BaseColor, Images, BaseSize} from '@config';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useFocusEffect} from '@react-navigation/native';
 import NoOrdersSvg from '../../assets/svgs/noOrders.svg';
-import { UserServices } from '../../services';
+import {UserServices} from '../../services';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { AndroidBackHandler } from 'react-navigation-backhandler';
+import {AndroidBackHandler} from 'react-navigation-backhandler';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
-function FocusEfect({ onFocus }) {
+function FocusEfect({onFocus}) {
   useFocusEffect(
     React.useCallback(() => {
       onFocus();
@@ -79,10 +79,10 @@ class Orders extends Component {
   }
 
   onFocus = () => {
-    const { auth, actions, navigation } = this.props;
+    const {auth, actions, navigation} = this.props;
     if (auth.user === null) {
       // guest mode
-      this.setState({ loaded: true, isGuestMode: true });
+      this.setState({loaded: true, isGuestMode: true});
       // Alert.alert(
       //   'Хотите посмотреть свои заказы?',
       //   'Сначала войдите в систему.',
@@ -104,19 +104,19 @@ class Orders extends Component {
       //   ],
       // );
     } else {
-      this.setState({ showScreen: true });
-      this.setState({ loading: true });
+      this.setState({showScreen: true});
+      this.setState({loading: true});
       UserServices.getOrder(auth.user.access_token)
         .then((response) => {
           if (response.data.success === 1) {
             actions.saveOrders(response.data.data);
-            this.setState({ orders: response.data.data });
+            this.setState({orders: response.data.data});
           } else {
             console.error(
               'something went wrong while getting orders',
               response.data.message,
             );
-            this.setState({ loading: false });
+            this.setState({loading: false});
             console.error('errorScreen 19');
 
             navigation.navigate('ErrorScreen', {
@@ -126,37 +126,37 @@ class Orders extends Component {
         })
         .catch((err) => {
           console.error('err in getting orders', err);
-          this.setState({ loading: false });
+          this.setState({loading: false});
           console.error('errorScreen 20');
 
-          navigation.navigate('ErrorScreen', { message: err.message });
+          navigation.navigate('ErrorScreen', {message: err.message});
         })
         .finally(() => {
-          this.setState({ loading: false, loaded: true });
+          this.setState({loading: false, loaded: true});
         });
     }
   };
 
   renderOrderDetailsView(item, index) {
-    const { auth } = this.props;
+    const {auth} = this.props;
     let price =
       (item.product.hasPromo
         ? item.product.promo.new_price
         : item.product.price) * item.product_count;
     return (
       <View style={styles.orderDetailsView}>
-        <View style={{ flex: 1 }}>
+        <View style={{flex: 1}}>
           <Text grayColor subhead>
             {item.product_count} {'x'}
           </Text>
         </View>
-        <View style={{ flex: 7 }}>
+        <View style={{flex: 7}}>
           <Text subhead numberOfLines={1}>
             {item.product.name}
           </Text>
         </View>
-        <View style={{ flex: 2 }}>
-          <Text subhead style={{ textAlign: 'right' }}>
+        <View style={{flex: 2}}>
+          <Text subhead style={{textAlign: 'right'}}>
             {price} {'₽'}
           </Text>
         </View>
@@ -165,91 +165,99 @@ class Orders extends Component {
   }
 
   renderOrderView(item, index) {
-    const { auth } = this.props;
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          this.props.navigation.navigate('OrdersStatus', { id: item.id });
-        }}
-        style={styles.order}>
-        <View style={styles.orderItem}>
-          <ImageBackground
-            source={Images.productPlaceholder}
-            imageStyle={{ borderRadius: 10 }}
-            style={styles.partnerImgBackground}>
-            <Image
-              source={{ uri: item.company.logo_url }}
-              style={styles.orderItemImg}
-            />
-          </ImageBackground>
-          <View style={styles.orderImageInfo}>
-            <View style={styles.orderInfo}>
-              <Text body1 numberOfLines={1}>
-                {item.company.name}
+    const {auth} = this.props;
+    console.log('_________addresses', auth.addresses);
+    console.log('_________item', item);
+    if (
+      auth.addresses.find((val) => val.id === item.user_address_id) !==
+      undefined
+    ) {
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            this.props.navigation.navigate('OrdersStatus', {id: item.id});
+          }}
+          style={styles.order}>
+          <View style={styles.orderItem}>
+            <ImageBackground
+              source={Images.productPlaceholder}
+              imageStyle={{borderRadius: 10}}
+              style={styles.partnerImgBackground}>
+              <Image
+                source={{uri: item.company.logo_url}}
+                style={styles.orderItemImg}
+              />
+            </ImageBackground>
+            <View style={styles.orderImageInfo}>
+              <View style={styles.orderInfo}>
+                <Text body1 numberOfLines={1}>
+                  {item.company.name}
+                </Text>
+                <Text body2 numberOfLines={1}>
+                  {(item.delivery_day === 0 ? 'Cегодня ' : 'Завтра ') +
+                    item.delivery_timeframe.start +
+                    ' ~ ' +
+                    item.delivery_timeframe.end}
+                </Text>
+                <Text body2 numberOfLines={1} grayColor>
+                  {auth.addresses.length !== 0 &&
+                    auth.addresses.find(
+                      (val) => val.id === item.user_address_id,
+                    ).address}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.orderItemStatusPrice}>
+              <Text
+                style={[
+                  styles.orderItemStatus,
+                  {
+                    color:
+                      item.status === 4
+                        ? BaseColor.successColor
+                        : item.status === 0 ||
+                          item.status === 1 ||
+                          item.status === 2 ||
+                          item.status === 3
+                        ? BaseColor.processingColor
+                        : BaseColor.cancelColor,
+                  },
+                ]}>
+                {item.status === 0
+                  ? 'Создан'
+                  : item.status === 1
+                  ? 'Принят'
+                  : item.status === 2
+                  ? 'Собирается'
+                  : item.status === 3
+                  ? 'У курьера'
+                  : item.status === 4
+                  ? 'Доставлен'
+                  : 'Отменен'}
               </Text>
-              <Text body2 numberOfLines={1}>
-                {(item.delivery_day === 0 ? 'Cегодня ' : 'Завтра ') +
-                  item.delivery_timeframe.start +
-                  ' ~ ' +
-                  item.delivery_timeframe.end}
-              </Text>
-              <Text body2 numberOfLines={1} grayColor>
-                {auth.addresses.length !== 0 &&
-                  auth.addresses.find((val) => val.id === item.user_address_id)
-                    .address}
+              <Text style={styles.orderItemPrice}>
+                {item.order_price} {'₽'}
               </Text>
             </View>
           </View>
-          <View style={styles.orderItemStatusPrice}>
-            <Text
-              style={[
-                styles.orderItemStatus,
-                {
-                  color:
-                    item.status === 4
-                      ? BaseColor.successColor
-                      : item.status === 0 ||
-                        item.status === 1 ||
-                        item.status === 2 ||
-                        item.status === 3
-                      ? BaseColor.processingColor
-                      : BaseColor.cancelColor,
-                },
-              ]}>
-              {item.status === 0
-                ? 'Создан'
-                : item.status === 1
-                ? 'Принят'
-                : item.status === 2
-                ? 'Собирается'
-                : item.status === 3
-                ? 'У курьера'
-                : item.status === 4
-                ? 'Доставлен'
-                : 'Отменен'}
-            </Text>
-            <Text style={styles.orderItemPrice}>
-              {item.order_price} {'₽'}
-            </Text>
-          </View>
-        </View>
-        {item.products.length !== 0 && (
-          <View style={styles.orderDetails}>
-            <FlatList
-              data={item.products}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item, index }) =>
-                this.renderOrderDetailsView(item, index)
-              }
-            />
-          </View>
-        )}
-      </TouchableOpacity>
-    );
+          {item.products.length !== 0 && (
+            <View style={styles.orderDetails}>
+              <FlatList
+                data={item.products}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item, index}) =>
+                  this.renderOrderDetailsView(item, index)
+                }
+              />
+            </View>
+          )}
+        </TouchableOpacity>
+      );
+    }
   }
 
   onReturnBtn = () => {
-    const { navigation } = this.props;
+    const {navigation} = this.props;
     if (this.props.auth.activeAddress) {
       this.props.navigation.navigate('Catalogue');
     } else {
@@ -269,19 +277,19 @@ class Orders extends Component {
   };
 
   render() {
-    const { slideSize, loading, orders, loaded, isGuestMode } = this.state;
-    const { navigation } = this.props;
+    const {slideSize, loading, orders, loaded, isGuestMode} = this.state;
+    const {navigation} = this.props;
     return (
       <AndroidBackHandler
         onBackPress={() => {
           this.props.navigation.navigate('Main', {
             screen: 'DrawerStack',
-            params: { screen: 'Catalogue' },
+            params: {screen: 'Catalogue'},
           });
           return true;
         }}>
         <FocusEfect onFocus={this.onFocus} />
-        <SafeAreaView style={styles.contain} forceInset={{ top: 'never' }}>
+        <SafeAreaView style={styles.contain} forceInset={{top: 'never'}}>
           <Spinner visible={loading} color="#FF2D34" />
           <Header
             title="Заказы"
@@ -311,19 +319,19 @@ class Orders extends Component {
                 navigation.openDrawer();
               }
             }}
-            style={{ backgroundColor: 'white' }}
+            style={{backgroundColor: 'white'}}
             statusBarColor={BaseColor.grayBackgroundColor}
           />
           {loaded && (
             <View style={styles.mainContainer}>
               {orders.length === 0 ? (
-                <View style={{ flex: 1 }}>
+                <View style={{flex: 1}}>
                   <NoOrdersSvg
                     width={slideSize}
                     height={slideSize}
-                    style={{ alignSelf: 'center' }}
+                    style={{alignSelf: 'center'}}
                   />
-                  <View style={{ alignItems: 'center' }}>
+                  <View style={{alignItems: 'center'}}>
                     <Text title1>{'У вас еще нет заказов'}</Text>
                     <Text
                       middleBody
@@ -343,11 +351,11 @@ class Orders extends Component {
                 <FlatList
                   data={orders}
                   keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item, index }) =>
+                  renderItem={({item, index}) =>
                     this.renderOrderView(item, index)
                   }
                   ItemSeparatorComponent={this.renderSeparator}
-                  style={{ marginTop: 6 }}
+                  style={{marginTop: 6}}
                 />
               )}
             </View>
@@ -368,7 +376,7 @@ class Orders extends Component {
                 padding: 11,
                 marginBottom: 50,
               }}>
-              <Text middleBody whiteColor style={{ textAlign: 'center' }}>
+              <Text middleBody whiteColor style={{textAlign: 'center'}}>
                 {'Вернуться к выбору продуктов'}
               </Text>
             </TouchableOpacity>
@@ -380,7 +388,7 @@ class Orders extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return { auth: state.auth };
+  return {auth: state.auth};
 };
 
 const mapDispatchToProps = (dispatch) => {

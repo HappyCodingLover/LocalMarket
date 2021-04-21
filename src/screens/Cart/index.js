@@ -245,7 +245,7 @@ class Cart extends Component {
           }
         })
         .catch((err) => {
-          console.error('err in clearing cart', err);
+          console.error('err in clearing cart_1', err);
           navigation.navigate('ErrorScreen', {message: err.message});
         })
         .finally(() => {
@@ -983,8 +983,8 @@ class Cart extends Component {
               </View>
               <View style={{flex: 3, alignItems: 'flex-end'}}>
                 <Text body1 bold>
-                  {auth.partner !== null &&
-                  delivery_zone.free_delivery_from > auth.totalPrice
+                  {auth.partner !== null && delivery_zone &&
+                  delivery_zone?.free_delivery_from > auth.totalPrice
                     ? delivery_zone?.delivery_price + ' ₽'
                     : 'Бесплатно'}
                 </Text>
@@ -1019,7 +1019,7 @@ class Cart extends Component {
                     </View>
                     <Text title2>
                       {auth.totalPrice +
-                        (delivery_zone?.free_delivery_from > auth.totalPrice &&
+                        (delivery_zone && delivery_zone?.free_delivery_from > auth.totalPrice &&
                           delivery_zone?.delivery_price)}{' '}
                       ₽
                     </Text>
@@ -1028,7 +1028,7 @@ class Cart extends Component {
                   <View style={{alignItems: 'flex-start'}}>
                     <Text title2 semiBold>
                       {auth.totalPrice +
-                        (delivery_zone?.free_delivery_from > auth.totalPrice &&
+                        (delivery_zone && delivery_zone?.free_delivery_from > auth.totalPrice &&
                           delivery_zone?.delivery_price)}{' '}
                       ₽
                     </Text>
@@ -1064,72 +1064,6 @@ class Cart extends Component {
             </View>
           )}
         </SafeAreaView>
-        {/* {auth.totalPrice > 0 && (
-          <View style={styles.bottomBar}>
-            <View style={styles.cart}>
-              <View style={styles.totalPrice}>
-                {ecoPrice > 0 ? (
-                  <>
-                    <View style={{alignItems: 'flex-start'}}>
-                      <Text
-                        style={{
-                          textDecorationLine: 'line-through',
-                          textDecorationStyle: 'solid',
-                          color: '#B3B3B3',
-                        }}>
-                        {ecoPrice} ₽
-                      </Text>
-                    </View>
-                    <Text title2>
-                      {auth.totalPrice +
-                        (delivery_zone.free_delivery_from > auth.totalPrice &&
-                          delivery_zone?.delivery_price)}{' '}
-                      ₽
-                    </Text>
-                  </>
-                ) : (
-                  <View style={{alignItems: 'flex-start'}}>
-                    <Text title2 semiBold>
-                      {auth.totalPrice +
-                        (delivery_zone.free_delivery_from > auth.totalPrice &&
-                          delivery_zone?.delivery_price)}{' '}
-                      ₽
-                    </Text>
-                    <Text>{'Сегодня'}</Text>
-                  </View>
-                )}
-              </View>
-              <View style={{flex: 1, paddingVertical: 5}}>
-                <TouchableOpacity
-                  disabled={this.checkMinimalCheckout() || inactive}
-                  onPress={this.onNextBtn}
-                  style={{
-                    borderRadius: 5,
-                    paddingVertical: 18,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor:
-                      !this.checkMinimalCheckout() && !inactive
-                        ? BaseColor.redColor
-                        : '#F1F1F1',
-                    marginRight: 10,
-                  }}>
-                  <Text
-                    middleBody
-                    semiBold
-                    style={{
-                      color:
-                        !this.checkMinimalCheckout() && !inactive
-                          ? 'white'
-                          : '#B3B3B3',
-                    }}>
-                    {'Далее'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        )} */}
       </>
     );
   }

@@ -86,6 +86,7 @@ export default StyleSheet.create({
     width: 120,
   },
   cart: {
+    paddingTop: 10,
     zIndex: 2,
     height: 64,
     paddingVertical: 10,
