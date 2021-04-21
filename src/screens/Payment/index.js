@@ -237,7 +237,6 @@ class Payment extends Component {
       cart,
     } = this.state;
     const _cart = cart.products;
-    return;
 
     const {auth, actions, navigation} = this.props;
     let products = [];
