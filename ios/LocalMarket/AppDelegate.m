@@ -73,7 +73,7 @@ static void InitializeFlipper(UIApplication *application) {
 - (void)application:(UIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
   // I used type:FIRAuthAPNSTokenTypeSandbox as the entitlement is set to development
-  [[FIRAuth auth] setAPNSToken:deviceToken type:FIRAuthAPNSTokenTypeSandbox];
+  [[FIRAuth auth] setAPNSToken:deviceToken type:FIRAuthAPNSTokenTypeProd];
 }
 
 - (void)application:(UIApplication *)application
