@@ -75,7 +75,7 @@ class NewAddress extends Component {
       floor: floor,
       comments: comments,
     };
-    if (auth.activeAddress !== undefined && auth.activeAddress.id === null) {
+    if (auth.activeAddress !== null && auth.activeAddress !== undefined && auth.activeAddress.id === null) {
       actions.saveAddresses([]);
     }
     if (auth.user) {

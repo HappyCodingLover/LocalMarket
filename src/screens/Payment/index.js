@@ -392,7 +392,7 @@ class Payment extends Component {
                           }
                         })
                         .catch((err) => {
-                          console.error('err in clearing cart', err);
+                          console.error('err in clearing cart_3', err);
                           navigation.navigate('ErrorScreen', {
                             message: err.message,
                           });
@@ -537,7 +537,7 @@ class Payment extends Component {
                     }
                   })
                   .catch((err) => {
-                    console.error('err in clearing cart', err);
+                    console.error('err in clearing cart_4', err);
                     navigation.navigate('ErrorScreen', {message: err.message});
                   })
                   .finally(() => {
@@ -823,6 +823,7 @@ class Payment extends Component {
                 <TextInput
                   value={comments}
                   placeholder="Укажите комментарий"
+                  placeholderTextColor={BaseColor.textInputPlaceholderColor}
                   style={styles.textInput}
                   onChangeText={(text) => {
                     this.setState({comments: text});
@@ -839,6 +840,7 @@ class Payment extends Component {
                   <View style={{flex: 6}}>
                     <TextInput
                       placeholder="Укажите промокод"
+                      placeholderTextColor={BaseColor.textInputPlaceholderColor}
                       style={styles.textInput}
                       onChangeText={(text) => {
                         this.setState({discountCode: text});

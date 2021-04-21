@@ -691,7 +691,7 @@ class Catalogue extends Component {
           }
         })
         .catch((err) => {
-          console.error('err in clearing cart', err);
+          console.error('err in clearing cart_2', err);
           navigation.navigate('ErrorScreen', {message: err.message});
         })
         .finally(() => {
@@ -705,6 +705,7 @@ class Catalogue extends Component {
     if (
       auth.partner !== null &&
       auth.activeAddress !== null &&
+      auth.activeAddress.district !== null &&
       (auth.partner.delivery_zones !== undefined ||
         auth.partner.delivery_zones !== null)
     ) {
@@ -753,7 +754,7 @@ class Catalogue extends Component {
   renderPartnersView(item, index) {
     const {auth} = this.props;
     // if no activeAddress, which means in the guest mode
-    if (auth.activeAddress === null || auth.activeAddress === undefined) {
+    if (auth.activeAddress === null && auth.activeAddress === undefined) {
       return (
         <PartnerItem
           item={item}
@@ -1054,20 +1055,22 @@ class Catalogue extends Component {
                               </Text>
                             </View>
                             <Text title2>
-                              {auth?.totalPrice +
-                                (delivery_zone?.free_delivery_from >
-                                  auth.totalPrice &&
-                                  delivery_zone?.delivery_price)}{' '}
+                              {delivery_zone &&
+                                auth?.totalPrice +
+                                  (delivery_zone?.free_delivery_from >
+                                    auth.totalPrice &&
+                                    delivery_zone?.delivery_price)}{' '}
                               ₽
                             </Text>
                           </>
                         ) : (
                           <View style={{alignItems: 'flex-start'}}>
                             <Text title2 semiBold>
-                              {auth?.totalPrice +
-                                (delivery_zone?.free_delivery_from >
-                                  auth.totalPrice &&
-                                  delivery_zone?.delivery_price)}{' '}
+                              {delivery_zone &&
+                                auth?.totalPrice +
+                                  (delivery_zone?.free_delivery_from >
+                                    auth.totalPrice &&
+                                    delivery_zone?.delivery_price)}{' '}
                               ₽
                             </Text>
                             <Text>{'Сегодня'}</Text>

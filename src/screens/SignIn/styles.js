@@ -12,7 +12,7 @@ export default StyleSheet.create({
   },
   headerLeft: { paddingLeft: 20, width: 60 },
   headerCenter: {
-    flex: 6,
+    flex: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -83,11 +83,7 @@ export default StyleSheet.create({
   },
   background: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: Dimensions.get('window').width,
-    borderColor: 'red',
+    alignSelf: 'center',
+    justifyContent: 'center',
   },
 });

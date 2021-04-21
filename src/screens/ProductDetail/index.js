@@ -411,7 +411,6 @@ class ProductDetail extends Component {
   };
 
   onDateBadge = () => {
-
     const {auth} = this.props;
     if (auth.partner?.delivery_zones.length !== 0) {
       this.DateSheet.open();
@@ -516,9 +515,10 @@ class ProductDetail extends Component {
   };
 
   renderAllProductsView = (ind) => {
-    const {auth, navigation} = this.props;
+    const {auth} = this.props;
     const {cart, adding} = this.state;
-    const _cart = cart !== null ? cart.products : auth.totalPrice === 0 ? [] : auth.cart;
+    const _cart =
+      cart !== null ? cart.products : auth.totalPrice === 0 ? [] : auth.cart;
     var products = auth.products.filter(
       (val) =>
         val.subcategory_id === auth.subCategories[ind].id && val.archived === 0,
@@ -544,12 +544,6 @@ class ProductDetail extends Component {
                   this.props.navigation.navigate('ProductShow', {
                     productID: item.id,
                     quantity:
-                      // cart === null ||
-                      // cart.products.find((val) => val.productID === item.id) ===
-                      //   undefined
-                      //   ? 0
-                      //   : cart.products.find((val) => val.productID === item.id)
-                      //       .quantity,
                       _cart &&
                       _cart.find((val) => val.productID === item.id) ===
                         undefined
@@ -588,8 +582,6 @@ class ProductDetail extends Component {
               <Text body1 style={{marginVertical: 12}}>
                 {item.name}
               </Text>
-              {/* {cart !== null &&
-              cart.products.findIndex((x) => x.productID === item.id) !== -1 ? ( */}
               {_cart &&
               _cart.find((x) => x.productID === item.id) !== undefined &&
               _cart.find((x) => x.productID === item.id).quantity !== 0 ? (
@@ -602,12 +594,6 @@ class ProductDetail extends Component {
                       <Minus width={18} height={18} />
                     </TouchableOpacity>
                     <Text title3 bold style={{marginHorizontal: 20}}>
-                      {/* {cart !== null &&
-                        cart.products[
-                          cart.products.findIndex(
-                            (x) => x.productID === item.id,
-                          )
-                        ].quantity} */}
                       {_cart &&
                         _cart.find((x) => x.productID === item.id).quantity}
                     </Text>
@@ -661,11 +647,11 @@ class ProductDetail extends Component {
                       style={{
                         borderWidth: 1,
                         borderColor: BaseColor.redColor,
-                        flex: 1,
                         alignItems: 'center',
                         justifyContent: 'center',
                         paddingVertical: 12,
                         borderRadius: 5,
+                        height: 50,
                       }}>
                       <Text middleBody redColor>
                         {item.price} ₽
@@ -701,10 +687,21 @@ class ProductDetail extends Component {
   }
 
   renderWebView = (content) => {
+    var css = `<head><style type="text/css"> @font-face {
+      font-family: 'SF Pro Text';
+      src: url('SFProText-Regular.woff2') format('woff2'),
+          url('SFProText-Regular.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    </style></head>`;
+    var HTML = css + `<p style='font-family:BYekan'>${content}</p>`;
     return (
       <AutoHeightWebView
         source={{
-          html: `<span style="font-size: 14px; color: 'red'; font-family: 'SF Pro Text';">${content}</span>`,
+          baseUrl: '',
+          html: HTML,
         }}
         style={{
           width: Dimensions.get('window').width - 40,
@@ -712,7 +709,7 @@ class ProductDetail extends Component {
           alignSelf: 'center',
           // color: BaseColor.grayColor,
         }}
-        customStyle={`p{font-size:14px; color: ${BaseColor.grayColor}; font-family: 'SF Pro Text}`}
+        customStyle={`p{font-size:14px; color: ${BaseColor.grayColor}; font-family: 'SF Pro Text';}`}
       />
     );
   };
@@ -776,62 +773,64 @@ class ProductDetail extends Component {
   renderCostPopup() {
     const {auth} = this.props;
     const {delivery_zone} = this.state;
-    return (
-      <>
-        {auth.partner !== null && auth.partner?.delivery_zones.length !== 0 && (
-          <RBSheet
-            ref={(ref) => {
-              this.CostSheet = ref;
-            }}
-            height={Dimensions.get('window').height / 2}
-            closeOnDragDown={true}
-            dragFromTopOnly={true}
-            openDuration={500}
-            customStyles={{
-              container: {
-                backgroundColor: 'white',
-                borderTopRightRadius: 29,
-                borderTopLeftRadius: 29,
-              },
-              draggableIcon: {
-                marginTop: 20,
-                width: 75,
-                height: 6,
-                borderRadius: 3,
-              },
-            }}>
-            <ScrollView style={{paddingHorizontal: 20}}>
-              <View style={{marginTop: 30}}>
-                <Text title3 bold style={{color: BaseColor.textPrimaryColor}}>
-                  {'Информация о стоимости доставки'}
-                </Text>
-                {this.renderWebView(auth.partner?.delivery_cost_information)}
-              </View>
-              <View style={{marginTop: 10}}>
-                <Text body1>
-                  {'При заказе до '}
-                  {delivery_zone.free_delivery_from}
-                  {' ₽'}
-                </Text>
-                <Text body2 grayColor style={{marginTop: 5}}>
-                  {'Стоимость доставки '} {delivery_zone?.delivery_price}
-                  {' ₽'}
-                </Text>
-              </View>
-              <View style={{marginTop: 10}}>
-                <Text body1>
-                  {'При заказе от'} {delivery_zone.free_delivery_from}
-                  {' ₽'}
-                </Text>
-                <Text body2 style={{marginTop: 5}}>
-                  {'Стоимость доставки бесплатно'}
-                </Text>
-              </View>
-            </ScrollView>
-          </RBSheet>
-        )}
-      </>
-    );
+    if (delivery_zone) {
+      return (
+        <>
+          {auth.partner !== null && auth.partner?.delivery_zones.length !== 0 && (
+            <RBSheet
+              ref={(ref) => {
+                this.CostSheet = ref;
+              }}
+              height={Dimensions.get('window').height / 2}
+              closeOnDragDown={true}
+              dragFromTopOnly={true}
+              openDuration={500}
+              customStyles={{
+                container: {
+                  backgroundColor: 'white',
+                  borderTopRightRadius: 29,
+                  borderTopLeftRadius: 29,
+                },
+                draggableIcon: {
+                  marginTop: 20,
+                  width: 75,
+                  height: 6,
+                  borderRadius: 3,
+                },
+              }}>
+              <ScrollView style={{paddingHorizontal: 20}}>
+                <View style={{marginTop: 30}}>
+                  <Text title3 bold style={{color: BaseColor.textPrimaryColor}}>
+                    {'Информация о стоимости доставки'}
+                  </Text>
+                  {this.renderWebView(auth.partner?.delivery_cost_information)}
+                </View>
+                <View style={{marginTop: 10}}>
+                  <Text body1>
+                    {'При заказе до '}
+                    {delivery_zone.free_delivery_from}
+                    {' ₽'}
+                  </Text>
+                  <Text body2 grayColor style={{marginTop: 5}}>
+                    {'Стоимость доставки '} {delivery_zone?.delivery_price}
+                    {' ₽'}
+                  </Text>
+                </View>
+                <View style={{marginTop: 10}}>
+                  <Text body1>
+                    {'При заказе от'} {delivery_zone.free_delivery_from}
+                    {' ₽'}
+                  </Text>
+                  <Text body2 style={{marginTop: 5}}>
+                    {'Стоимость доставки бесплатно'}
+                  </Text>
+                </View>
+              </ScrollView>
+            </RBSheet>
+          )}
+        </>
+      );
+    }
   }
 
   renderPromoPopup() {
@@ -951,6 +950,7 @@ class ProductDetail extends Component {
     ) {
       if (
         auth.partner.delivery_zones !== null &&
+        auth.activeAddress.district !== null &&
         auth.partner.delivery_zones.find(
           (zone) => zone.district === auth.activeAddress.district,
         ) !== undefined
@@ -986,7 +986,8 @@ class ProductDetail extends Component {
       subCatVal = subCatVal || subCat;
     });
     const {auth} = this.props;
-    const _cart = cart !== null ? cart.products : auth.totalPrice === 0 ? [] : auth.cart;
+    const _cart =
+      cart !== null ? cart.products : auth.totalPrice === 0 ? [] : auth.cart;
 
     return (
       <>
@@ -1115,9 +1116,12 @@ class ProductDetail extends Component {
                 <TouchableOpacity
                   onPress={this.onCostBadge}
                   style={styles.blackBadge}>
-                  <Text footnote whiteColor>
-                    Бесплатная доставка от {delivery_zone.free_delivery_from} ₽
-                  </Text>
+                  {delivery_zone && (
+                    <Text footnote whiteColor>
+                      Бесплатная доставка от {delivery_zone.free_delivery_from}{' '}
+                      ₽
+                    </Text>
+                  )}
                 </TouchableOpacity>
                 {/* </Animated.View> */}
               </View>
@@ -1401,18 +1405,22 @@ class ProductDetail extends Component {
                       </Text>
                     </View>
                     <Text title2>
-                      {auth.totalPrice +
-                        (delivery_zone?.free_delivery_from > auth.totalPrice &&
-                          delivery_zone?.delivery_price)}{' '}
+                      {delivery_zone &&
+                        auth.totalPrice +
+                          (delivery_zone?.free_delivery_from >
+                            auth.totalPrice &&
+                            delivery_zone?.delivery_price)}{' '}
                       ₽
                     </Text>
                   </>
                 ) : (
                   <View style={{alignItems: 'flex-start'}}>
                     <Text title2 semiBold>
-                      {auth.totalPrice +
-                        (delivery_zone?.free_delivery_from > auth.totalPrice &&
-                          delivery_zone?.delivery_price)}{' '}
+                      {delivery_zone &&
+                        auth.totalPrice +
+                          (delivery_zone?.free_delivery_from >
+                            auth.totalPrice &&
+                            delivery_zone?.delivery_price)}{' '}
                       ₽
                     </Text>
                     <Text>{'Сегодня'}</Text>
@@ -1426,15 +1434,16 @@ class ProductDetail extends Component {
                     this.props.navigation.navigate('Cart');
                   }}
                   style={{
+                    flex: 1,
                     borderRadius: 5,
-                    height: 44,
+                    // height: 44,
                     paddingVertical: 8,
                     alignItems: 'center',
                     justifyContent: 'center',
                     backgroundColor: !this.checkMinimalCheckout()
                       ? BaseColor.redColor
                       : '#F1F1F1',
-                    marginRight: 20,
+                    marginRight: 10,
                   }}>
                   <Text
                     middleBody

@@ -1,27 +1,22 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { AuthActions } from '@actions';
-import {
-  View,
-  Dimensions,
-  ScrollView,
-  ImageBackground,
-} from 'react-native';
-import { bindActionCreators } from 'redux';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {AuthActions} from '@actions';
+import {View, Dimensions, ScrollView, ImageBackground} from 'react-native';
+import {bindActionCreators} from 'redux';
 import moment from 'moment-timezone';
-import { Text, Header, Image, SafeAreaView } from '@components';
+import {Text, Header, Image, SafeAreaView} from '@components';
 import styles from './styles';
-import { BaseColor, BaseSize, Images } from '@config';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {BaseColor, BaseSize, Images} from '@config';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import Minus from '../../assets/svgs/minus.svg';
 import Plus from '../../assets/svgs/plus.svg';
-import Carousel, { Pagination } from 'react-native-snap-carousel';
-import { useFocusEffect } from '@react-navigation/native';
+import Carousel, {Pagination} from 'react-native-snap-carousel';
+import {useFocusEffect} from '@react-navigation/native';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { UserServices, GuestServices } from '../../services';
+import {UserServices, GuestServices} from '../../services';
 
-function FocusEfect({ onFocus }) {
+function FocusEfect({onFocus}) {
   useFocusEffect(
     React.useCallback(() => {
       onFocus();
@@ -52,7 +47,7 @@ class ProductShow extends Component {
   }
 
   onFocus = () => {
-    const { auth } = this.props;
+    const {auth} = this.props;
     if (auth.user !== null) {
       this.getCart();
     }
@@ -95,8 +90,8 @@ class ProductShow extends Component {
   };
 
   getCart = () => {
-    const { auth, actions } = this.props;
-    this.setState({ loading: true });
+    const {auth, actions} = this.props;
+    this.setState({loading: true});
     UserServices.getCart(auth.user.access_token)
       .then((response) => {
         if (response.data.success === 1) {
@@ -105,7 +100,7 @@ class ProductShow extends Component {
             actions.saveTotalPrice(0);
           } else {
             var totalPrice = 0;
-            this.setState({ loading: true });
+            this.setState({loading: true});
             GuestServices.getCatalogueById(cart.company_id)
               .then((response) => {
                 if (response.data.success === 1) {
@@ -139,11 +134,11 @@ class ProductShow extends Component {
                 console.error('err in getting partner', err);
               })
               .finally(() => {
-                this.setState({ loading: false });
+                this.setState({loading: false});
                 actions.saveTotalPrice(totalPrice);
               });
           }
-          this.setState({ cart: cart });
+          this.setState({cart: cart});
         } else {
           console.error(
             'something went wrong while getting cart',
@@ -155,7 +150,7 @@ class ProductShow extends Component {
         console.error('err in getting cart', err);
       })
       .finally(() => {
-        this.setState({ loading: false });
+        this.setState({loading: false});
       });
   };
 
@@ -195,16 +190,16 @@ class ProductShow extends Component {
     }
   }
 
-  _renderItem = ({ item, index }) => {
-    const { deliveryZone } = this.state;
+  _renderItem = ({item, index}) => {
+    const {deliveryZone} = this.state;
     return (
       <View style={styles.slide}>
         <ImageBackground
           source={Images.productPlaceholder}
-          imageStyle={{ borderRadius: 10 }}
+          imageStyle={{borderRadius: 10}}
           style={styles.partnerImgBackground}>
           <Image
-            source={{ uri: item.image_url }}
+            source={{uri: item.image_url}}
             resizeMode="contain"
             style={styles.swiperImg}
           />
@@ -216,15 +211,17 @@ class ProductShow extends Component {
               bottom: 12,
             }}>
             <View style={styles.partnerDateBadge}>
-              <Text style={{ fontSize: 13 }} whiteColor>
+              <Text style={{fontSize: 13}} whiteColor>
                 {this.getAvailableDeliveryDay(deliveryZone)}
               </Text>
             </View>
-            {item.free_delivery_from !== null && (
+            {item && item.free_delivery_from !== null && (
               <View style={styles.partnerDescriptionBadge}>
-                <Text footnote whiteColor>
-                  Бесплатная доставка от {deliveryZone.free_delivery_from} ₽
-                </Text>
+                {deliveryZone && (
+                  <Text footnote whiteColor>
+                    Бесплатная доставка от {deliveryZone.free_delivery_from} ₽
+                  </Text>
+                )}
               </View>
             )}
           </View>
@@ -234,8 +231,8 @@ class ProductShow extends Component {
   };
 
   getEconomizedPrice() {
-    const { auth } = this.props;
-    const { product, productID, cart } = this.state;
+    const {auth} = this.props;
+    const {product, productID, cart} = this.state;
     let _cart = cart !== null ? cart.products : auth.cart;
 
     var ecoPrice = 0;
@@ -253,8 +250,8 @@ class ProductShow extends Component {
   }
 
   onMinusBtn = () => {
-    const { auth, actions } = this.props;
-    const { productID, product, cart } = this.state;
+    const {auth, actions} = this.props;
+    const {productID, product, cart} = this.state;
     let _cart = cart !== null ? cart.products : auth.cart;
     let tmpCart = _cart;
     let productIndexInCart = _cart.findIndex((x) => x.productID === productID);
@@ -291,8 +288,8 @@ class ProductShow extends Component {
   };
 
   onPlusBtn = () => {
-    const { auth, actions } = this.props;
-    const { productID, cart } = this.state;
+    const {auth, actions} = this.props;
+    const {productID, cart} = this.state;
     let _cart = cart !== null ? cart.products : auth.cart;
     let tmpCart = _cart;
     let product = auth.products.find((val) => val.id === productID);
@@ -302,7 +299,7 @@ class ProductShow extends Component {
       actions.addTotalPrice(product.price);
     }
     if (_cart.findIndex((x) => x.productID === productID) === -1) {
-      tmpCart.push({ productID: productID, quantity: 1 });
+      tmpCart.push({productID: productID, quantity: 1});
     } else {
       tmpCart[_cart.findIndex((x) => x.productID === productID)].quantity++;
     }
@@ -314,22 +311,22 @@ class ProductShow extends Component {
   };
 
   addToCart = (tmpCart) => {
-    const { auth } = this.props;
+    const {auth} = this.props;
 
     const body = {
       company_id: auth.partner.id,
       products: tmpCart,
     };
-    this.setState({ loading: true });
+    this.setState({loading: true});
     UserServices.addToCart(auth.user.access_token, body)
       .then((response) => {
         if (response.data.success === 1) {
-          this.setState({ loading: true });
+          this.setState({loading: true});
           UserServices.getCart(auth.user.access_token)
             .then((response) => {
               if (response.data.success === 1) {
                 const cart = response.data.data.cart;
-                this.setState({ cart: cart });
+                this.setState({cart: cart});
               } else {
                 console.error('error in getting cart', response.data.message);
               }
@@ -338,7 +335,7 @@ class ProductShow extends Component {
               console.error('error in getting cart', err);
             })
             .finally(() => {
-              this.setState({ loading: false });
+              this.setState({loading: false});
             });
         } else {
           console.error(
@@ -351,7 +348,7 @@ class ProductShow extends Component {
         console.error('err in adding to cart', err);
       })
       .finally(() => {
-        this.setState({ loading: false });
+        this.setState({loading: false});
       });
   };
 
@@ -368,7 +365,7 @@ class ProductShow extends Component {
       loading,
       cart,
     } = this.state;
-    const { auth } = this.props;
+    const {auth} = this.props;
     var ecoPrice = this.getEconomizedPrice();
     let _cart = cart !== null ? cart.products : auth.cart;
     let quantity =
@@ -379,7 +376,7 @@ class ProductShow extends Component {
       <>
         <FocusEfect onFocus={this.onFocus} />
         <Spinner visible={loading} color="#FF2D34" />
-        <SafeAreaView style={styles.contain} forceInset={{ top: 'never' }}>
+        <SafeAreaView style={styles.contain} forceInset={{top: 'never'}}>
           <Header
             title={product?.name}
             renderLeft={() => {
@@ -394,7 +391,7 @@ class ProductShow extends Component {
             onPressLeft={() => {
               this.props.navigation.goBack();
             }}
-            style={{ backgroundColor: BaseColor.grayBackgroundColor }}
+            style={{backgroundColor: BaseColor.grayBackgroundColor}}
             statusBarColor={BaseColor.grayBackgroundColor}
           />
           {product && (
@@ -409,9 +406,7 @@ class ProductShow extends Component {
                   renderItem={this._renderItem}
                   sliderWidth={sliderWidth + 80}
                   itemWidth={sliderWidth + 35}
-                  onSnapToItem={(index) =>
-                    this.setState({ activeSlide: index })
-                  }
+                  onSnapToItem={(index) => this.setState({activeSlide: index})}
                 />
               </View>
               <Pagination
@@ -420,20 +415,20 @@ class ProductShow extends Component {
                 dotStyle={styles.carouselPagination}
                 inactiveDotOpacity={0.3}
                 inactiveDotScale={1}
-                containerStyle={{ paddingBottom: 15, paddingHorizontal: 9 }}
+                containerStyle={{paddingBottom: 15, paddingHorizontal: 9}}
               />
               {/* product details and description */}
               <ScrollView
                 showsVerticalScrollIndicator={false}
-                style={[styles.contain, { marginHorizontal: 20 }]}>
-                <Text title1 style={{ textAlign: 'left', marginBottom: 24 }}>
+                style={[styles.contain, {marginHorizontal: 20}]}>
+                <Text title1 style={{textAlign: 'left', marginBottom: 24}}>
                   {product.name}
                 </Text>
                 <Text
                   numberOfLines={0}
                   body2
                   grayColor
-                  style={{ lineHeight: 20 }}>
+                  style={{lineHeight: 20}}>
                   {product.description}
                 </Text>
               </ScrollView>
@@ -443,7 +438,7 @@ class ProductShow extends Component {
                 <View style={styles.totalPrice}>
                   {product.hasPromo === 1 && ecoPrice > 0 ? (
                     <>
-                      <View style={{ alignItems: 'flex-start' }}>
+                      <View style={{alignItems: 'flex-start'}}>
                         <Text
                           style={{
                             textDecorationLine: 'line-through',
@@ -453,14 +448,14 @@ class ProductShow extends Component {
                           {ecoPrice} ₽
                         </Text>
                       </View>
-                      <View style={{ alignItems: 'center' }}>
+                      <View style={{alignItems: 'center'}}>
                         <Text title2>
                           {product.promo.new_price * quantity} ₽
                         </Text>
                       </View>
                     </>
                   ) : (
-                    <View style={{ alignItems: 'center' }}>
+                    <View style={{alignItems: 'center'}}>
                       <Text title2>{product.price * quantity} ₽</Text>
                     </View>
                   )}
@@ -473,7 +468,7 @@ class ProductShow extends Component {
                       }}>
                       <Minus width={18} height={18} />
                     </TouchableOpacity>
-                    <Text title3 bold style={{ marginHorizontal: 20 }}>
+                    <Text title3 bold style={{marginHorizontal: 20}}>
                       {quantity}
                     </Text>
                     <TouchableOpacity
@@ -488,8 +483,8 @@ class ProductShow extends Component {
                   style={[
                     styles.addBtn,
                     quantity > 0
-                      ? { backgroundColor: BaseColor.redColor }
-                      : { backgroundColor: BaseColor.textInputBackgroundColor },
+                      ? {backgroundColor: BaseColor.redColor}
+                      : {backgroundColor: BaseColor.textInputBackgroundColor},
                   ]}>
                   <TouchableOpacity
                     disabled={quantity === 0}
@@ -500,8 +495,8 @@ class ProductShow extends Component {
                       middleBody
                       style={
                         quantity > 0
-                          ? { color: BaseColor.whiteColor }
-                          : { color: BaseColor.placeholderColor }
+                          ? {color: BaseColor.whiteColor}
+                          : {color: BaseColor.placeholderColor}
                       }>
                       {'Добавить'}
                     </Text>
@@ -517,7 +512,7 @@ class ProductShow extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return { auth: state.auth };
+  return {auth: state.auth};
 };
 
 const mapDispatchToProps = (dispatch) => {
