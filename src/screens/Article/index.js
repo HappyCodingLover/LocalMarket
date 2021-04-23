@@ -131,7 +131,7 @@ class Article extends Component {
                     (partner) => partner.id === article.company.id,
                   ) === undefined
                 ) {
-                  Alert.alert('This shop is not available in your address');
+                  Alert.alert('Этот магазин недоступен по вашему адресу');
                 } else {
                   this.props.actions.setPartner(
                     this.props.auth?.catalogues.find(
