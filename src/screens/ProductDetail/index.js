@@ -224,7 +224,7 @@ class ProductDetail extends Component {
     if (auth.partner?.delivery_zones !== null) {
       auth.partner?.delivery_zones
         .find((zone) => zone?.district === auth.activeAddress?.district)
-        ?.delivery_timeframes.map((timeframe, index) => {
+        ?.delivery_timeframes?.map((timeframe, index) => {
           if (this.checkIsBefore(timeframe?.start)) {
             availableTimeframes.push(timeframe);
           }
@@ -1007,7 +1007,7 @@ class ProductDetail extends Component {
       }
     }
     var availableTimeframes = [];
-    deliveryZone?.delivery_timeframes.map((timeframe, index) => {
+    deliveryZone?.delivery_timeframes?.map((timeframe, index) => {
       if (this.checkIsBefore(timeframe) || this.checkIsBetween(timeframe)) {
         availableTimeframes.push(timeframe);
       }

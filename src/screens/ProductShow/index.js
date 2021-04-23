@@ -178,7 +178,7 @@ class ProductShow extends Component {
 
   getAvailableDeliveryDay(deliveryZone) {
     var availableTimeframes = [];
-    deliveryZone?.delivery_timeframes.map((timeframe, index) => {
+    deliveryZone?.delivery_timeframes?.map((timeframe, index) => {
       if (this.checkIsBefore(timeframe) || this.checkIsBetween(timeframe)) {
         availableTimeframes.push(timeframe);
       }

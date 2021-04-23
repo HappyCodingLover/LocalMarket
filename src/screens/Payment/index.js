@@ -120,7 +120,7 @@ class Payment extends Component {
       }
     }
     var availableTimeframes = [];
-    myZone?.delivery_timeframes.map((timeframe, index) => {
+    myZone?.delivery_timeframes?.map((timeframe, index) => {
       if (this.checkIsBefore(timeframe) || this.checkIsBetween(timeframe)) {
         availableTimeframes.push(timeframe);
       }
@@ -760,7 +760,7 @@ class Payment extends Component {
     let timeframesForToday = [];
     let timeframesForTomorrow = [];
     if (delivery_zone.delivery_timeframes !== undefined) {
-      delivery_zone?.delivery_timeframes.map((item, index) => {
+      delivery_zone?.delivery_timeframes?.map((item, index) => {
         timeframesForTomorrow.push('с ' + item.start + ' до ' + item.end);
       });
     }
