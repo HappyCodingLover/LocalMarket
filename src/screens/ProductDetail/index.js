@@ -986,10 +986,9 @@ class ProductDetail extends Component {
     const {auth} = this.props;
     var deliveryZone = {};
     if (
-      auth.activeAddress !== undefined &&
-      auth.activeAddress !== null &&
-      (auth.partner.delivery_zones !== null ||
-        auth.partner.delivery_zones !== undefined)
+      auth?.activeAddress && auth?.partner &&
+      (auth?.partner?.delivery_zones !== null ||
+        auth?.partner?.delivery_zones !== undefined)
     ) {
       if (
         auth.partner.delivery_zones !== null &&

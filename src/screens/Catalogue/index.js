@@ -706,9 +706,8 @@ class Catalogue extends Component {
   checkMinimalCheckout = () => {
     const {auth} = this.props;
     if (
-      auth.partner !== null &&
-      auth.activeAddress !== null &&
-      auth.activeAddress.district !== null &&
+      auth?.partner  &&
+      auth?.activeAddress?.district !== null &&
       (auth.partner.delivery_zones !== undefined ||
         auth.partner.delivery_zones !== null)
     ) {

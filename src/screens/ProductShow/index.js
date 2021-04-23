@@ -52,10 +52,10 @@ class ProductShow extends Component {
       this.getCart();
     }
     if (
-      auth.partner !== null &&
-      auth.activeAddress !== null &&
-      (auth.partner.delivery_zones !== null ||
-        auth.partner.delivery_zones !== undefined)
+      auth?.partner  &&
+      auth?.activeAddress  &&
+      (auth?.partner?.delivery_zones !== null ||
+        auth?.partner?.delivery_zones !== undefined)
     ) {
       if (
         auth.partner.delivery_zones.find(

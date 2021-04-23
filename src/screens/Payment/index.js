@@ -100,8 +100,8 @@ class Payment extends Component {
 
     let myZone = '';
     if (
-      auth.activeAddress !== null &&
-      auth.activeAddress.district !== null &&
+      auth?.activeAddress &&
+      auth?.activeAddress?.district !== null &&
       (auth.partner.delivery_zones !== null ||
         auth.partner.delivery_zones !== undefined)
     ) {
