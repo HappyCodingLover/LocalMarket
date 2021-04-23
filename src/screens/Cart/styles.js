@@ -38,7 +38,7 @@ export default StyleSheet.create({
     backgroundColor: BaseColor.grayBackgroundColor,
     borderRadius: 5,
     width: 130,
-    height: 40,
+    height: 35,
   },
   countBtnInside: {
     flexDirection: 'row',

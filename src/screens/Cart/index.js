@@ -822,7 +822,7 @@ class Cart extends Component {
                     {product.name}
                   </Text>
                 </View>
-                <View style={{flex: 3, alignItems: 'flex-end'}}>
+                <View style={{flex: 4, alignItems: 'flex-end'}}>
                   <Text
                     bold
                     body2
@@ -865,7 +865,7 @@ class Cart extends Component {
                         }}>
                         <Minus width={18} height={18} />
                       </TouchableOpacity>
-                      <Text title3 style={{marginHorizontal: 30}}>
+                      <Text title3 style={{marginHorizontal: 30 }}>
                         {/* {
                           cart.products.find(
                             (val) => val.productID === item.productID,
@@ -1057,7 +1057,7 @@ class Cart extends Component {
                     style={{
                       color: !this.checkMinimalCheckout() ? 'white' : '#B3B3B3',
                     }}>
-                    {'В корзину'}
+                    {'К оплате'}
                   </Text>
                 </TouchableOpacity>
               </View>
