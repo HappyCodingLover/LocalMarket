@@ -100,6 +100,7 @@ class Payment extends Component {
 
     let myZone = '';
     if (
+      auth.activeAddress !== null &&
       auth.activeAddress.district !== null &&
       (auth.partner.delivery_zones !== null ||
         auth.partner.delivery_zones !== undefined)
@@ -290,100 +291,65 @@ class Payment extends Component {
       debugLog: true,
     });
     if (Platform.OS === 'ios') {
-      TinkoffASDK.isPayWithAppleAvailable()
-        .then((response) => {
-          console.log('____hasApplePay', response);
-          if (response) {
-            const payment = TinkoffASDK.ApplePay({
-              appleMerchantId: 'merchant.local-market',
-              Phone: '+79998881111',
-              Shipping: {
-                Street: 'Головинское шоссе, дом 5, корп. 1',
-                Country: 'Россия',
-                City: 'Москва',
-                PostalCode: '125212',
-                ISOCountryCode: '643',
-                givenName: 'имя',
-                familyName: 'фамилия',
-              },
-              // Все то же что в простом Pay
-              OrderID: Math.abs(new Date().getTime()).toString(10), // ID заказа в вашей системе
-              Amount: orderPriceTmp * 100, // сумма для оплаты (в копейках)
-              PaymentName: auth.partner.name, // название платежа, видимое пользователю
-              PaymentDesc: auth.partner.description, // описание платежа, видимое пользователю
-              CardID: 'CARD-ID', // ID карточки
-              // тестовые:
-              Email: 'team.local.market@gmail.com',
-              CustomerKey: 'team.local.market@gmail.com',
-              IsRecurrent: false, // флаг определяющий является ли платеж рекуррентным [1]
-              UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
-              Taxation: 'usn_income',
-              Items: items,
-            });
-
-            payment
-              .then((r) => {
-                const body = {
-                  user_address_id: auth.activeAddress.id,
-                  company_id: auth.partner.id,
-                  order_date: myTime.tz('Europe/Moscow').format('YYYY-MM-DD'),
-                  delivery_timeframe: selectedTimeframe,
-                  delivery_day: selectedDay,
-                  order_price: orderPriceTmp,
-                  order_original_price:
-                    delivery_zone.free_delivery_from > auth.totalPrice
-                      ? auth.totalPrice + delivery_zone?.delivery_price
-                      : auth.totalPrice,
-                  products: products,
-                  comment: comments,
-                };
+      const payment = TinkoffASDK.Pay({
+        OrderID: Math.abs(new Date().getTime()).toString(10), // ID заказа в вашей системе
+        Amount: orderPriceTmp * 100, // сумма для оплаты (в копейках)
+        PaymentName: auth.partner.name, // название платежа, видимое пользователю
+        PaymentDesc: auth.partner.description, // описание платежа, видимое пользователю
+        Phone: '+79998881111',
+        CardID: 'CARD-ID', // ID карточки
+        // тестовые:
+        Email: 'team.local.market@gmail.com',
+        CustomerKey: 'team.local.market@gmail.com',
+        IsRecurrent: false, // флаг определяющий является ли платеж рекуррентным [1]
+        UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
+        Taxation: 'usn_income',
+        Items: items,
+      });
+      payment
+        .then((r) => {
+          const body = {
+            user_address_id: auth.activeAddress.id,
+            company_id: auth.partner.id,
+            order_date: myTime.tz('Europe/Moscow').format('YYYY-MM-DD'),
+            delivery_timeframe: selectedTimeframe,
+            delivery_day: selectedDay,
+            order_price: orderPriceTmp,
+            order_original_price:
+              delivery_zone.free_delivery_from > auth.totalPrice
+                ? auth.totalPrice + delivery_zone?.delivery_price
+                : auth.totalPrice,
+            products: products,
+            comment: comments,
+          };
+          this.setState({loading: true});
+          UserServices.addOrder(body, auth.user.access_token)
+            .then((response) => {
+              if (response.data.success === 1) {
+                // actions.clearCart();
+                // clear cart
                 this.setState({loading: true});
-                UserServices.addOrder(body, auth.user.access_token)
+                UserServices.clearCart(auth.user.access_token, cart.id)
                   .then((response) => {
                     if (response.data.success === 1) {
-                      // actions.clearCart();
-                      // clear cart
+                      actions.clearTotalPrice();
+                      actions.clearDiscountPrice();
+                      // actions.clearPartner();
+                      this.setState({
+                        courierComment: null,
+                        deliveryTime: null,
+                        comments: null,
+                      });
                       this.setState({loading: true});
-                      UserServices.clearCart(auth.user.access_token, cart.id)
+                      UserServices.getOrder(auth.user.access_token)
                         .then((response) => {
                           if (response.data.success === 1) {
-                            actions.clearTotalPrice();
-                            actions.clearDiscountPrice();
-                            // actions.clearPartner();
-                            this.setState({
-                              courierComment: null,
-                              deliveryTime: null,
-                              comments: null,
+                            navigation.navigate('OrdersStatus', {
+                              id: response.data.data[0].id,
                             });
-                            this.setState({loading: true});
-                            UserServices.getOrder(auth.user.access_token)
-                              .then((response) => {
-                                if (response.data.success === 1) {
-                                  navigation.navigate('OrdersStatus', {
-                                    id: response.data.data[0].id,
-                                  });
-                                } else {
-                                  console.error(
-                                    'sth wrong in getOrder',
-                                    response.data.message,
-                                  );
-                                  navigation.navigate('ErrorScreen', {
-                                    message: response.data.message,
-                                  });
-                                }
-                              })
-                              .catch((err) => {
-                                console.error('err in getOrder', err);
-                                navigation.navigate('ErrorScreen', {
-                                  message: err.message,
-                                });
-                              })
-                              .finally(() => {
-                                this.setState({loading: false});
-                              });
                           } else {
                             console.error(
-                              'something went wrong while clearing cart',
+                              'sth wrong in getOrder',
                               response.data.message,
                             );
                             navigation.navigate('ErrorScreen', {
@@ -392,17 +358,17 @@ class Payment extends Component {
                           }
                         })
                         .catch((err) => {
-                          console.error('err in clearing cart_3', err);
+                          console.error('err in getOrder', err);
                           navigation.navigate('ErrorScreen', {
                             message: err.message,
                           });
                         })
                         .finally(() => {
-                          // this.setState({ loading: false });
+                          this.setState({loading: false});
                         });
                     } else {
                       console.error(
-                        'something went wrong in adding order',
+                        'something went wrong while clearing cart',
                         response.data.message,
                       );
                       navigation.navigate('ErrorScreen', {
@@ -411,23 +377,171 @@ class Payment extends Component {
                     }
                   })
                   .catch((err) => {
-                    console.error('err in adding Order', err);
+                    console.error('err in clearing cart_4', err);
                     navigation.navigate('ErrorScreen', {message: err.message});
                   })
                   .finally(() => {
-                    this.setState({loading: false});
+                    // this.setState({ loading: false });
                   });
-              })
-              .catch((e) => {
-                console.error('_err_payment', e);
-              });
-          } else {
-            Alert.alert('Applepay в данный момент недоступен');
-          }
+              } else {
+                console.error(
+                  'something went wrong in adding order',
+                  response.data.message,
+                );
+                navigation.navigate('ErrorScreen', {
+                  message: response.data.message,
+                });
+              }
+            })
+            .catch((err) => {
+              console.error('err in adding Order', err);
+              navigation.navigate('ErrorScreen', {message: err.message});
+            })
+            .finally(() => {
+              this.setState({loading: false});
+            });
         })
-        .catch((err) => {
-          console.error('_err_ios_available', err);
+        .catch((e) => {
+          console.error('_err_payment', e);
         });
+      // TinkoffASDK.isPayWithAppleAvailable()
+      //   .then((response) => {
+      //     console.log('____hasApplePay', response);
+      //     if (response) {
+      //       const payment = TinkoffASDK.ApplePay({
+      //         appleMerchantId: 'merchant.local-market',
+      //         Phone: '+79998881111',
+      //         Shipping: {
+      //           Street: 'Головинское шоссе, дом 5, корп. 1',
+      //           Country: 'Россия',
+      //           City: 'Москва',
+      //           PostalCode: '125212',
+      //           ISOCountryCode: '643',
+      //           givenName: 'имя',
+      //           familyName: 'фамилия',
+      //         },
+      //         // Все то же что в простом Pay
+      //         OrderID: Math.abs(new Date().getTime()).toString(10), // ID заказа в вашей системе
+      //         Amount: orderPriceTmp * 100, // сумма для оплаты (в копейках)
+      //         PaymentName: auth.partner.name, // название платежа, видимое пользователю
+      //         PaymentDesc: auth.partner.description, // описание платежа, видимое пользователю
+      //         CardID: 'CARD-ID', // ID карточки
+      //         // тестовые:
+      //         Email: 'team.local.market@gmail.com',
+      //         CustomerKey: 'team.local.market@gmail.com',
+      //         IsRecurrent: false, // флаг определяющий является ли платеж рекуррентным [1]
+      //         UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
+      //         Taxation: 'usn_income',
+      //         Items: items,
+      //       });
+
+      //       payment
+      //         .then((r) => {
+      //           const body = {
+      //             user_address_id: auth.activeAddress.id,
+      //             company_id: auth.partner.id,
+      //             order_date: myTime.tz('Europe/Moscow').format('YYYY-MM-DD'),
+      //             delivery_timeframe: selectedTimeframe,
+      //             delivery_day: selectedDay,
+      //             order_price: orderPriceTmp,
+      //             order_original_price:
+      //               delivery_zone.free_delivery_from > auth.totalPrice
+      //                 ? auth.totalPrice + delivery_zone?.delivery_price
+      //                 : auth.totalPrice,
+      //             products: products,
+      //             comment: comments,
+      //           };
+      //           this.setState({loading: true});
+      //           UserServices.addOrder(body, auth.user.access_token)
+      //             .then((response) => {
+      //               if (response.data.success === 1) {
+      //                 // actions.clearCart();
+      //                 // clear cart
+      //                 this.setState({loading: true});
+      //                 UserServices.clearCart(auth.user.access_token, cart.id)
+      //                   .then((response) => {
+      //                     if (response.data.success === 1) {
+      //                       actions.clearTotalPrice();
+      //                       actions.clearDiscountPrice();
+      //                       // actions.clearPartner();
+      //                       this.setState({
+      //                         courierComment: null,
+      //                         deliveryTime: null,
+      //                         comments: null,
+      //                       });
+      //                       this.setState({loading: true});
+      //                       UserServices.getOrder(auth.user.access_token)
+      //                         .then((response) => {
+      //                           if (response.data.success === 1) {
+      //                             navigation.navigate('OrdersStatus', {
+      //                               id: response.data.data[0].id,
+      //                             });
+      //                           } else {
+      //                             console.error(
+      //                               'sth wrong in getOrder',
+      //                               response.data.message,
+      //                             );
+      //                             navigation.navigate('ErrorScreen', {
+      //                               message: response.data.message,
+      //                             });
+      //                           }
+      //                         })
+      //                         .catch((err) => {
+      //                           console.error('err in getOrder', err);
+      //                           navigation.navigate('ErrorScreen', {
+      //                             message: err.message,
+      //                           });
+      //                         })
+      //                         .finally(() => {
+      //                           this.setState({loading: false});
+      //                         });
+      //                     } else {
+      //                       console.error(
+      //                         'something went wrong while clearing cart',
+      //                         response.data.message,
+      //                       );
+      //                       navigation.navigate('ErrorScreen', {
+      //                         message: response.data.message,
+      //                       });
+      //                     }
+      //                   })
+      //                   .catch((err) => {
+      //                     console.error('err in clearing cart_3', err);
+      //                     navigation.navigate('ErrorScreen', {
+      //                       message: err.message,
+      //                     });
+      //                   })
+      //                   .finally(() => {
+      //                     // this.setState({ loading: false });
+      //                   });
+      //               } else {
+      //                 console.error(
+      //                   'something went wrong in adding order',
+      //                   response.data.message,
+      //                 );
+      //                 navigation.navigate('ErrorScreen', {
+      //                   message: response.data.message,
+      //                 });
+      //               }
+      //             })
+      //             .catch((err) => {
+      //               console.error('err in adding Order', err);
+      //               navigation.navigate('ErrorScreen', {message: err.message});
+      //             })
+      //             .finally(() => {
+      //               this.setState({loading: false});
+      //             });
+      //         })
+      //         .catch((e) => {
+      //           console.error('_err_payment', e);
+      //         });
+      //     } else {
+      //       Alert.alert('Applepay в данный момент недоступен');
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.error('_err_ios_available', err);
+      //   });
     } else {
       // tinkoff payment -------------------------------------------------------------------------------
       const payment = TinkoffASDK.Pay({
@@ -673,7 +787,7 @@ class Payment extends Component {
             borderTopLeftRadius: 20,
           },
         }}>
-        <ScrollView style={{paddingHorizontal: 20}}>
+        <View style={{paddingHorizontal: 20}}>
           <View style={{marginTop: 15}}>
             <Text title3>{'Укажите промежуток доставки'}</Text>
           </View>
@@ -714,22 +828,211 @@ class Payment extends Component {
               }
             </Text>
           )}
-        </ScrollView>
+        </View>
       </RBSheet>
     );
   }
 
-  onApplyBtn = () => {
-    const {discountCode} = this.state;
-    const {auth} = this.props;
-    if (
-      auth.partner.promocode !== null &&
-      auth.partner.promocode.code === discountCode
-    ) {
-      this.setState({appliedStatus: true, errorPromocode: false});
-    } else {
-      this.setState({errorPromocode: true});
+  onApplePayBtn = () => {
+    const {
+      comments,
+      selectedTimeframe,
+      selectedDay,
+      appliedStatus,
+      delivery_zone,
+      cart,
+    } = this.state;
+    const _cart = cart.products;
+
+    const {auth, actions, navigation} = this.props;
+    let products = [];
+    _cart
+      .filter((val) => val.quantity > 0)
+      .map((item, index) => {
+        products = [...products, {id: item.productID, count: item.quantity}];
+      });
+    var myTime = moment();
+    var orderPriceTmp =
+      (appliedStatus
+        ? (auth.totalPrice * (100 - auth.partner.promocode.discount)) / 100
+        : auth.totalPrice) +
+      (delivery_zone.free_delivery_from > auth.totalPrice
+        ? delivery_zone?.delivery_price
+        : 0);
+    var items = [];
+    products.forEach((product) => {
+      var item = {};
+      var productInfo = auth.products.find((val) => val.id === product.id);
+      var prod_price =
+        productInfo.hasPromo === 1
+          ? productInfo.promo.new_price
+          : productInfo.price;
+      item['Name'] = productInfo.name;
+      item['Price'] = appliedStatus
+        ? prod_price * (100 - auth.partner.promocode.discount)
+        : prod_price * 100;
+      item['Quantity'] = product.count;
+      item['Amount'] = prod_price * product.count * 100;
+      item['Tax'] = 'none';
+      items.push(item);
+    });
+    if (delivery_zone.free_delivery_from > auth.totalPrice) {
+      var fee = {};
+      fee['Name'] = 'Delivery Fee';
+      fee['Price'] = delivery_zone?.delivery_price * 100;
+      fee['Quantity'] = 1;
+      fee['Amount'] = delivery_zone?.delivery_price * 100;
+      fee['Tax'] = 'none';
+      items.push(fee);
     }
+
+    TinkoffASDK.init({
+      // Тестовые данные из https://github.com/TinkoffCreditSystems/tinkoff-asdk-android/blob/9c7d1727f2ba5d715f240e0be6e4a0fd8b88a1db/sample/src/main/java/ru/tinkoff/acquiring/sample/SessionParams.java
+      terminalKey: '1611068012288DEMO',
+      password: 'n0q11yb653s13fgc',
+      publicKey:
+        'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv5yse9ka3ZQE0feuGtemYv3IqOlLck8zHUM7lTr0za6lXTszRSXfUO7jMb+L5C7e2QNFs+7sIX2OQJ6a+HG8kr+jwJ4tS3cVsWtd9NXpsU40PE4MeNr5RqiNXjcDxA+L4OsEm/BlyFOEOh2epGyYUd5/iO3OiQFRNicomT2saQYAeqIwuELPs1XpLk9HLx5qPbm8fRrQhjeUD5TLO8b+4yCnObe8vy/BMUwBfq+ieWADIjwWCMp2KTpMGLz48qnaD9kdrYJ0iyHqzb2mkDhdIzkim24A3lWoYitJCBrrB2xM05sm9+OdCI1f7nPNJbl5URHobSwR94IRGT7CJcUjvwIDAQAB',
+      testMode: false,
+      debugLog: true,
+    });
+    TinkoffASDK.isPayWithAppleAvailable()
+      .then((response) => {
+        console.log('____hasApplePay', response);
+        if (response) {
+          const payment = TinkoffASDK.ApplePay({
+            appleMerchantId: 'merchant.local-market',
+            Phone: '+79998881111',
+            Shipping: {
+              Street: 'Головинское шоссе, дом 5, корп. 1',
+              Country: 'Россия',
+              City: 'Москва',
+              PostalCode: '125212',
+              ISOCountryCode: '643',
+              givenName: 'имя',
+              familyName: 'фамилия',
+            },
+            // Все то же что в простом Pay
+            OrderID: Math.abs(new Date().getTime()).toString(10), // ID заказа в вашей системе
+            Amount: orderPriceTmp * 100, // сумма для оплаты (в копейках)
+            PaymentName: auth.partner.name, // название платежа, видимое пользователю
+            PaymentDesc: auth.partner.description, // описание платежа, видимое пользователю
+            CardID: 'CARD-ID', // ID карточки
+            // тестовые:
+            Email: 'team.local.market@gmail.com',
+            CustomerKey: 'team.local.market@gmail.com',
+            IsRecurrent: false, // флаг определяющий является ли платеж рекуррентным [1]
+            UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
+            Taxation: 'usn_income',
+            Items: items,
+          });
+
+          payment
+            .then((r) => {
+              const body = {
+                user_address_id: auth.activeAddress.id,
+                company_id: auth.partner.id,
+                order_date: myTime.tz('Europe/Moscow').format('YYYY-MM-DD'),
+                delivery_timeframe: selectedTimeframe,
+                delivery_day: selectedDay,
+                order_price: orderPriceTmp,
+                order_original_price:
+                  delivery_zone.free_delivery_from > auth.totalPrice
+                    ? auth.totalPrice + delivery_zone?.delivery_price
+                    : auth.totalPrice,
+                products: products,
+                comment: comments,
+              };
+              this.setState({loading: true});
+              UserServices.addOrder(body, auth.user.access_token)
+                .then((response) => {
+                  if (response.data.success === 1) {
+                    // actions.clearCart();
+                    // clear cart
+                    this.setState({loading: true});
+                    UserServices.clearCart(auth.user.access_token, cart.id)
+                      .then((response) => {
+                        if (response.data.success === 1) {
+                          actions.clearTotalPrice();
+                          actions.clearDiscountPrice();
+                          // actions.clearPartner();
+                          this.setState({
+                            courierComment: null,
+                            deliveryTime: null,
+                            comments: null,
+                          });
+                          this.setState({loading: true});
+                          UserServices.getOrder(auth.user.access_token)
+                            .then((response) => {
+                              if (response.data.success === 1) {
+                                navigation.navigate('OrdersStatus', {
+                                  id: response.data.data[0].id,
+                                });
+                              } else {
+                                console.error(
+                                  'sth wrong in getOrder',
+                                  response.data.message,
+                                );
+                                navigation.navigate('ErrorScreen', {
+                                  message: response.data.message,
+                                });
+                              }
+                            })
+                            .catch((err) => {
+                              console.error('err in getOrder', err);
+                              navigation.navigate('ErrorScreen', {
+                                message: err.message,
+                              });
+                            })
+                            .finally(() => {
+                              this.setState({loading: false});
+                            });
+                        } else {
+                          console.error(
+                            'something went wrong while clearing cart',
+                            response.data.message,
+                          );
+                          navigation.navigate('ErrorScreen', {
+                            message: response.data.message,
+                          });
+                        }
+                      })
+                      .catch((err) => {
+                        console.error('err in clearing cart_3', err);
+                        navigation.navigate('ErrorScreen', {
+                          message: err.message,
+                        });
+                      })
+                      .finally(() => {
+                        // this.setState({ loading: false });
+                      });
+                  } else {
+                    console.error(
+                      'something went wrong in adding order',
+                      response.data.message,
+                    );
+                    navigation.navigate('ErrorScreen', {
+                      message: response.data.message,
+                    });
+                  }
+                })
+                .catch((err) => {
+                  console.error('err in adding Order', err);
+                  navigation.navigate('ErrorScreen', {message: err.message});
+                })
+                .finally(() => {
+                  this.setState({loading: false});
+                });
+            })
+            .catch((e) => {
+              console.error('_err_payment', e);
+            });
+        } else {
+          Alert.alert('Applepay в данный момент недоступен');
+        }
+      })
+      .catch((err) => {
+        console.error('_err_ios_available', err);
+      });
   };
 
   render() {
@@ -929,6 +1232,39 @@ class Payment extends Component {
                   </Text>
                 </View>
               </TouchableOpacity>
+              {Platform.OS === 'ios' && (
+                <TouchableOpacity
+                  onPress={this.onApplePayBtn}
+                  disabled={!this.checkInput()}
+                  style={[
+                    styles.saveBtn,
+                    this.checkInput()
+                      ? {backgroundColor: BaseColor.redColor}
+                      : {backgroundColor: BaseColor.textInputBackgroundColor},
+                  ]}>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Icon
+                      name="apple-pay"
+                      size={20}
+                      color={
+                        this.checkInput()
+                          ? BaseColor.whiteColor
+                          : BaseColor.textPrimaryColor
+                      }
+                      style={{
+                        borderWidth: 1,
+                        borderColor: this.checkInput()
+                          ? BaseColor.whiteColor
+                          : BaseColor.textPrimaryColor,
+                        marginRight: 5,
+                        paddingHorizontal: 5,
+                        paddingVertical: 2,
+                        borderRadius: 5,
+                      }}
+                    />
+                  </View>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </SafeAreaView>
