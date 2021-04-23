@@ -30,7 +30,8 @@ export default StyleSheet.create({
     borderRadius: 5,
   },
   bottomContainer: {
-    marginBottom: 50,
-    marginTop: 100,
+    // marginBottom: 20,
+    // marginTop: 20,
+    marginHorizontal: 20,
   },
 });

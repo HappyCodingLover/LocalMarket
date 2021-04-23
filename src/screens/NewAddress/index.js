@@ -151,7 +151,7 @@ class NewAddress extends Component {
           }
         })
         .catch((err) => {
-          console.error('err in adding address', err);
+          console.error('err in adding address___', err);
           if (err.message === 'Request failed with status code 422') {
             const body1 = {
               address:
@@ -165,7 +165,7 @@ class NewAddress extends Component {
                   : ''),
               latitude: address.geo_lat,
               longitude: address.geo_lon,
-              district: 'Выбрать все районы (Москва)\r\n',
+              district: 'Москва',
               entrance: entrance,
               intercom: intercom,
               apt_office: apt,
@@ -226,10 +226,6 @@ class NewAddress extends Component {
                 navigation.navigate('ErrorScreen', {message: err.message});
               })
               .finally(() => {});
-            Alert.alert(
-              'Этот адрес пока не поддерживается. Пожалуйста, попробуйте другой адрес.',
-            );
-            navigation.navigate('SearchAddress');
           } else {
             this.setState({loading: false});
             navigation.navigate('ErrorScreen', {message: err.message});
@@ -355,28 +351,28 @@ class NewAddress extends Component {
                   }}
                 />
               </View>
-              <View style={styles.bottomContainer}>
-                <TouchableOpacity
-                  onPress={this.onSaveBtn}
-                  disabled={!this.checkInput()}
-                  style={[
-                    styles.saveBtn,
-                    this.checkInput()
-                      ? {backgroundColor: BaseColor.redColor}
-                      : {backgroundColor: BaseColor.textInputBackgroundColor},
-                  ]}>
-                  <Text
-                    middleBody
-                    style={
-                      this.checkInput()
-                        ? {color: BaseColor.whiteColor}
-                        : {color: BaseColor.placeholderColor}
-                    }>
-                    {'Сохранить'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
             </KeyboardAwareScrollView>
+            <View style={styles.bottomContainer}>
+              <TouchableOpacity
+                onPress={this.onSaveBtn}
+                disabled={!this.checkInput()}
+                style={[
+                  styles.saveBtn,
+                  this.checkInput()
+                    ? {backgroundColor: BaseColor.redColor}
+                    : {backgroundColor: BaseColor.textInputBackgroundColor},
+                ]}>
+                <Text
+                  middleBody
+                  style={
+                    this.checkInput()
+                      ? {color: BaseColor.whiteColor}
+                      : {color: BaseColor.placeholderColor}
+                  }>
+                  {'Сохранить'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </SafeAreaView>
       </>
