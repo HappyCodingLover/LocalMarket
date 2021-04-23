@@ -75,7 +75,11 @@ class NewAddress extends Component {
       floor: floor,
       comments: comments,
     };
-    if (auth.activeAddress !== null && auth.activeAddress !== undefined && auth.activeAddress.id === null) {
+    if (
+      auth.activeAddress !== null &&
+      auth.activeAddress !== undefined &&
+      auth.activeAddress.id === null
+    ) {
       actions.saveAddresses([]);
     }
     if (auth.user) {
@@ -149,6 +153,79 @@ class NewAddress extends Component {
         .catch((err) => {
           console.error('err in adding address', err);
           if (err.message === 'Request failed with status code 422') {
+            const body1 = {
+              address:
+                address.street_with_type +
+                ', ' +
+                address.house_type +
+                ' ' +
+                address.house +
+                (address.settlement_with_type !== null
+                  ? ', ' + address.settlement_with_type
+                  : ''),
+              latitude: address.geo_lat,
+              longitude: address.geo_lon,
+              district: 'Выбрать все районы (Москва)\r\n',
+              entrance: entrance,
+              intercom: intercom,
+              apt_office: apt,
+              floor: floor,
+              comments: comments,
+              active: 1,
+            };
+            UserServices.addAddress(body1, auth.user.access_token)
+              .then((response) => {
+                if (response.data.success === 1) {
+                  this.setState({loading: true});
+                  UserServices.getAddress(auth.user.access_token)
+                    .then((response1) => {
+                      if (response1.data.success === 1) {
+                        actions.saveAddresses(response1.data.data);
+                        actions.setActiveAddress(
+                          response1.data.data.find((item) => item.active === 1),
+                        );
+                        if (route.params.from === 'Payment') {
+                          navigation.navigate('Payment');
+                        } else {
+                          navigation.navigate('DrawerStack', {
+                            screen: 'Catalogue',
+                          });
+                        }
+                      } else {
+                        console.error(
+                          'something went wrong',
+                          response1.data.message,
+                        );
+                        this.setState({loading: false});
+                        navigation.navigate('ErrorScreen', {
+                          message: response1.data.message,
+                        });
+                      }
+                    })
+                    .catch((err) => {
+                      console.error('err2 in getting addresses', err);
+                      this.setState({loading: false});
+                      navigation.navigate('ErrorScreen', {
+                        message: err.message,
+                      });
+                    })
+                    .finally(() => {
+                      actions.setLoadingFalse();
+                    });
+                } else {
+                  console.error('something went wrong', response.data.message);
+                  this.setState({loading: false});
+                  navigation.navigate('ErrorScreen', {
+                    message: response.data.message,
+                  });
+                }
+              })
+              .catch((err) => {
+                console.error('err in adding address', err);
+                this.setState({loading: false});
+                navigation.navigate('ErrorScreen', {message: err.message});
+              })
+              .finally(() => {});
             Alert.alert(
               'Этот адрес пока не поддерживается. Пожалуйста, попробуйте другой адрес.',
             );
