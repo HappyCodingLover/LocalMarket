@@ -239,10 +239,12 @@ class Catalogue extends Component {
 
   functionX = () => {
     const {auth, actions, navigation} = this.props;
+    console.log('___________district__________', auth?.activeAddress?.district);
+    const {categories} = this.state;
     var tmpArray = [];
     auth?.categories.forEach((category, index) => {
-      if (auth?.categories[index]) {
-        tmpArray.push(index + 1);
+      if (auth?.categories[index] && categories.length !== 0) {
+        tmpArray.push(categories[index].id);
       }
     });
     if (auth?.user === null) {
