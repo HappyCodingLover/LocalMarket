@@ -325,11 +325,12 @@ class Catalogue extends Component {
 
   getPartnersByCategory = () => {
     const {auth, actions, navigation} = this.props;
+    const {categories} = this.state;
     this.setState({loadingPartners: true});
     var tmpArray = [];
     auth?.categories.forEach((category, index) => {
-      if (auth?.categories[index]) {
-        tmpArray.push(index + 1);
+      if (auth?.categories[index] && categories.length !== 0) {
+        tmpArray.push(categories[index].id);
       }
     });
 
@@ -363,7 +364,6 @@ class Catalogue extends Component {
 
   onFocus = () => {
     const {auth} = this.props;
-    console.log('__auth_activeAddress', auth.activeAddress);
     // if (!auth.activeAddress) {
     //   Alert.alert(
     //     'Активный адрес не выбран.\nПожалуйста, выберите один из ваших адресов',
@@ -437,7 +437,7 @@ class Catalogue extends Component {
   onCategoryBtn = (index) => {
     const {auth, actions, navigation} = this.props;
 
-    const {cats} = this.state;
+    const {cats, categories} = this.state;
     var tmpCats = cats;
     // if selected, unselect; if unselected, select
     tmpCats[index] = !tmpCats[index];
@@ -446,9 +446,10 @@ class Catalogue extends Component {
     var tmpArray = [];
     tmpCats.forEach((category, index) => {
       if (tmpCats[index]) {
-        tmpArray.push(index + 1);
+        tmpArray.push(categories[index].id);
       }
     });
+
     // not categories selected, get all partners again.
     if (auth?.user !== null) {
       if (tmpArray.length !== 0) {
