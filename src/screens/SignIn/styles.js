@@ -17,12 +17,12 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   topContainer: {
-    flex: 0.8,
+    flex: 0.7,
     alignItems: 'center',
     marginTop: 10,
   },
   centerContainer: {
-    flex: 1,
+    flex: 1
   },
   bottomContainer: {
     marginBottom: 20,
