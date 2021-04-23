@@ -300,7 +300,7 @@ class ProductDetail extends Component {
   };
 
   addToCart = (tmpCart) => {
-    const {auth, navigation} = this.props;
+    const {auth, actions, navigation} = this.props;
     const {cart} = this.state;
     // return;
     if (tmpCart.length === 0) {
@@ -314,6 +314,25 @@ class ProductDetail extends Component {
               .then((response) => {
                 if (response.data.success === 1) {
                   const cart = response.data.data.cart;
+                  let totalPrice = 0;
+                  cart?.products.forEach((product) => {
+                    var itemInfo = undefined;
+                    auth.products.forEach((item) => {
+                      if (product?.productID === item?.id) {
+                        itemInfo = item;
+                      }
+                    });
+                    var price =
+                      itemInfo !== undefined
+                        ? itemInfo?.hasPromo === 1
+                          ? itemInfo?.promo?.new_price
+                          : itemInfo?.price
+                        : 0;
+                    totalPrice = parseFloat(
+                      (totalPrice + price * product?.quantity).toFixed(2),
+                    );
+                  });
+                  actions.saveTotalPrice(totalPrice);
                   this.setState({cart: cart});
                 } else {
                   console.error('error in getting cart', response.data.message);
@@ -359,6 +378,26 @@ class ProductDetail extends Component {
               .then((response) => {
                 if (response.data.success === 1) {
                   const cart = response.data.data.cart;
+                  console.log('__________my_cart_________', cart);
+                  let totalPrice = 0;
+                  cart?.products.forEach((product) => {
+                    var itemInfo = undefined;
+                    auth.products.forEach((item) => {
+                      if (product?.productID === item?.id) {
+                        itemInfo = item;
+                      }
+                    });
+                    var price =
+                      itemInfo !== undefined
+                        ? itemInfo?.hasPromo === 1
+                          ? itemInfo?.promo?.new_price
+                          : itemInfo?.price
+                        : 0;
+                    totalPrice = parseFloat(
+                      (totalPrice + price * product?.quantity).toFixed(2),
+                    );
+                  });
+                  actions.saveTotalPrice(totalPrice);
                   this.setState({cart: cart});
                 } else {
                   console.error('error in getting cart', response.data.message);
@@ -389,17 +428,18 @@ class ProductDetail extends Component {
   onSelectProduct = (product) => {
     this.setState({loading: true, adding: true}, async () => {
       const {auth, actions} = this.props;
-      if (product.hasPromo) {
-        await actions.addTotalPrice(product.promo.new_price);
-      } else {
-        await actions.addTotalPrice(product.price);
-      }
+
       let purchase = {productID: product.id, quantity: 1};
       // actions.addToCart(purchase);
       const cart = this.state.cart;
       if (cart === null) {
       }
       if (auth.user === null) {
+        if (product.hasPromo) {
+          await actions.addTotalPrice(product.promo.new_price);
+        } else {
+          await actions.addTotalPrice(product.price);
+        }
         await actions.addToCart(purchase);
         this.setState({cart: null, adding: false, loading: false});
       } else {
@@ -442,15 +482,16 @@ class ProductDetail extends Component {
       _cart.find((val) => val.productID === productID).quantity !== 0
     ) {
       tmpCart[_cart.findIndex((x) => x.productID === productID)].quantity--;
+
+      tmpCart = tmpCart.filter((item) => item.quantity > 0);
+    }
+    if (auth.user === null) {
       let product = auth.products.find((val) => val.id === productID);
       if (product.hasPromo) {
         actions.minusTotalPrice(product.promo.new_price);
       } else {
         actions.minusTotalPrice(product.price);
       }
-      tmpCart = tmpCart.filter((item) => item.quantity > 0);
-    }
-    if (auth.user === null) {
       actions.setCart(tmpCart);
     } else {
       this.addToCart(tmpCart);
@@ -463,11 +504,7 @@ class ProductDetail extends Component {
     const _cart = cart !== null ? cart.products : auth.cart;
     let tmpCart = _cart;
     let product = auth.products.find((val) => val.id === productID);
-    if (product.hasPromo) {
-      actions.addTotalPrice(product.promo.new_price);
-    } else {
-      actions.addTotalPrice(product.price);
-    }
+
     // if (cart !== null)
     //   tmpCart[cart.products.findIndex((x) => x.productID === productID)]
     //     .quantity++;
@@ -476,6 +513,11 @@ class ProductDetail extends Component {
     }
     // actions.setCart(tmpCart);
     if (auth.user === null) {
+      if (product.hasPromo) {
+        actions.addTotalPrice(product.promo.new_price);
+      } else {
+        actions.addTotalPrice(product.price);
+      }
       actions.setCart(tmpCart);
     } else {
       this.addToCart(tmpCart);
@@ -945,6 +987,7 @@ class ProductDetail extends Component {
     var deliveryZone = {};
     if (
       auth.activeAddress !== undefined &&
+      auth.activeAddress !== null &&
       (auth.partner.delivery_zones !== null ||
         auth.partner.delivery_zones !== undefined)
     ) {
@@ -1404,24 +1447,12 @@ class ProductDetail extends Component {
                         {ecoPrice} ₽
                       </Text>
                     </View>
-                    <Text title2>
-                      {delivery_zone &&
-                        auth.totalPrice +
-                          (delivery_zone?.free_delivery_from >
-                            auth.totalPrice &&
-                            delivery_zone?.delivery_price)}{' '}
-                      ₽
-                    </Text>
+                    <Text title2>{auth.totalPrice} ₽</Text>
                   </>
                 ) : (
                   <View style={{alignItems: 'flex-start'}}>
                     <Text title2 semiBold>
-                      {delivery_zone &&
-                        auth.totalPrice +
-                          (delivery_zone?.free_delivery_from >
-                            auth.totalPrice &&
-                            delivery_zone?.delivery_price)}{' '}
-                      ₽
+                      {auth.totalPrice} ₽
                     </Text>
                     <Text>{'Сегодня'}</Text>
                   </View>
