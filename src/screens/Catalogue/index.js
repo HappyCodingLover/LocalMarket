@@ -239,7 +239,6 @@ class Catalogue extends Component {
 
   functionX = () => {
     const {auth, actions, navigation} = this.props;
-    console.log('___________district__________', auth?.activeAddress?.district);
     const {categories} = this.state;
     var tmpArray = [];
     auth?.categories.forEach((category, index) => {
@@ -366,11 +365,6 @@ class Catalogue extends Component {
 
   onFocus = () => {
     const {auth} = this.props;
-    // if (!auth.activeAddress) {
-    //   Alert.alert(
-    //     'Активный адрес не выбран.\nПожалуйста, выберите один из ваших адресов',
-    //   );
-    // }
     if (auth?.user === null) {
     } else {
       this.getCart();
@@ -390,7 +384,12 @@ class Catalogue extends Component {
   onPartnerBtn = (index) => {
     const {auth, actions, navigation} = this.props;
     const {cart} = this.state;
-    const _cart = cart !== null ? cart?.products : auth?.cart;
+    let _cart;
+    if (auth.user !== null) {
+      _cart = cart;
+    } else {
+      _cart = cart !== null ? cart?.products : auth?.cart;
+    }
     if (
       auth?.partner?.id !== auth?.catalogues[index]?.id &&
       _cart !== null &&
@@ -706,7 +705,7 @@ class Catalogue extends Component {
   checkMinimalCheckout = () => {
     const {auth} = this.props;
     if (
-      auth?.partner  &&
+      auth?.partner && auth?.activeAddress &&
       auth?.activeAddress?.district !== null &&
       (auth.partner.delivery_zones !== undefined ||
         auth.partner.delivery_zones !== null)
@@ -756,7 +755,7 @@ class Catalogue extends Component {
   renderPartnersView(item, index) {
     const {auth} = this.props;
     // if no activeAddress, which means in the guest mode
-    if (auth.activeAddress === null && auth.activeAddress === undefined) {
+    if (auth.activeAddress === null || auth.activeAddress === undefined) {
       return (
         <PartnerItem
           item={item}
@@ -1026,22 +1025,24 @@ class Catalogue extends Component {
                 </View>
                 {/* minimal order price warning */}
                 {loadingCategories ||
-                  (auth?.totalPrice > 0 && this.checkMinimalCheckout() && (
-                    <View style={{backgroundColor: '#262626'}}>
-                      <Text
-                        body2
-                        whiteColor
-                        style={{textAlign: 'center', paddingVertical: 3}}>
-                        {delivery_zone !== undefined &&
-                          'Минимальная сумма заказа ' +
-                            delivery_zone?.min_order_price +
-                            ' руб.'}
-                      </Text>
-                    </View>
-                  ))}
+                  (auth?.totalPrice > 0 &&
+                    delivery_zone &&
+                    this.checkMinimalCheckout() && (
+                      <View style={{backgroundColor: '#262626'}}>
+                        <Text
+                          body2
+                          whiteColor
+                          style={{textAlign: 'center', paddingVertical: 3}}>
+                          {delivery_zone !== undefined &&
+                            'Минимальная сумма заказа ' +
+                              delivery_zone?.min_order_price +
+                              ' руб.'}
+                        </Text>
+                      </View>
+                    ))}
                 {/* cart */}
                 {loadingCategories ||
-                  (auth?.totalPrice > 0 && (
+                  (auth?.totalPrice > 0 && delivery_zone && (
                     <View style={styles.cart}>
                       <View style={styles.totalPrice}>
                         {ecoPrice > 0 ? (
@@ -1068,12 +1069,7 @@ class Catalogue extends Component {
                         ) : (
                           <View style={{alignItems: 'flex-start'}}>
                             <Text title2 semiBold>
-                              {delivery_zone &&
-                                auth?.totalPrice +
-                                  (delivery_zone?.free_delivery_from >
-                                    auth.totalPrice &&
-                                    delivery_zone?.delivery_price)}{' '}
-                              ₽
+                              {auth?.totalPrice} ₽
                             </Text>
                             <Text>{'Сегодня'}</Text>
                           </View>

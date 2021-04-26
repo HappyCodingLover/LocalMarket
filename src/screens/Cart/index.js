@@ -294,6 +294,10 @@ class Cart extends Component {
               );
               if (updated_partner === undefined) {
                 console.error('err in getCatalogues: partner not found');
+                Alert.alert(
+                  'Этот партнер в данный момент недоступен.\nПожалуйста, повторите попытку позже.',
+                );
+
                 this.setState({inactive: true});
               } else {
                 var start = updated_partner.working_starts_at;
@@ -506,7 +510,10 @@ class Cart extends Component {
               (partner) => partner.id === auth.partner.id,
             );
             if (updated_partner === undefined) {
-              console.error('err in getCatalogues: partner not found');
+              console.log('err in getCatalogues: partner not found');
+              Alert.alert(
+                'Этот партнер в данный момент недоступен.\nПожалуйста, повторите попытку позже.',
+              );
               this.setState({inactive: true});
             } else {
               var start = updated_partner.working_starts_at;
@@ -865,7 +872,7 @@ class Cart extends Component {
                         }}>
                         <Minus width={18} height={18} />
                       </TouchableOpacity>
-                      <Text title3 style={{marginHorizontal: 30 }}>
+                      <Text title3 style={{marginHorizontal: 30}}>
                         {/* {
                           cart.products.find(
                             (val) => val.productID === item.productID,
@@ -983,7 +990,8 @@ class Cart extends Component {
               </View>
               <View style={{flex: 3, alignItems: 'flex-end'}}>
                 <Text body1 bold>
-                  {auth.partner !== null && delivery_zone &&
+                  {auth.partner !== null &&
+                  delivery_zone &&
                   delivery_zone?.free_delivery_from > auth.totalPrice
                     ? delivery_zone?.delivery_price + ' ₽'
                     : 'Бесплатно'}
@@ -1019,7 +1027,8 @@ class Cart extends Component {
                     </View>
                     <Text title2>
                       {auth.totalPrice +
-                        (delivery_zone && delivery_zone?.free_delivery_from > auth.totalPrice &&
+                        (delivery_zone &&
+                          delivery_zone?.free_delivery_from > auth.totalPrice &&
                           delivery_zone?.delivery_price)}{' '}
                       ₽
                     </Text>
@@ -1028,7 +1037,8 @@ class Cart extends Component {
                   <View style={{alignItems: 'flex-start'}}>
                     <Text title2 semiBold>
                       {auth.totalPrice +
-                        (delivery_zone && delivery_zone?.free_delivery_from > auth.totalPrice &&
+                        (delivery_zone &&
+                          delivery_zone?.free_delivery_from > auth.totalPrice &&
                           delivery_zone?.delivery_price)}{' '}
                       ₽
                     </Text>
@@ -1038,7 +1048,7 @@ class Cart extends Component {
               </View>
               <View style={{flex: 1}}>
                 <TouchableOpacity
-                  disabled={this.checkMinimalCheckout()}
+                  disabled={this.checkMinimalCheckout() || this.state.inactive}
                   onPress={this.onNextBtn}
                   style={{
                     borderRadius: 5,
@@ -1046,9 +1056,9 @@ class Cart extends Component {
                     paddingVertical: 16,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: !this.checkMinimalCheckout()
-                      ? BaseColor.redColor
-                      : '#F1F1F1',
+                    backgroundColor: (this.checkMinimalCheckout() || this.state.inactive)
+                      ? '#F1F1F1'
+                      : BaseColor.redColor,
                     marginRight: 10,
                   }}>
                   <Text

@@ -237,6 +237,10 @@ class Payment extends Component {
       delivery_zone,
       cart,
     } = this.state;
+    if (cart === null) {
+      Alert.alert('Ваша корзина пуста.');
+      return;
+    }
     const _cart = cart.products;
 
     const {auth, actions, navigation} = this.props;
