@@ -1067,7 +1067,7 @@ class Cart extends Component {
                     style={{
                       color: !this.checkMinimalCheckout() ? 'white' : '#B3B3B3',
                     }}>
-                    {'К оплате'}
+                    {'Далее'}
                   </Text>
                 </TouchableOpacity>
               </View>
