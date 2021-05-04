@@ -1077,7 +1077,7 @@ class Catalogue extends Component {
                       </View>
                       <View style={{flex: 1}}>
                         <TouchableOpacity
-                          disabled={this.checkMinimalCheckout()}
+                          // disabled={this.checkMinimalCheckout()}
                           onPress={() => {
                             this.props.navigation.navigate('Cart');
                           }}
@@ -1087,18 +1087,20 @@ class Catalogue extends Component {
                             paddingVertical: 8,
                             alignItems: 'center',
                             justifyContent: 'center',
-                            backgroundColor: !this.checkMinimalCheckout()
-                              ? BaseColor.redColor
-                              : '#F1F1F1',
+                            // backgroundColor: !this.checkMinimalCheckout()
+                            //   ? BaseColor.redColor
+                            //   : '#F1F1F1',
+                            backgroundColor: BaseColor.redColor,
                             marginRight: 20,
                           }}>
                           <Text
                             middleBody
                             semiBold
                             style={{
-                              color: !this.checkMinimalCheckout()
-                                ? 'white'
-                                : '#B3B3B3',
+                              // color: !this.checkMinimalCheckout()
+                              //   ? 'white'
+                              //   : '#B3B3B3',
+                              color: 'white',
                             }}>
                             {'В корзину'}
                           </Text>
