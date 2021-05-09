@@ -183,8 +183,9 @@ android {
 }
 
 dependencies {
+    compile 'io.intercom.android:intercom-sdk-fcm:5.+'
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'androidx.multidex:multidex: 2.0.1'
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.google.firebase:firebase-analytics:17.3.0'
     implementation project(':react-native-push-notification')
     //noinspection GradleDynamicVersion

@@ -183,7 +183,7 @@ class ProductDetail extends Component {
         }
       })
       .catch((err) => {
-        console.error('err in getting cart', err);
+        console.error('err in getting cart 5', err);
         navigation.navigate('ErrorScreen', {
           message: err.message,
         });
@@ -378,7 +378,6 @@ class ProductDetail extends Component {
               .then((response) => {
                 if (response.data.success === 1) {
                   const cart = response.data.data.cart;
-                  console.log('__________my_cart_________', cart);
                   let totalPrice = 0;
                   cart?.products.forEach((product) => {
                     var itemInfo = undefined;
@@ -1387,7 +1386,7 @@ class ProductDetail extends Component {
                                           style={{
                                             borderWidth: 1,
                                             borderColor: BaseColor.redColor,
-                                            flex: 1,
+                                            height: 50,
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             paddingVertical: 12,

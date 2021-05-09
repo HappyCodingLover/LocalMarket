@@ -100,7 +100,7 @@ class Cart extends Component {
         }
       })
       .catch((err) => {
-        console.error('err in getting cart', err);
+        console.error('err in getting cart 1', err);
       })
       .finally(() => {
         this.setState({loading: false});
@@ -258,6 +258,7 @@ class Cart extends Component {
     const {auth} = this.props;
     const {cart} = this.state;
     const _cart = cart !== null ? cart.products : auth.cart;
+
     var ecoPrice = 0;
     _cart.forEach((item) => {
       var itemInfo = auth.products.find(
@@ -275,7 +276,7 @@ class Cart extends Component {
   };
 
   checkIsBetween = () => {
-    const {auth} = this.props;
+    const {auth, navigation} = this.props;
     const {cart} = this.state;
     const _cart = cart !== null ? cart.products : auth.cart;
     var updated_partner;
@@ -793,7 +794,8 @@ class Cart extends Component {
           {
             backgroundColor: isOutOfStock || inactive ? '#F9F9F9' : 'white',
           },
-        ]}>
+        ]}
+        keyExtractor={(item, index) => index.toString()}>
         {/* {cart !== null && cart.products.length > 0 && ( */}
         {product !== undefined && _cart !== null && _cart.length > 0 && (
           <>

@@ -134,7 +134,7 @@ class Catalogue extends Component {
         }
       })
       .catch((err) => {
-        console.error('err in getting cart', err);
+        console.error('err in getting cart 2', err);
       })
       .finally(() => {
         this.setState({loadingPartners: false});
@@ -584,81 +584,97 @@ class Catalogue extends Component {
       var extension = item.icon.split('.').pop();
       if (extension === 'svg') {
         return (
-          <TouchableOpacity
-            onPress={() => {
-              this.onCategoryBtn(index);
-            }}
-            style={[
-              styles.type,
-              {
-                backgroundColor: auth.categories[index]
-                  ? BaseColor.textPrimaryColor
-                  : BaseColor.textInputBackgroundColor,
-              },
-            ]}>
-            <View style={styles.typeView}>
-              <SvgCssUri
-                width="20"
-                height="20"
-                // source={{
-                //   uri:
-                //     'http://local-admin.its-dev.ru/media/categoryIcons/' +
-                //     item.icon,
-                // }}
-                uri={
-                  'https://local-admin.its-dev.ru/media/categoryIcons/' +
-                  item.icon
-                }
-              />
-            </View>
-            <Text
-              body2
-              style={{
-                color: auth.categories[index]
-                  ? 'white'
-                  : BaseColor.textPrimaryColor,
-              }}>
-              {item.name}
-            </Text>
-          </TouchableOpacity>
+          <View
+            style={{
+              paddingLeft: 20,
+              paddingVertical: 15,
+            }}>
+            <TouchableOpacity
+              onPress={() => {
+                this.onCategoryBtn(index);
+              }}
+              style={[
+                styles.type,
+                {
+                  backgroundColor: auth.categories[index]
+                    ? BaseColor.textPrimaryColor
+                    : BaseColor.textInputBackgroundColor,
+                },
+              ]}>
+              <View style={styles.typeView}>
+                <SvgCssUri
+                  width="20"
+                  height="20"
+                  // source={{
+                  //   uri:
+                  //     'http://local-admin.its-dev.ru/media/categoryIcons/' +
+                  //     item.icon,
+                  // }}
+                  uri={
+                    'https://local-admin.its-dev.ru/media/categoryIcons/' +
+                    item.icon
+                  }
+                />
+              </View>
+              <Text
+                body2
+                style={{
+                  color: auth.categories[index]
+                    ? 'white'
+                    : BaseColor.textPrimaryColor,
+                }}>
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          </View>
         );
       } else if (extension === 'jpg' || extension === 'png') {
         return (
-          <TouchableOpacity
-            onPress={() => {
-              this.onCategoryBtn(index);
-            }}
-            style={[
-              styles.type,
-              {
-                backgroundColor: auth.categories[index]
-                  ? BaseColor.textPrimaryColor
-                  : BaseColor.textInputBackgroundColor,
-              },
-            ]}>
-            <View style={styles.typeView}>
-              <Image
-                source={{
-                  uri:
-                    'https://local-admin.its-dev.ru/media/categoryIcons/' +
-                    item.icon,
-                }}
-                style={styles.typeImg}
-                resizeMode="contain"
-              />
-            </View>
-            <Text
-              body2
-              style={{
-                color: auth.categories[index]
-                  ? 'white'
-                  : BaseColor.textPrimaryColor,
-              }}>
-              {item.name}
-            </Text>
-          </TouchableOpacity>
+          <View
+            style={{
+              paddingLeft: 20,
+              paddingVertical: 15,
+              borderWidth: 1,
+              borderColor: 'blue',
+            }}>
+            <TouchableOpacity
+              onPress={() => {
+                this.onCategoryBtn(index);
+              }}
+              style={[
+                styles.type,
+                {
+                  backgroundColor: auth.categories[index]
+                    ? BaseColor.textPrimaryColor
+                    : BaseColor.textInputBackgroundColor,
+                },
+              ]}>
+              <View style={styles.typeView}>
+                <Image
+                  source={{
+                    uri:
+                      'https://local-admin.its-dev.ru/media/categoryIcons/' +
+                      item.icon,
+                  }}
+                  style={styles.typeImg}
+                  resizeMode="contain"
+                />
+              </View>
+              <Text
+                body2
+                style={{
+                  color: auth.categories[index]
+                    ? 'white'
+                    : BaseColor.textPrimaryColor,
+                }}>
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          </View>
         );
       }
+    } else {
+      return <></>;
     }
   }
 
@@ -705,7 +721,8 @@ class Catalogue extends Component {
   checkMinimalCheckout = () => {
     const {auth} = this.props;
     if (
-      auth?.partner && auth?.activeAddress &&
+      auth?.partner &&
+      auth?.activeAddress &&
       auth?.activeAddress?.district !== null &&
       (auth.partner.delivery_zones !== undefined ||
         auth.partner.delivery_zones !== null)
@@ -974,8 +991,12 @@ class Catalogue extends Component {
               </ScrollView>
               {/* categories */}
               <View style={styles.bottomBar}>
-                <View style={{paddingLeft: 20, paddingVertical: 15}}>
-                  {loadingCategories ? (
+                {loadingCategories ? (
+                  <View
+                    style={{
+                      paddingLeft: 20,
+                      paddingVertical: 15,
+                    }}>
                     <Placeholder style={{zIndex: 2}} Animation={Fade}>
                       <View style={{flexDirection: 'row'}}>
                         <PlaceholderMedia
@@ -1000,29 +1021,29 @@ class Catalogue extends Component {
                         />
                       </View>
                     </Placeholder>
-                  ) : selectedCategoryIndex === 100000 ? (
-                    <FlatList
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      data={categories}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={({item, index}) =>
-                        this.renderTypesView(item, index)
-                      }
-                    />
-                  ) : (
-                    <FlatList
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      data={categories}
-                      initialScrollIndex={selectedCategoryIndex}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={({item, index}) =>
-                        this.renderTypesView(item, index)
-                      }
-                    />
-                  )}
-                </View>
+                  </View>
+                ) : selectedCategoryIndex === 100000 ? (
+                  <FlatList
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    data={categories}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({item, index}) =>
+                      this.renderTypesView(item, index)
+                    }
+                  />
+                ) : (
+                  <FlatList
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    data={categories}
+                    initialScrollIndex={selectedCategoryIndex}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({item, index}) =>
+                      this.renderTypesView(item, index)
+                    }
+                  />
+                )}
                 {/* minimal order price warning */}
                 {loadingCategories ||
                   (auth?.totalPrice > 0 &&

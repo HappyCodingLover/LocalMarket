@@ -40,7 +40,7 @@ class Loading extends Component {
   _handleAppStateChange = (nextAppState) => {
     if (nextAppState === 'inactive' || nextAppState === 'background') {
       // auth.totalPrice > 0
-      const { auth } = this.props;
+      const {auth} = this.props;
       if (auth.totalPrice > 0) {
         // After 30 mins
         NotificationServices.showScheduledNotification(
@@ -69,7 +69,7 @@ class Loading extends Component {
     ) {
       NotificationServices.cancelAll();
     }
-    this.setState({ appState: nextAppState });
+    this.setState({appState: nextAppState});
   };
 
   onFocus = () => {
@@ -237,7 +237,7 @@ class Loading extends Component {
               }
             })
             .catch((err) => {
-              console.error('err in getting cart', err);
+              console.error('err in getting cart 3', err);
             })
             .finally(() => {
               this.setState({loading: false});
@@ -264,6 +264,23 @@ class Loading extends Component {
       });
   };
 
+  addGuestAddress(userAddressArray, guestAddressArray) {
+    let flag = false;
+    let newGuestAddressArray = [];
+    guestAddressArray.forEach((guestAddr, index) => {
+      flag = false;
+      userAddressArray.forEach((userAddr, ind) => {
+        if (userAddr.address === guestAddr.address) {
+          flag = true;
+        }
+      });
+      if (!flag) {
+        newGuestAddressArray.push(guestAddr);
+      }
+    });
+    return newGuestAddressArray;
+  }
+
   handleLogin(phoneNumber, token) {
     const {auth, actions, navigation} = this.props;
 
@@ -272,116 +289,304 @@ class Loading extends Component {
       phone: phoneNumber,
       device_token: token,
     };
+    let accessToken;
     UserServices.login(body)
       .then((response) => {
         if (response.data.success === 1) {
-          // login successfully
-          // if (auth.cart !== null && auth.cart.length !== 0) {
-          //   this.saveCart(response.data.data.access_token);
-          // }
           actions.clearDiscountPrice();
           // actions.clearCart();
           // actions.saveProducts([]);
           localStorageService.setToken(response.data.data.access_token);
+          accessToken = response.data.data.access_token;
 
           actions.saveUserData({
             phoneNumber: phoneNumber,
             token: token,
-            access_token: response.data.data.access_token,
+            access_token: accessToken,
           });
           let addAddressBody;
-          // if a guest has addresses in the app local,
-          // if (auth.addresses.length > 0 && auth.addresses[0].address !== null) {
-          //   auth.addresses.map((item, index) => {
-          //     addAddressBody = {
-          //       address: item.address,
-          //       latitude: item.latitude,
-          //       longitude: item.longitude,
-          //       entrance: item.entrance,
-          //       intercom: item.intercom,
-          //       apt_office: item.apt_office,
-          //       floor: item.floor,
-          //       comments: item.comments,
-          //       active: 1,
-          //       district:
-          //         item.district !== null ? item.district : 'Алексеевский',
-          //     };
-          //     actions.setLoadingTrue();
-          //     UserServices.addAddress(
-          //       addAddressBody,
-          //       response.data.data.access_token,
-          //     )
-          //       .then((response) => {
-          //         if (response.data.success === 1) {
-          //         } else {
-          //           console.error(
-          //             'something went wrong while adding an address',
-          //             response.data.message,
-          //           );
-          //           navigation.navigate('ErrorScreen', {
-          //             message: response.data.message,
-          //           });
-          //         }
-          //       })
-          //       .catch((err) => {
-          //         console.error('err while adding an address', err);
-
-          //         actions.setLoadingFalse();
-          //         navigation.navigate('ErrorScreen', {
-          //           from: 'Loading',
-          //           message: err.message,
-          //         });
-          //       })
-          //       .finally(() => {
-          //         // actions.setLoadingFalse();
-          //       });
-          //   });
-          // }
 
           actions.setLoadingTrue();
-          UserServices.getAddress(response.data.data.access_token)
+          UserServices.getAddress(accessToken)
             .then((response) => {
               if (response.data.success === 1) {
                 if (response.data.data.length > 0) {
-                  console.log('__getAddressResp', response.data.data);
-                  actions.saveAddresses(response.data.data);
-                  actions.setActiveAddress(
-                    response.data.data.find((item) => item.active === 1),
+                  // ----------------------------------------- //
+                  // check if any of guest's address is duplicated in user's address and add only new addresses.
+                  let newAddressArray = this.addGuestAddress(
+                    response.data.data,
+                    auth.addresses,
                   );
-                  if (auth.payment) {
-                    actions.setPaymentFalse();
-                    actions.setLoadingFalse();
-                    setTimeout(() => {
-                      navigation.navigate('Main', {
-                        screen: 'DrawerStack',
-                        params: {
-                          screen: 'Payment',
-                          params: {cart: this.state.cart},
-                        },
-                      });
-                    }, 500);
-                  } else {
-                    navigation.navigate('Main', {
-                      screen: 'DrawerStack',
-                      params: {screen: 'Catalogue'},
+                  if (newAddressArray.length !== 0) {
+                    newAddressArray.forEach((item, index) => {
+                      addAddressBody = {
+                        address: item.address,
+                        latitude: item.latitude,
+                        longitude: item.longitude,
+                        entrance: item.entrance,
+                        intercom: item.intercom,
+                        apt_office: item.apt_office,
+                        floor: item.floor,
+                        comments: item.comments,
+                        active:
+                          auth.activeAddress.address === item.address ? 1 : 0,
+                        district:
+                          item.district !== null
+                            ? item.district
+                            : 'Алексеевский',
+                      };
+                      actions.setLoadingTrue();
+                      UserServices.addAddress(addAddressBody, accessToken)
+                        .then((response) => {
+                          if (response.data.success === 1) {
+                          } else {
+                            console.error(
+                              'something went wrong while adding an address',
+                              response.data.message,
+                            );
+                            navigation.navigate('ErrorScreen', {
+                              message: response.data.message,
+                            });
+                          }
+                        })
+                        .catch((err) => {
+                          console.error('err while adding an address', err);
+
+                          actions.setLoadingFalse();
+                          navigation.navigate('ErrorScreen', {
+                            from: 'Loading',
+                            message: err.message,
+                          });
+                        })
+                        .finally(() => {
+                          // actions.setLoadingFalse();
+                        });
                     });
                   }
+
+                  // ----- Get my addresses again ------------ //
+                  UserServices.getAddress(accessToken)
+                    .then((response) => {
+                      actions.saveAddresses(response.data.data);
+                      actions.setActiveAddress(
+                        response.data.data.find((item) => item.active === 1),
+                      );
+                      if (auth.payment) {
+                        actions.setPaymentFalse();
+                        actions.setLoadingFalse();
+                        const body = {
+                          company_id: auth.partner.id,
+                          products: auth.cart,
+                        };
+                        UserServices.addToCart(accessToken, body)
+                          .then((response) => {
+                            if (response.data.success === 1) {
+                              this.setState({loading: true});
+                              UserServices.getCart(accessToken)
+                                .then((response) => {
+                                  if (response.data.success === 1) {
+                                    actions.setCart(response.data.data.cart.products);
+                                    setTimeout(() => {
+                                      navigation.navigate('Main', {
+                                        screen: 'DrawerStack',
+                                        params: {
+                                          screen: 'Payment',
+                                          params: {cart: null},
+                                        },
+                                      });
+                                    }, 500);
+                                  } else {
+                                    console.error(
+                                      'something went wrong while getting cart',
+                                      response.data.message,
+                                    );
+                                  }
+                                })
+                                .catch((err) => {
+                                  console.error('err in getting cart 3', err);
+                                })
+                                .finally(() => {
+                                  this.setState({loading: false});
+                                });
+                              actions.clearCart();
+                            } else {
+                              console.error(
+                                'something went wrong while adding purchase to cart',
+                                response.data.message,
+                              );
+                              navigation.navigate('ErrorScreen', {
+                                message: response.data.message,
+                              });
+                            }
+                          })
+                          .catch((err) => {
+                            console.error(
+                              'err in adding to cart savecart',
+                              err,
+                            );
+                            navigation.navigate('ErrorScreen', {
+                              message: err.message,
+                            });
+                          })
+                          .finally(() => {
+                            this.setState({loading: false});
+                          });
+                      } else {
+                        navigation.navigate('Main', {
+                          screen: 'DrawerStack',
+                          params: {screen: 'Catalogue'},
+                        });
+                      }
+                    })
+                    .catch((err) => {
+                      console.error('err while getting addresses 1', err);
+
+                      actions.setLoadingFalse();
+                      navigation.navigate('ErrorScreen', {
+                        from: 'Loading',
+                        message: err.message,
+                      });
+                    });
+                  // ----------------------------------------- //
+                } else if (
+                  response.data.data.length === 0 &&
+                  auth.addresses.length > 0
+                ) {
+                  // ----------------------------------------- //
+                  // ----- No my addresses, so just add guest addresses ----- //
+                  auth.addresses.forEach((item, index) => {
+                    addAddressBody = {
+                      address: item.address,
+                      latitude: item.latitude,
+                      longitude: item.longitude,
+                      entrance: item.entrance,
+                      intercom: item.intercom,
+                      apt_office: item.apt_office,
+                      floor: item.floor,
+                      comments: item.comments,
+                      active:
+                        auth.activeAddress.address === item.address ? 1 : 0,
+                      district:
+                        item.district !== null ? item.district : 'Алексеевский',
+                    };
+                    actions.setLoadingTrue();
+                    UserServices.addAddress(addAddressBody, accessToken)
+                      .then((response) => {
+                        if (response.data.success === 1) {
+                        } else {
+                          console.error(
+                            'something went wrong while adding an address',
+                            response.data.message,
+                          );
+                          navigation.navigate('ErrorScreen', {
+                            message: response.data.message,
+                          });
+                        }
+                      })
+                      .catch((err) => {
+                        console.error('err while adding an address', err);
+
+                        actions.setLoadingFalse();
+                        navigation.navigate('ErrorScreen', {
+                          from: 'Loading',
+                          message: err.message,
+                        });
+                      })
+                      .finally(() => {
+                        // actions.setLoadingFalse();
+                      });
+                  });
+                  // ----------------------------------------- //
+
+                  // ----- Get my addresses again ------------ //
+                  UserServices.getAddress(accessToken)
+                    .then((response) => {
+                      actions.saveAddresses(response.data.data);
+                      actions.setActiveAddress(
+                        response.data.data.find((item) => item.active === 1),
+                      );
+                      if (auth.payment) {
+                        actions.setPaymentFalse();
+                        actions.setLoadingFalse();
+                        const body = {
+                          company_id: auth.partner.id,
+                          products: auth.cart,
+                        };
+                        UserServices.addToCart(accessToken, body)
+                          .then((response) => {
+                            if (response.data.success === 1) {
+                              this.setState({loading: true});
+                              UserServices.getCart(accessToken)
+                                .then((response) => {
+                                  if (response.data.success === 1) {
+                                    actions.setCart(response.data.data.cart.products);
+                                    setTimeout(() => {
+                                      navigation.navigate('Main', {
+                                        screen: 'DrawerStack',
+                                        params: {
+                                          screen: 'Payment',
+                                          params: {cart: null},
+                                        },
+                                      });
+                                    }, 500);
+                                  } else {
+                                    console.error(
+                                      'something went wrong while getting cart',
+                                      response.data.message,
+                                    );
+                                  }
+                                })
+                                .catch((err) => {
+                                  console.error('err in getting cart 3', err);
+                                })
+                                .finally(() => {
+                                  this.setState({loading: false});
+                                });
+                              actions.clearCart();
+                            } else {
+                              console.error(
+                                'something went wrong while adding purchase to cart',
+                                response.data.message,
+                              );
+                              navigation.navigate('ErrorScreen', {
+                                message: response.data.message,
+                              });
+                            }
+                          })
+                          .catch((err) => {
+                            console.error(
+                              'err in adding to cart savecart',
+                              err,
+                            );
+                            navigation.navigate('ErrorScreen', {
+                              message: err.message,
+                            });
+                          })
+                          .finally(() => {
+                            this.setState({loading: false});
+                          });
+                      } else {
+                        navigation.navigate('Main', {
+                          screen: 'DrawerStack',
+                          params: {screen: 'Catalogue'},
+                        });
+                      }
+                    })
+                    .catch((err) => {
+                      console.error('err while getting addresses 1', err);
+
+                      actions.setLoadingFalse();
+                      navigation.navigate('ErrorScreen', {
+                        from: 'Loading',
+                        message: err.message,
+                      });
+                    });
+                  // ----------------------------------------- //
                 } else {
                   navigation.navigate('Main', {
                     screen: 'DrawerStack',
                     params: {screen: 'ViewCatalogue'},
                   });
-                  // if (auth.addresses.length === 0) {
-                  //   navigation.navigate('Main', {
-                  //     screen: 'DrawerStack',
-                  //     params: { screen: 'ViewCatalogue' },
-                  //   });
-                  // } else {
-                  //   navigation.navigate('Main', {
-                  //     screen: 'DrawerStack',
-                  //     params: { screen: 'Catalogue' },
-                  //   });
-                  // }
                 }
               } else {
                 console.error(
@@ -419,7 +624,6 @@ class Loading extends Component {
         }
       })
       .catch((error) => {
-
         actions.setLoadingFalse();
         navigation.navigate('ErrorScreen', {
           from: 'Loading',

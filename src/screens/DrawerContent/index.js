@@ -23,6 +23,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { bindActionCreators } from 'redux';
 import { AuthActions } from '@actions';
 import Spinner from 'react-native-loading-spinner-overlay';
+import Intercom from 'react-native-intercom';
 
 class DrawerContent extends Component {
   constructor(props) {
@@ -33,6 +34,24 @@ class DrawerContent extends Component {
   }
 
   onChatBtn = () => {
+    Intercom.registerIdentifiedUser({ userId: "Bob" });
+    Intercom.updateUser({ // Pre-defined user attributes
+    email: 'bob@intercom.com',
+    user_id: 'user_id',
+    name: 'Bob',
+    phone: '010-1234-5678',
+    language_override: 'language_override',
+    signed_up_at: 1004,
+    unsubscribed_from_emails: true,
+    companies: [{
+    company_id: 'bob@company-email-id.com',
+    name: 'Company'
+    }],
+    custom_attributes: {
+    my_custom_attribute: 123
+    },
+    });
+    Intercom.displayMessageComposer();
     this.ChatSheet.open();
     this.props.navigation.closeDrawer();
   };

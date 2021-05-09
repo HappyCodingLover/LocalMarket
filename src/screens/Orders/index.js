@@ -166,8 +166,6 @@ class Orders extends Component {
 
   renderOrderView(item, index) {
     const {auth} = this.props;
-    console.log('_________addresses', auth.addresses);
-    console.log('_________item', item);
     if (
       auth.addresses.find((val) => val.id === item.user_address_id) !==
       undefined

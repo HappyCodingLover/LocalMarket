@@ -147,7 +147,7 @@ class ProductShow extends Component {
         }
       })
       .catch((err) => {
-        console.error('err in getting cart', err);
+        console.error('err in getting cart 6', err);
       })
       .finally(() => {
         this.setState({loading: false});

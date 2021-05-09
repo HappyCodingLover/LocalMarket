@@ -79,7 +79,7 @@ export default StyleSheet.create({
   },
   minimalWarning: {
     position: 'absolute',
-    bottom: 100,
+    bottom: 65,
     backgroundColor: BaseColor.textPrimaryColor,
     padding: 5,
     height: 30,

@@ -234,7 +234,7 @@ class SearchAddress extends Component {
           (suggestion) => !suggestion.data.street_with_type?.includes('метро'),
         )[0].data.geo_lon;
         if (
-          this.props.auth.addresses.find(
+          this.props.auth.addresses && this.props.auth.addresses.find(
             (address) => address.latitude === lat && address.longitude === lon,
           )
         ) {
