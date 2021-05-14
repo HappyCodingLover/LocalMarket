@@ -6,7 +6,6 @@ import {View, TouchableOpacity, Alert} from 'react-native';
 import {BaseColor, BaseSize} from '@config';
 import {SafeAreaView, Text, Header, TextInput} from '@components';
 import styles from './styles';
-import {withTranslation} from 'react-i18next';
 import Spinner from 'react-native-loading-spinner-overlay';
 import {isValidNumberForRegion} from 'libphonenumber-js';
 import {GuestServices, UserServices} from '../../services';
@@ -14,6 +13,7 @@ import fbauth from '@react-native-firebase/auth';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import RuFlag from '../../assets/svgs/ru_flag.svg';
 import {useFocusEffect} from '@react-navigation/native';
+import Intercom from 'react-native-intercom';
 
 function FocusEfect({onFocus}) {
   useFocusEffect(
@@ -250,43 +250,8 @@ class ProfileEdit extends Component {
           await actions.clearTotalPrice();
           await actions.setActiveAddress(null);
           await fbauth().signOut();
-          // await actions.saveUserData(null);
-          // await actions.saveProfile(null);
-          // await actions.saveAddresses([
-          //   {
-          //     id: null,
-          //     address: null,
-          //     district_id: null,
-          //     longitude: null,
-          //     latitude: null,
-          //     entrance: null,
-          //     intercom: null,
-          //     apt_office: null,
-          //     floor: null,
-          //     comments: null,
-          //     active: null,
-          //     district: null,
-          //   },
-          // ]);
-          // // actions.clearPartner();
-          // // actions.clearTotalPrice();
-          // // actions.clearDiscountPrice();
-          // // actions.clearCart();
-          // // actions.saveProducts([]);
-          // await actions.setActiveAddress({
-          //   id: null,
-          //   address: null,
-          //   district_id: null,
-          //   longitude: null,
-          //   latitude: null,
-          //   entrance: null,
-          //   intercom: null,
-          //   apt_office: null,
-          //   floor: null,
-          //   comments: null,
-          //   active: null,
-          //   district: null,
-          // });
+          Intercom.logout();
+          navigation.navigate('SignIn');
         } catch (error) {
           console.error('err in fbauth signOut', error);
           navigation.navigate('ErrorScreen', {message: error.message});
@@ -533,4 +498,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation()(ProfileEdit));
+)(ProfileEdit);
