@@ -14,6 +14,7 @@ import Splash from '../../assets/svgs/splash.svg';
 import {AppState, View, Dimensions, ActivityIndicator} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import LocalStorageService from '../../services/localStorageService';
+import { acc } from 'react-native-reanimated';
 const localStorageService = LocalStorageService.getService();
 
 function FocusEfect({onFocus}) {
@@ -78,6 +79,7 @@ class Loading extends Component {
     actions.setLoadingFalse();
     this.unsubscribeAuthState = fbauth().onAuthStateChanged((user) => {
       if (user) {
+        console.log('____authStateChanged', user);
         // this user is using app with this device for the 1st time
         // let's see if this user's uid is in users table
         actions.setLoadingTrue();
@@ -282,6 +284,7 @@ class Loading extends Component {
   }
 
   handleLogin(phoneNumber, token) {
+    console.log('______________handleLogin_______________');
     const {auth, actions, navigation} = this.props;
 
     actions.setLoadingTrue();
@@ -308,17 +311,21 @@ class Loading extends Component {
 
           actions.setLoadingTrue();
           UserServices.getAddress(accessToken)
-            .then((response) => {
+            .then(async (response) => {
               if (response.data.success === 1) {
                 if (response.data.data.length > 0) {
                   // ----------------------------------------- //
                   // check if any of guest's address is duplicated in user's address and add only new addresses.
+                  console.log('_________response.data.data', response.data.data);
+                  console.log('_________auth.addresses', auth.addresses);
                   let newAddressArray = this.addGuestAddress(
                     response.data.data,
                     auth.addresses,
                   );
+                  console.log('_________newAddressArray', newAddressArray);
+
                   if (newAddressArray.length !== 0) {
-                    newAddressArray.forEach((item, index) => {
+                    await newAddressArray.forEach((item, index) => {
                       addAddressBody = {
                         address: item.address,
                         latitude: item.latitude,
@@ -336,9 +343,11 @@ class Loading extends Component {
                             : 'Алексеевский',
                       };
                       actions.setLoadingTrue();
+                      console.log('___accessToken', accessToken);
                       UserServices.addAddress(addAddressBody, accessToken)
                         .then((response) => {
                           if (response.data.success === 1) {
+                            console.log('___guestAddressAdded');
                           } else {
                             console.error(
                               'something went wrong while adding an address',
@@ -350,7 +359,7 @@ class Loading extends Component {
                           }
                         })
                         .catch((err) => {
-                          console.error('err while adding an address', err);
+                          console.error('err while adding an address 1', err);
 
                           actions.setLoadingFalse();
                           navigation.navigate('ErrorScreen', {
@@ -484,7 +493,7 @@ class Loading extends Component {
                         }
                       })
                       .catch((err) => {
-                        console.error('err while adding an address', err);
+                        console.error('err while adding an address 2', err);
 
                         actions.setLoadingFalse();
                         navigation.navigate('ErrorScreen', {
