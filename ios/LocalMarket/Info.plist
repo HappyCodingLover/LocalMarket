@@ -101,5 +101,7 @@
 		<false />
 		<key>UIUserInterfaceStyle</key>
 		<string>Light</string>
+		<key>NSCameraUsageDescription</key>
+		<string>This app requires your permission to access the camera for profile.</string>
 	</dict>
 </plist>
