@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { AuthActions } from '@actions';
-import { View, Dimensions, StatusBar, Platform } from 'react-native';
+import { View, Dimensions, StatusBar, Platform, Alert } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { Text, SafeAreaView, Header } from '@components';
 import styles from './styles';
@@ -75,6 +75,7 @@ class ViewCatalogue extends Component {
           PERMISSIONS.IOS.LOCATION_ALWAYS,
         ])
           .then((statuses) => {
+            console.log('____statuses', statuses);
             if (
               statuses[PERMISSIONS.IOS.LOCATION_WHEN_IN_USE] !==
                 'granted' &&
@@ -85,6 +86,8 @@ class ViewCatalogue extends Component {
                 PERMISSIONS.IOS.LOCATION_ALWAYS,
               ])
                 .then((statuses) => {
+            console.log('___request_statuses', statuses);
+
                   if (
                     statuses[PERMISSIONS.IOS.LOCATION_WHEN_IN_USE] ===
                       'granted' ||
@@ -98,6 +101,14 @@ class ViewCatalogue extends Component {
                     statuses[PERMISSIONS.IOS.LOCATION_ALWAYS] ===
                       'denied'
                   ) {
+                    Alert.alert('Location Permission is denied.');
+                  } else if (
+                    statuses[PERMISSIONS.IOS.LOCATION_WHEN_IN_USE] ===
+                      'blocked' ||
+                    statuses[PERMISSIONS.IOS.LOCATION_ALWAYS] ===
+                      'blocked'
+                  ) {
+                    Alert.alert('Location Permission is blocked.');
                   }
                 })
                 .catch((err) => {
