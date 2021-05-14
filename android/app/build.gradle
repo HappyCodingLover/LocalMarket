@@ -184,13 +184,15 @@ android {
 
 dependencies {
     compile 'io.intercom.android:intercom-sdk-fcm:5.+'
+    compile 'ru.tinkoff.acquiring:ui:$latestVersion'
+    compile 'ru.tinkoff.acquiring:card-io:$latestVersion'
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.google.firebase:firebase-analytics:17.3.0'
     implementation project(':react-native-push-notification')
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-
+    implementation 'com.google.firebase:firebase-messaging:21.1.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
