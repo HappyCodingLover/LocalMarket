@@ -134,7 +134,7 @@ class Catalogue extends Component {
         }
       })
       .catch((err) => {
-        console.error('err in getting cart', err);
+        console.error('err in getting cart 2', err);
       })
       .finally(() => {
         this.setState({loadingPartners: false});
@@ -239,10 +239,11 @@ class Catalogue extends Component {
 
   functionX = () => {
     const {auth, actions, navigation} = this.props;
+    const {categories} = this.state;
     var tmpArray = [];
     auth?.categories.forEach((category, index) => {
-      if (auth?.categories[index]) {
-        tmpArray.push(index + 1);
+      if (auth?.categories[index] && categories.length !== 0) {
+        tmpArray.push(categories[index].id);
       }
     });
     if (auth?.user === null) {
@@ -257,6 +258,7 @@ class Catalogue extends Component {
           .then((response) => {
             if (response.data.success === 1) {
               let partners = response.data.data.data;
+              console.log('_________partners', partners);
               partners = this.filterBreakTimes(partners);
               actions.saveCatalogues(partners, () => {
                 this.setState({loadingPartners: false});
@@ -325,11 +327,12 @@ class Catalogue extends Component {
 
   getPartnersByCategory = () => {
     const {auth, actions, navigation} = this.props;
+    const {categories} = this.state;
     this.setState({loadingPartners: true});
     var tmpArray = [];
     auth?.categories.forEach((category, index) => {
-      if (auth?.categories[index]) {
-        tmpArray.push(index + 1);
+      if (auth?.categories[index] && categories.length !== 0) {
+        tmpArray.push(categories[index].id);
       }
     });
 
@@ -363,12 +366,6 @@ class Catalogue extends Component {
 
   onFocus = () => {
     const {auth} = this.props;
-    console.log('__auth_activeAddress', auth.activeAddress);
-    // if (!auth.activeAddress) {
-    //   Alert.alert(
-    //     'Активный адрес не выбран.\nПожалуйста, выберите один из ваших адресов',
-    //   );
-    // }
     if (auth?.user === null) {
     } else {
       this.getCart();
@@ -388,7 +385,12 @@ class Catalogue extends Component {
   onPartnerBtn = (index) => {
     const {auth, actions, navigation} = this.props;
     const {cart} = this.state;
-    const _cart = cart !== null ? cart?.products : auth?.cart;
+    let _cart;
+    if (auth.user !== null) {
+      _cart = cart;
+    } else {
+      _cart = cart !== null ? cart?.products : auth?.cart;
+    }
     if (
       auth?.partner?.id !== auth?.catalogues[index]?.id &&
       _cart !== null &&
@@ -437,7 +439,7 @@ class Catalogue extends Component {
   onCategoryBtn = (index) => {
     const {auth, actions, navigation} = this.props;
 
-    const {cats} = this.state;
+    const {cats, categories} = this.state;
     var tmpCats = cats;
     // if selected, unselect; if unselected, select
     tmpCats[index] = !tmpCats[index];
@@ -446,9 +448,10 @@ class Catalogue extends Component {
     var tmpArray = [];
     tmpCats.forEach((category, index) => {
       if (tmpCats[index]) {
-        tmpArray.push(index + 1);
+        tmpArray.push(categories[index].id);
       }
     });
+
     // not categories selected, get all partners again.
     if (auth?.user !== null) {
       if (tmpArray.length !== 0) {
@@ -582,81 +585,97 @@ class Catalogue extends Component {
       var extension = item.icon.split('.').pop();
       if (extension === 'svg') {
         return (
-          <TouchableOpacity
-            onPress={() => {
-              this.onCategoryBtn(index);
-            }}
-            style={[
-              styles.type,
-              {
-                backgroundColor: auth.categories[index]
-                  ? BaseColor.textPrimaryColor
-                  : BaseColor.textInputBackgroundColor,
-              },
-            ]}>
-            <View style={styles.typeView}>
-              <SvgCssUri
-                width="20"
-                height="20"
-                // source={{
-                //   uri:
-                //     'http://local-admin.its-dev.ru/media/categoryIcons/' +
-                //     item.icon,
-                // }}
-                uri={
-                  'https://local-admin.its-dev.ru/media/categoryIcons/' +
-                  item.icon
-                }
-              />
-            </View>
-            <Text
-              body2
-              style={{
-                color: auth.categories[index]
-                  ? 'white'
-                  : BaseColor.textPrimaryColor,
-              }}>
-              {item.name}
-            </Text>
-          </TouchableOpacity>
+          <View
+            style={{
+              paddingLeft: 20,
+              paddingVertical: 15,
+            }}>
+            <TouchableOpacity
+              onPress={() => {
+                this.onCategoryBtn(index);
+              }}
+              style={[
+                styles.type,
+                {
+                  backgroundColor: auth.categories[index]
+                    ? BaseColor.textPrimaryColor
+                    : BaseColor.textInputBackgroundColor,
+                },
+              ]}>
+              <View style={styles.typeView}>
+                <SvgCssUri
+                  width="20"
+                  height="20"
+                  // source={{
+                  //   uri:
+                  //     'http://local-admin.its-dev.ru/media/categoryIcons/' +
+                  //     item.icon,
+                  // }}
+                  uri={
+                    'https://local-admin.its-dev.ru/media/categoryIcons/' +
+                    item.icon
+                  }
+                />
+              </View>
+              <Text
+                body2
+                style={{
+                  color: auth.categories[index]
+                    ? 'white'
+                    : BaseColor.textPrimaryColor,
+                }}>
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          </View>
         );
       } else if (extension === 'jpg' || extension === 'png') {
         return (
-          <TouchableOpacity
-            onPress={() => {
-              this.onCategoryBtn(index);
-            }}
-            style={[
-              styles.type,
-              {
-                backgroundColor: auth.categories[index]
-                  ? BaseColor.textPrimaryColor
-                  : BaseColor.textInputBackgroundColor,
-              },
-            ]}>
-            <View style={styles.typeView}>
-              <Image
-                source={{
-                  uri:
-                    'https://local-admin.its-dev.ru/media/categoryIcons/' +
-                    item.icon,
-                }}
-                style={styles.typeImg}
-                resizeMode="contain"
-              />
-            </View>
-            <Text
-              body2
-              style={{
-                color: auth.categories[index]
-                  ? 'white'
-                  : BaseColor.textPrimaryColor,
-              }}>
-              {item.name}
-            </Text>
-          </TouchableOpacity>
+          <View
+            style={{
+              paddingLeft: 20,
+              paddingVertical: 15,
+              borderWidth: 1,
+              borderColor: 'blue',
+            }}>
+            <TouchableOpacity
+              onPress={() => {
+                this.onCategoryBtn(index);
+              }}
+              style={[
+                styles.type,
+                {
+                  backgroundColor: auth.categories[index]
+                    ? BaseColor.textPrimaryColor
+                    : BaseColor.textInputBackgroundColor,
+                },
+              ]}>
+              <View style={styles.typeView}>
+                <Image
+                  source={{
+                    uri:
+                      'https://local-admin.its-dev.ru/media/categoryIcons/' +
+                      item.icon,
+                  }}
+                  style={styles.typeImg}
+                  resizeMode="contain"
+                />
+              </View>
+              <Text
+                body2
+                style={{
+                  color: auth.categories[index]
+                    ? 'white'
+                    : BaseColor.textPrimaryColor,
+                }}>
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          </View>
         );
       }
+    } else {
+      return <></>;
     }
   }
 
@@ -703,9 +722,9 @@ class Catalogue extends Component {
   checkMinimalCheckout = () => {
     const {auth} = this.props;
     if (
-      auth.partner !== null &&
-      auth.activeAddress !== null &&
-      auth.activeAddress.district !== null &&
+      auth?.partner &&
+      auth?.activeAddress &&
+      auth?.activeAddress?.district !== null &&
       (auth.partner.delivery_zones !== undefined ||
         auth.partner.delivery_zones !== null)
     ) {
@@ -754,7 +773,7 @@ class Catalogue extends Component {
   renderPartnersView(item, index) {
     const {auth} = this.props;
     // if no activeAddress, which means in the guest mode
-    if (auth.activeAddress === null && auth.activeAddress === undefined) {
+    if (auth.activeAddress === null || auth.activeAddress === undefined) {
       return (
         <PartnerItem
           item={item}
@@ -829,6 +848,7 @@ class Catalogue extends Component {
     } = this.state;
     var ecoPrice = 0;
     const {auth} = this.props;
+    console.log('_____________auth_catalogues', auth.catalogues);
     return (
       <AndroidBackHandler
         onBackPress={() => {
@@ -973,8 +993,12 @@ class Catalogue extends Component {
               </ScrollView>
               {/* categories */}
               <View style={styles.bottomBar}>
-                <View style={{paddingLeft: 20, paddingVertical: 15}}>
-                  {loadingCategories ? (
+                {loadingCategories ? (
+                  <View
+                    style={{
+                      paddingLeft: 20,
+                      paddingVertical: 15,
+                    }}>
                     <Placeholder style={{zIndex: 2}} Animation={Fade}>
                       <View style={{flexDirection: 'row'}}>
                         <PlaceholderMedia
@@ -999,47 +1023,49 @@ class Catalogue extends Component {
                         />
                       </View>
                     </Placeholder>
-                  ) : selectedCategoryIndex === 100000 ? (
-                    <FlatList
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      data={categories}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={({item, index}) =>
-                        this.renderTypesView(item, index)
-                      }
-                    />
-                  ) : (
-                    <FlatList
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      data={categories}
-                      initialScrollIndex={selectedCategoryIndex}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={({item, index}) =>
-                        this.renderTypesView(item, index)
-                      }
-                    />
-                  )}
-                </View>
+                  </View>
+                ) : selectedCategoryIndex === 100000 ? (
+                  <FlatList
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    data={categories}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({item, index}) =>
+                      this.renderTypesView(item, index)
+                    }
+                  />
+                ) : (
+                  <FlatList
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    data={categories}
+                    initialScrollIndex={selectedCategoryIndex}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({item, index}) =>
+                      this.renderTypesView(item, index)
+                    }
+                  />
+                )}
                 {/* minimal order price warning */}
                 {loadingCategories ||
-                  (auth?.totalPrice > 0 && this.checkMinimalCheckout() && (
-                    <View style={{backgroundColor: '#262626'}}>
-                      <Text
-                        body2
-                        whiteColor
-                        style={{textAlign: 'center', paddingVertical: 3}}>
-                        {delivery_zone !== undefined &&
-                          'Минимальная сумма заказа ' +
-                            delivery_zone?.min_order_price +
-                            ' руб.'}
-                      </Text>
-                    </View>
-                  ))}
+                  (auth?.totalPrice > 0 &&
+                    delivery_zone &&
+                    this.checkMinimalCheckout() && (
+                      <View style={{backgroundColor: '#262626'}}>
+                        <Text
+                          body2
+                          whiteColor
+                          style={{textAlign: 'center', paddingVertical: 3}}>
+                          {delivery_zone !== undefined &&
+                            'Минимальная сумма заказа ' +
+                              delivery_zone?.min_order_price +
+                              ' руб.'}
+                        </Text>
+                      </View>
+                    ))}
                 {/* cart */}
                 {loadingCategories ||
-                  (auth?.totalPrice > 0 && (
+                  (auth?.totalPrice > 0 && delivery_zone && (
                     <View style={styles.cart}>
                       <View style={styles.totalPrice}>
                         {ecoPrice > 0 ? (
@@ -1066,12 +1092,7 @@ class Catalogue extends Component {
                         ) : (
                           <View style={{alignItems: 'flex-start'}}>
                             <Text title2 semiBold>
-                              {delivery_zone &&
-                                auth?.totalPrice +
-                                  (delivery_zone?.free_delivery_from >
-                                    auth.totalPrice &&
-                                    delivery_zone?.delivery_price)}{' '}
-                              ₽
+                              {auth?.totalPrice} ₽
                             </Text>
                             <Text>{'Сегодня'}</Text>
                           </View>
@@ -1079,7 +1100,7 @@ class Catalogue extends Component {
                       </View>
                       <View style={{flex: 1}}>
                         <TouchableOpacity
-                          disabled={this.checkMinimalCheckout()}
+                          // disabled={this.checkMinimalCheckout()}
                           onPress={() => {
                             this.props.navigation.navigate('Cart');
                           }}
@@ -1089,18 +1110,20 @@ class Catalogue extends Component {
                             paddingVertical: 8,
                             alignItems: 'center',
                             justifyContent: 'center',
-                            backgroundColor: !this.checkMinimalCheckout()
-                              ? BaseColor.redColor
-                              : '#F1F1F1',
+                            // backgroundColor: !this.checkMinimalCheckout()
+                            //   ? BaseColor.redColor
+                            //   : '#F1F1F1',
+                            backgroundColor: BaseColor.redColor,
                             marginRight: 20,
                           }}>
                           <Text
                             middleBody
                             semiBold
                             style={{
-                              color: !this.checkMinimalCheckout()
-                                ? 'white'
-                                : '#B3B3B3',
+                              // color: !this.checkMinimalCheckout()
+                              //   ? 'white'
+                              //   : '#B3B3B3',
+                              color: 'white',
                             }}>
                             {'В корзину'}
                           </Text>
