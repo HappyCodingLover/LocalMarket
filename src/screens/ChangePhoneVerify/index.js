@@ -1,13 +1,11 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { AuthActions } from '@actions';
 import { bindActionCreators } from 'redux';
 import {
   View,
-  TextInput,
   StatusBar,
   BackHandler,
-  Platform,
   ScrollView,
   Alert,
 } from 'react-native';
@@ -15,12 +13,9 @@ import { BaseStyle, BaseColor, BaseSize } from '@config';
 import { Text } from '@components';
 import { AndroidBackHandler } from 'react-navigation-backhandler';
 import styles from './styles';
-import { withTranslation } from 'react-i18next';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Background from '../../assets/svgs/background.svg';
-import Logo from '../../assets/svgs/logo.svg';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import fbauth from '@react-native-firebase/auth';
 import { showMessage } from 'react-native-flash-message';
@@ -382,4 +377,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation()(ChangePhoneVerify));
+)(ChangePhoneVerify);

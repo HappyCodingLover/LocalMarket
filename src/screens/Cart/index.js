@@ -702,14 +702,14 @@ class Cart extends Component {
               );
             }
           } else {
-            console.error('err in getCatalogues', response.data.message);
+            console.error('err in getCatalogues 2', response.data.message);
             navigation.navigate('ErrorScreen', {
               message: response.data.message,
             });
           }
         })
         .catch((err) => {
-          console.error('err in getCatalogues', err);
+          console.error('err in getCatalogues 1', err);
           navigation.navigate('ErrorScreen', {
             message: err.message,
           });
@@ -1058,9 +1058,10 @@ class Cart extends Component {
                     paddingVertical: 16,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: (this.checkMinimalCheckout() || this.state.inactive)
-                      ? '#F1F1F1'
-                      : BaseColor.redColor,
+                    backgroundColor:
+                      this.checkMinimalCheckout() || this.state.inactive
+                        ? '#F1F1F1'
+                        : BaseColor.redColor,
                     marginRight: 10,
                   }}>
                   <Text

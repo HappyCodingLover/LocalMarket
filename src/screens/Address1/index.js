@@ -16,7 +16,6 @@ import { showMessage } from 'react-native-flash-message';
 import { BaseColor, BaseSize } from '@config';
 import { SafeAreaView, Text, Icon, Header } from '@components';
 import styles from './styles';
-import { withTranslation } from 'react-i18next';
 import Spinner from 'react-native-loading-spinner-overlay';
 import NoAddress from '../../assets/svgs/noAddress.svg';
 import { useFocusEffect } from '@react-navigation/native';
@@ -401,4 +400,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation()(Address1));
+)(Address1);

@@ -13,7 +13,6 @@ import { BaseStyle, BaseColor, BaseSize } from '@config';
 import { SafeAreaView, Text, Icon, Header } from '@components';
 import { AndroidBackHandler } from 'react-navigation-backhandler';
 import styles from './styles';
-import { withTranslation } from 'react-i18next';
 import Spinner from 'react-native-loading-spinner-overlay';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { GuestServices } from '../../services';
@@ -286,4 +285,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation()(Profile));
+)(Profile);

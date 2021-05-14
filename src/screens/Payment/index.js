@@ -7,13 +7,11 @@ import {
   TouchableOpacity,
   Platform,
   TextInput,
-  ScrollView,
   Alert,
 } from 'react-native';
 import {BaseStyle, BaseColor, BaseSize, Images} from '@config';
 import {SafeAreaView, Text, Header, Icon} from '@components';
 import styles from './styles';
-import {withTranslation} from 'react-i18next';
 import Spinner from 'react-native-loading-spinner-overlay';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -23,7 +21,6 @@ import {UserServices} from '../../services';
 import moment from 'moment-timezone';
 import {WheelPicker} from 'react-native-wheel-picker-android';
 import TinkoffASDK from 'react-native-tinkoff-asdk';
-import {concat} from 'react-native-reanimated';
 
 const DELIVERY_DAY = ['Cегодня', 'Завтра', '12 сентября'];
 
@@ -294,6 +291,7 @@ class Payment extends Component {
       publicKey:
         'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv5yse9ka3ZQE0feuGtemYv3IqOlLck8zHUM7lTr0za6lXTszRSXfUO7jMb+L5C7e2QNFs+7sIX2OQJ6a+HG8kr+jwJ4tS3cVsWtd9NXpsU40PE4MeNr5RqiNXjcDxA+L4OsEm/BlyFOEOh2epGyYUd5/iO3OiQFRNicomT2saQYAeqIwuELPs1XpLk9HLx5qPbm8fRrQhjeUD5TLO8b+4yCnObe8vy/BMUwBfq+ieWADIjwWCMp2KTpMGLz48qnaD9kdrYJ0iyHqzb2mkDhdIzkim24A3lWoYitJCBrrB2xM05sm9+OdCI1f7nPNJbl5URHobSwR94IRGT7CJcUjvwIDAQAB',
       testMode: false,
+      // testMode: true,
       debugLog: true,
     });
     if (Platform.OS === 'ios') {
@@ -563,7 +561,7 @@ class Payment extends Component {
         UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
         GooglePayParams: {
           MerchantName: 'test',
-          AddressRequired: false,
+          AddressRequired: true,
           PhoneRequired: false,
           Environment: 'TEST', // "SANDBOX", "PRODUCTION"
         },
@@ -1284,4 +1282,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation()(Payment));
+)(Payment);

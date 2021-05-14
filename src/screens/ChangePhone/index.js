@@ -10,11 +10,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { BaseStyle, BaseColor, BaseSize } from '@config';
-import { SafeAreaView, Text, TextInput } from '@components';
+import { SafeAreaView, Text } from '@components';
 import { AndroidBackHandler } from 'react-navigation-backhandler';
 import fbauth from '@react-native-firebase/auth';
 import styles from './styles';
-import { withTranslation } from 'react-i18next';
 import { isValidNumberForRegion } from 'libphonenumber-js';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -371,4 +370,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation()(ChangePhone));
+)(ChangePhone);

@@ -13,7 +13,6 @@ import {
 import {BaseStyle, BaseColor, BaseSize} from '@config';
 import {SafeAreaView, Text, Header} from '@components';
 import styles from './styles';
-import {withTranslation} from 'react-i18next';
 import Spinner from 'react-native-loading-spinner-overlay';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -395,4 +394,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation()(NewAddress));
+)(NewAddress);
